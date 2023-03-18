@@ -1,11 +1,15 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm import relationship
 from flask_cors import CORS
 from os import environ
 
+#To reference to another file
+from Pet import Pet, db
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+mysqlconnector://root:root@localhost:3306/owner"
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+#"mysql+mysqlconnector://root:root@localhost:3306/owner"s
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -15,14 +19,15 @@ class Owner(db.Model):
     __tablename__ = 'owner'
 
     ownerID = db.Column(db.String(13), primary_key =True)
-    ownerName = db.Column(db.String(25), nullable=False)
+    ownerName = db.Column(db.String(50), nullable=False)
     phoneNum = db.Column(db.String(8), nullable = False)
     postal = db.Column(db.String(7), nullable = False)
     cardInfo = db.Column(db.String(20), nullable = False)
-    pets=db.Column(ARRAY(db.String(13)))
+
+    #pet
+    pets = relationship('Pet.pet', backref='owner')
 
 
-    #runs when the class is called -> owner = owner(isbn13, **data) - creates a owner object
     def __init__(self, ownerID, ownerName, phoneNum, postal, cardInfo, pets):
         self.ownerID = ownerID
         self.ownerName = ownerName

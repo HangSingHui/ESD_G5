@@ -4,12 +4,22 @@ from sqlalchemy.orm import relationship
 from flask_cors import CORS
 from os import environ
 
+# from __future__ import annotations
+from typing import List
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import relationship
+
+
 #To reference to another file
-from Pet import Pet, db
+from SimpleMS.Pet import Pet, db
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-#"mysql+mysqlconnector://root:root@localhost:3306/owner"s
+#"mysql+mysqlconnector://root:root@localhost:3306/owner
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -25,7 +35,9 @@ class Owner(db.Model):
     cardInfo = db.Column(db.String(20), nullable = False)
 
     #pet
-    pets = relationship('Pet.pet', backref='owner')
+    id: Mapped[int] = mapped_column(primary_key=True)
+    pets: Mapped[List["Pet.petID"]] = relationship()
+
 
 
     def __init__(self, ownerID, ownerName, phoneNum, postal, cardInfo, pets):
@@ -35,6 +47,7 @@ class Owner(db.Model):
         self.postal = postal
         self.pets = pets
         self.cardInfo=cardInfo
+
     
     def json(self):
         return {

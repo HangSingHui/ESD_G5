@@ -3,8 +3,21 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from os import environ
 
-from Owner import Owner
-from Pet import Pet
+from typing import List
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import relationship
+
+
+class Base(DeclarativeBase):
+    pass
+
+from SimpleMS.Owner import Owner
+from SimpleMS.Pet import Pet
+from SimpleMS.Sitter import Sitter
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
@@ -17,16 +30,19 @@ CORS(app)
 class Job(db.Model):
     __tablename__ = 'job'
 
-    jobID = db.Column(db.String(13), primary_key =True)
-    jobName = db.Column(db.String(25), nullable=False)
-    phoneNum = db.Column(db.String(8), nullable = False)
-    postal = db.Column(db.String(7), nullable = False)
-    cardInfo = db.Column(db.String(20), nullable = False)
+    jobID = db.Column(db.Integer, primary_key =True)
 
+    jobTitle = db.Column(db.String(25), nullable=False)
+    jobDescription=db.Column(db.Text, nullable =False)
+    status = db.Column(db.String(8), nullable = False)
+    startDT = db.Column(db.DateTime(), nullable=False)
+    endDT = db.Column(db.DateTime(), nullable=False)
+    payout= db.Column(db.Float(2), nullable=False)
+   
     #Foreign Keys
-    ownerID = db.column(db.String(13), db.ForeignKey(Owner.ownerID))
-    petID = db.column(db.String(13), db.ForeignKey(Pet.petID)) #yet to start Pet.py
-
+    ownerID = db.column(db.String(13), db.ForeignKey(Owner.ownerID)) #one owner many job (one to many)
+    petID = db.column(db.String(13), db.ForeignKey(Pet.petID)) #one pet to many job (one to many)
+    sitterID= db.column(db.String(13), db.ForeignKey(Sitter.sitterID), nullable=True) #one sitter to many job 
 
 
     def __init__(self, jobID, jobName, phoneNum, postal, cardInfo, pets):

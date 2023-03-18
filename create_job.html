@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Create a Job</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+    <!-- Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"rel="stylesheet"/>
+
+    
+</head>
+<body onload="updateTime()">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Pet's R Us</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="#">Features</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="#">Pricing</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link disabled">Disabled</a>
+                </li>
+            </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="app">
+        <div class="row align-items-start">
+          <div class="col-8 bg-info">
+            <h1 class="text-center my-3">Create New Job</h1>
+
+            <div class="container">
+                <div class="row align-items-center">
+                    
+                    <div class="row my-3">
+                        <!-- Date and Time -->
+                        <div class="col">
+                            <div>
+                                <label for="meeting-time">Select Date and Time:</label>
+                            </div>
+                            <input type="datetime-local" id="meeting-time"
+                            name="meeting-time" value="2018-06-12T19:30"
+                            min="2018-06-07T00:00" max="2053-12-31T23:59">
+                        </div>
+                        <!-- Pay Rate -->
+                        <div class="col">
+                            <div>
+                                <label for="payrate">Select Pay Rate:</label>
+                            </div>
+                            <select class="form-select form-select-sm">
+                                <option selected>Select Pay Rate</option>
+                                <option value="1">$10-$20/hr</option>
+                                <option value="2">$21-$30/hr</option>
+                                <option value="3">$31-$40/hr</option>
+                                <option value="4">$41-$50/hr</option>
+                                <option value="5">>$50/hr</option>
+                                </select>
+                        </div>
+                    </div>
+                    
+                </div>
+              </div>
+
+              <!-- Select Pet  -->
+              <div class="container">
+                <div class="row">
+                    <!-- Select Pet -->
+                    <label>Select Pet</label>
+                    <select name="field1" id="field1" multiple onchange="console.log(Array.from(this.selectedOptions).map(x=>x.value??x.text))" multiselect-hide-x="false">
+                        <option selected value="Dog">Dog</option>
+                        <option selected value="Cat">Cat</option>
+                        <option value="Rabbit">Rabbit</option>
+                        <option value="Bird">Bird</option>
+                        <option value="Turtle">Turtle</option>
+                        <option value="Fish">Fish</option>
+                        <option value="Hamster">Hamster</option>
+                        <option value="Guinea Pig">Guinea Pig</option>
+                        <option value="Pig">Pig</option>
+                    </select>
+                </div>
+              </div>
+              
+              <!-- Job Description -->
+              <div class="form-floating my-5">
+                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
+                <label for="floatingTextarea">Enter Job Description...</label>
+              </div>
+
+              <!-- Specifications -->
+              <div class="container text-center my-5">
+                <div class="row align-items-center">
+                  <div class="col">
+                    <label for="specifications" class="form-label fw-bold">Enter Specifications</label>
+                    <div class="d-flex">
+                        <input class="form-control" type="text" placeholder="Any Requirements?" id="specification" v-model="spec_text">
+                    <button class="btn btn-success mx-2" @click="enterSpec()" :disabled="spec_text.length==0" >Enter</button>
+                    </div>
+
+                    {{spec_text}}
+                    
+                  </div>
+                  <div class="col">
+                    <strong>Current Specifications</strong>
+                    <div id="curr_specs">
+                        <p id="spec_placeholder">No Specifications Entered</p>
+
+                        <ul class="list-group d-none" id="spec_list">
+                        </ul>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="mb-3">
+                <label for="formFileMultiple" class="form-label">Upload Relevant Images and File</label>
+                <input class="form-control" type="file" id="formFileMultiple" multiple>
+              </div>
+
+
+              <div class="d-grid gap-2 my-5">
+                <button class="btn btn-primary" type="button">Submit Job</button>
+              </div>
+              
+              
+
+          </div>
+
+          <div class="col-4 text-center bg-warning">
+            <div class="mb-5">
+                <h2 class="my-3">View Current Jobs</h2>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      A list item
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            View
+                        </button>
+                        
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Job Title</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                Job Details Here
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Edit</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      A second list item
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            View
+                        </button>
+                        
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Job Title</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                Job Details Here
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Edit</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      A third list item
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            View
+                        </button>
+                        
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Job Title</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                Job Details Here
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Edit</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </li>
+                  </ul>
+            </div>
+            
+            <div>
+                <h3>View Sitter's Profile</h3>
+            </div>
+            
+          </div>
+        </div>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+        data() {
+            return {
+                spec_text: ''
+            }
+        },
+        methods:{
+            enterSpec(){
+                document.getElementById("spec_placeholder").innerText = ""
+                var spec_list = document.getElementById("spec_list")
+                var curr_spec = document.getElementById("specification").value
+                spec_list.setAttribute("class", "list-group")
+                spec_list.innerHTML += 
+                `<li class="list-group-item d-flex justify-content-between align-items-center" id="${curr_spec}">
+                    ${curr_spec}
+                <button class="btn btn-danger" onclick="removeSpec('${curr_spec}')">X</button>
+                </li>`
+                document.getElementById("specification").value = ""
+
+                this.spec_text = ""
+            }
+        }
+        })
+
+        const vm = app.mount('#app')
+        function updateTime() {
+            const date = new Date()
+            var year = date.getFullYear()
+            var month = date.getMonth() + 1
+            var day = date.getDate()
+            var hours = date.getHours();
+            var min = date.getMinutes();
+
+            if (month < 10) {
+                month = "0" + month
+            }
+
+            if (day < 10) {
+                day = "0" + day
+            }
+
+            if (hours < 10) {
+                hours = "0" + hours
+            }
+
+            if (min < 10) {
+                min = "0" + min
+            }
+
+            document.getElementById("meeting-time").value = `${year}-${month}-${day}T${hours}:${min}`
+
+            document.getElementById("meeting-time").min = `${year}-${month}-${day}T${hours}:${min}`
+        }
+
+        function removeSpec(spec) {
+            document.getElementById(spec).remove()
+            ifEmpty();
+        }
+
+        function ifEmpty() {
+            var spec_list = document.getElementById("spec_list")
+            if (spec_list.getElementsByTagName("li").length == 0) {
+                document.getElementById("spec_placeholder").innerText = "No Specifications Entered"
+                console.log(document.getElementById("spec_placeholder"));
+                spec_list.setAttribute("class", "list-group d-none")
+            }
+        }
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+    <!-- MDB -->
+    <script
+    type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+    <script src="multiselect-dropdown.js" ></script>
+    
+</body>
+</html>

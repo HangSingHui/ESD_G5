@@ -56,7 +56,7 @@
                 <div class="card h-100">
                     <img src="Pets/puppy.jpg" class="card-img-top">
                     <div class="card-body">
-                      <h5 class="card-title">[Job Owner 1]</h5>
+                      <h5 class="card-title">[Job 1]</h5>
                       <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
                             <!-- View More Jobs Modal -->
                             <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal">
@@ -74,29 +74,41 @@
                                         More Detailed Job Information Here
                                         </div>
                                         <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <!-- Cancel Job -->
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelJobModal">
-                                Cancel Job
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cancelJobModal">
+                                View Applications
                             </button>
                             <!-- Modal -->
                             <div class="modal fade" id="cancelJobModal" tabindex="-1">
                                 <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="cancelJobModalLabel">Cancel Job?</h1>
+                                    <h1 class="modal-title fs-5" id="cancelJobModalLabel">View Applications for this Job</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
-                                    Are you sure you want to cancel this Job? Note that cancellation of this job at this current period will result in a $20 penalty credited from your bank account. Failure to pay the penalty amount will result in your account being locked out.
+                                      <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                          Application 1
+                                          <a href="" class="btn btn-info">View More</a>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                          Application 2
+                                          <a href="" class="btn btn-info">View More</a>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                          Application 3
+                                          <a href="" class="btn btn-info">View More</a>
+                                        </li>
+                                      </ul>
                                     </div>
                                     <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" onclick="removeJob(this)" id="job_cancel1">Cancel</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Don't Cancel</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                                 </div>

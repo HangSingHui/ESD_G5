@@ -80,7 +80,7 @@ def updateSitter(id):
     
     #Get new data
     data = request.get_json()
-    updatedApp = Application(id, **data)
+    updatedApp = Application(id, **data) #data contains new sitterID and status
 
     try:
         db.session.add(updatedApp)
@@ -90,7 +90,7 @@ def updateSitter(id):
         return jsonify(
         {
             "code":500, #internal error
-            "message": "Appkication failed to update"
+            "message": "Application failed to update"
         }
      ),500   
 

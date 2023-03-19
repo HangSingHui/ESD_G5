@@ -4,15 +4,6 @@ from sqlalchemy.orm import relationship
 from flask_cors import CORS
 from os import environ
 
-# from __future__ import annotations
-from typing import List
-from sqlalchemy import ForeignKey
-from sqlalchemy import Integer
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import relationship
-
 
 #To reference to another file
 from SimpleMS.Pet import Pet, db
@@ -28,15 +19,14 @@ CORS(app)
 class Owner(db.Model):
     __tablename__ = 'owner'
 
-    ownerID = db.Column(db.String(13), primary_key =True)
-    ownerName = db.Column(db.String(50), nullable=False)
+    id = db.Column(db.String(13), primary_key =True)
+    name = db.Column(db.String(50), nullable=False)
     phoneNum = db.Column(db.String(8), nullable = False)
     postal = db.Column(db.String(7), nullable = False)
     cardInfo = db.Column(db.String(20), nullable = False)
 
     #pet
-    id: Mapped[int] = mapped_column(primary_key=True)
-    pets: Mapped[List["Pet.petID"]] = relationship()
+    pets=db.relationship('Pet',backref='owner')
 
 
 

@@ -119,8 +119,6 @@
                         <input class="form-control" type="text" placeholder="Any Requirements?" id="specification" v-model="spec_text">
                     <button class="btn btn-success mx-2" @click="enterSpec()" :disabled="spec_text.length==0" >Enter</button>
                     </div>
-
-                    {{spec_text}}
                     
                   </div>
                   <div class="col">
@@ -148,12 +146,11 @@
               </div>
               
               
-
           </div>
 
-          <div class="col-4 text-center bg-warning">
+          <div class="col-4 bg-warning">
             <div class="mb-5">
-                <h2 class="my-3">View Current Jobs</h2>
+                <h2 class="my-3 text-center">View Current Jobs</h2>
                 <ul class="list-group">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                       A list item
@@ -171,7 +168,10 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
-                                Job Details Here
+                                <p>Date: 19 April 2023</p>
+                                <p>Time:  16:00</p>
+                                <p>Pets: Rabbit</p>
+                                <p>Sitter: Sing Hui</p>
                                 </div>
                                 <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -197,7 +197,10 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
-                                Job Details Here
+                                    <p>Date: 20 April 2023</p>
+                                    <p>Time:  16:00</p>
+                                    <p>Pets: Cat</p>
+                                    <p>Sitter: Angie</p>
                                 </div>
                                 <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -223,7 +226,10 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
-                                Job Details Here
+                                    <p>Date: 21 April 2023</p>
+                                    <p>Time:  16:00</p>
+                                    <p>Pets: Dog</p>
+                                    <p>Sitter: Izumi</p>
                                 </div>
                                 <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -323,7 +329,6 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
     ></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
     <script src="multiselect-dropdown.js" ></script>
     
 </body>

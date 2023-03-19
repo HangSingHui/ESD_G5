@@ -55,28 +55,35 @@ class Job(db.Model):
 
 
 
-    def __init__(self, jobID, jobTitle, jobDescription, status, startDT, endDT, payout, ownerID, petID, sitterID):
-        self.jobID = jobID
-        self.jobTitle = jobTitle
-        self.jobDescription= jobDescription
-        self.status = status
-        self.start= pets
-        self.cardInfo=cardInfo
-    
+    def __init__(self, id, title, desc, status, startDT, endDT, payout, owner_id, pet_id, sitter_id):
+       self.id = id
+       self.title=title
+       self.desc=desc
+       self.status=status
+       self.startDT=startDT
+       self.endDT=endDT
+       self.payout=payout
+       self.owner_id=owner_id
+       self.pet_id=pet_id
+       self.sitter_id=sitter_id
+
     def json(self):
         return {
-            "jobID": self.jobID,
-            'jobName': self.jobName,
-            "phoneNum": self.phoneNum,
-            "postal": self.postal,
-            "pets":self.pets,
-            "cardInfo":self.cardInfo
+            "id": self.id,
+            'title': self.title,
+            "desc": self.desc,
+            "startDT": self.startDT,
+            "endDT": self.endDT,
+            "payout":self.payout,
+            "owner_id":self.owner_id,
+            "pet_id":self.pet_id,
+            "sitter_id":self.sitter_id
         }
 
 #Function 1: Get all jobs - to display on the interface
 @app.route("/job")
 def get_all():
-    jobList = job.query.all()
+    jobList = Job.query.all()
 
     if len(jobList):
         return jsonify(
@@ -95,10 +102,10 @@ def get_all():
 
 
 #Function 2: Get job title by jobID
-@app.route("/accept/<string:jobID>")
+@app.route("/accept/<integer:jobID>")
 def get_jobTitle(jobID):
     #search if job exists first with jobID
-    job=job.query.filter_by(jobID=jobID).first()
+    job=job.query.filter_by(jobID=id).first()
 
     if job:
         return jsonify(

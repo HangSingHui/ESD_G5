@@ -51,8 +51,8 @@
     <div class="container">
         <h1 class="display-1 text-center">My Jobs</h1>
  
-        <div class="row my-3">
-            <div class="col-4 my-2">
+        <div class="row my-3" id="job_list">
+            <div class="col-4 my-2" id="job1">
                 <div class="card h-100">
                     <img src="Pets/puppy.jpg" class="card-img-top">
                     <div class="card-body">
@@ -95,7 +95,7 @@
                                     Are you sure you want to cancel this Job? Note that cancellation of this job at this current period will result in a $20 penalty credited from your bank account. Failure to pay the penalty amount will result in your account being locked out.
                                     </div>
                                     <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger">Cancel</button>
+                                    <button type="button" class="btn btn-danger" onclick="removeJob(this)" id="job_cancel1">Cancel</button>
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Don't Cancel</button>
                                     </div>
                                 </div>
@@ -104,7 +104,7 @@
                     </div>
                   </div>
             </div>
-            <div class="col-4 my-2">
+            <div class="col-4 my-2" id="job2">
                 <div class="card h-100">
                     <img src="Pets/kitten.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
@@ -114,7 +114,7 @@
                     </div>
                   </div>
             </div>
-            <div class="col-4 my-2">
+            <div class="col-4 my-2" id="job3">
                 <div class="card h-100">
                     <img src="Pets/cow.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
@@ -125,7 +125,7 @@
                   </div>
             </div>
        
-            <div class="col-4 my-2">
+            <div class="col-4 my-2" id="job4">
                 <div class="card h-100">
                     <img src="Pets/goldfish.jpg" class="card-img-top">
                     <div class="card-body">
@@ -135,7 +135,7 @@
                     </div>
                   </div>
             </div>
-            <div class="col-4 my-2">
+            <div class="col-4 my-2" id="job5">
                 <div class="card h-100">
                     <img src="Pets/turtle.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
@@ -145,7 +145,7 @@
                     </div>
                   </div>
             </div>
-            <div class="col-4 my-2">
+            <div class="col-4 my-2" id="job6">
                 <div class="card h-100">
                     <img src="Pets/birds.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
@@ -156,7 +156,7 @@
                   </div>
             </div>
         
-            <div class="col-4 my-2">
+            <div class="col-4 my-2" id="job7">
                 <div class="card h-100">
                     <img src="Pets/guineapig.jpg" class="card-img-top">
                     <div class="card-body">
@@ -166,7 +166,7 @@
                     </div>
                   </div>
             </div>
-            <div class="col-4 my-2">
+            <div class="col-4 my-2" id="job8">
                 <div class="card h-100">
                     <img src="Pets/hamster.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
@@ -176,7 +176,7 @@
                     </div>
                   </div>
             </div>
-            <div class="col-4 my-2">
+            <div class="col-4 my-2" id="job9">
                 <div class="card h-100">
                     <img src="Pets/rabbit.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
@@ -190,6 +190,18 @@
 
         
     </div>
+
+    <script>
+
+        function removeJob(job) {
+            var job_id = job.id.substr(job.id.length-1,1)
+            var job_to_remove = document.getElementById(`job${job_id}`)
+            job_to_remove.remove()
+            location.reload()
+        }
+
+
+    </script>
 
 
 

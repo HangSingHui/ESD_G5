@@ -32,38 +32,31 @@ channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, dura
 # - instead of setting up the queues using RabbitMQ UI.
 
 
-############   replacement queue   #############
-#delcare replacement queue
-queue_name = 'replacement'
-channel.queue_declare(queue=queue_name, durable=True) 
-    # 'durable' makes the queue survive broker restarts
-
-#bind Error queue
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.replacement') 
-    # bind the queue to the exchange via the key
-    # any routing_key with two words and ending with '.error' will be matched
-
-
-
-
-############   email queue    #############
+############   notification queue    #############
 #delcare message queue
-queue_name = 'email'
+queue_name = 'notification'
 channel.queue_declare(queue=queue_name, durable=True)
     # 'durable' makes the queue survive broker restarts
 
 #bind Activity_Log queue
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.email') 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.notification') 
+    # bind the queue to the exchange via the key
+    # 'routing_key=#' => any routing_key would be matched
+
+
+############   penalty queue    #############
+#delcare message queue
+queue_name = 'penalty'
+channel.queue_declare(queue=queue_name, durable=True)
+    # 'durable' makes the queue survive broker restarts
+
+#bind Activity_Log queue
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.penalty') 
     # bind the queue to the exchange via the key
     # 'routing_key=#' => any routing_key would be matched
 
 
 
-
-"""
-This function in this module sets up a connection and a channel to a local AMQP broker,
-and declares a 'topic' exchange to be used by the microservices in the solution.
-"""
 def check_setup():
     # The shared connection and channel created when the module is imported may be expired, 
     # timed out, disconnected by the broker or a client;

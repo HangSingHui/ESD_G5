@@ -27,6 +27,9 @@ class Owner(db.Model):
     #Owner is PARENT to Pet (one to many)
     pets=db.relationship('Pet',backref='owner')
 
+    #Owner is PARENT to Job (one to many)
+    jobs=db.relationship('Job',backref='owner')
+
 
     def __init__(self, id, ownerName, phoneNum, postal, cardInfo, pets):
         self.id = id

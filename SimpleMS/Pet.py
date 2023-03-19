@@ -31,3 +31,4 @@ class Pet(db.Model):
     
     #Putting foreign key on pet, creating new column owner.id in pet database automatically
     owner_id=db.Column(db.Integer, db.ForeignKey('owner.id'))
+

@@ -41,14 +41,18 @@ class Job(db.Model):
     endDT = db.Column(db.DateTime(), nullable=False)
     payout= db.Column(db.Float(2), nullable=False)
 
+    #Foreign key - OWNER is PARENT to JOB (a job can only have 1 owner, 1 to many)
+    owner_id=db.Column(db.Integer, db.ForeignKey('owner.id'))
+
+    #Foreign key - PET is PARENT to JOB (a job can only have 1 pet, 1 to many)
+    pet_id=db.Column(db.Integer, db.ForeignKey('pet.id'))
+
+    #Foreign key - SITTER is PARENT to JOB (a job can only have 1 HIRED sitter, 1 to many, can be null, update once sitter confirmed)
+    sitter_id=db.Column(db.Integer, db.ForeignKey('sitter.id'))
+
     #Foreign key - Job is PARENT to Application (One to Many)
     applications=db.relationship('Application',backref='job')
 
-   
-    #Foreign Keys - not updated yet
-    # ownerID = db.column(db.String(13), db.ForeignKey(Owner.ownerID)) #one owner many job (one to many)
-    # petID = db.column(db.String(13), db.ForeignKey(Pet.petID)) #one pet to many job (one to many)
-    # sitterID= db.column(db.String(13), db.ForeignKey(Sitter.sitterID), nullable=True) #one sitter to many job 
 
 
     def __init__(self, jobID, jobTitle, jobDescription, status, startDT, endDT, payout, ownerID, petID, sitterID):

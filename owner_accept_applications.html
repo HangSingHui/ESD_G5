@@ -50,14 +50,13 @@
     
     <div class="container">
         <h1 class="display-1 text-center">My Jobs</h1>
- 
         <div class="row my-3" id="job_list">
             <div class="col-4 my-2" id="job1">
                 <div class="card h-100">
                     <img src="Pets/puppy.jpg" class="card-img-top">
                     <div class="card-body">
-                      <h5 class="card-title">[Job 1]</h5>
-                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                    <h5 class="card-title">[Job 1]</h5>
+                    <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
                             <!-- View More Jobs Modal -->
                             <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal">
                                 View More Info
@@ -79,43 +78,85 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Cancel Job -->
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cancelJobModal">
-                                View Applications
-                            </button>
-                            <!-- Modal -->
-                            <div class="modal fade" id="cancelJobModal" tabindex="-1">
-                                <div class="modal-dialog">
+                            <div class="modal fade" id="job1applications" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="cancelJobModalLabel">View Applications for this Job</h1>
+                                    <h1 class="modal-title fs-5" id="job1applicationsTitle">Applications</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
-                                      <ul class="list-group list-group-flush">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                          Application 1
-                                          <a href="" class="btn btn-info">View More</a>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                          Application 2
-                                          <a href="" class="btn btn-info">View More</a>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                          Application 3
-                                          <a href="" class="btn btn-info">View More</a>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                    <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Application 1
+                                            <button class="btn btn-primary" data-bs-target="#job1applications1" data-bs-toggle="modal">View More</button>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Application 2
+                                            <button class="btn btn-primary" data-bs-target="#job1applications2" data-bs-toggle="modal">View More</button>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Application 3
+                                            <button class="btn btn-primary" data-bs-target="#job1applications3" data-bs-toggle="modal">View More</button>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                                 </div>
                             </div>
+                            <div class="modal fade" id="job1applications1" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="job1applications1Label">Application 1</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Application 1 Details
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" data-bs-target="#job1applications" data-bs-toggle="modal">Back to All Applications</button>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="modal fade" id="job1applications2" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="job1applications2Label">Application 2</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Application 2 Details
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" data-bs-target="#job1applications" data-bs-toggle="modal">Back to All Applications</button>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="modal fade" id="job1applications3" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="job1applications3Label">Application 3</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Application 3 Details
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" data-bs-target="#job1applications" data-bs-toggle="modal">Back to All Applications</button>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                            <button class="btn btn-primary" data-bs-target="#job1applications" data-bs-toggle="modal">View Job Applications</button>
                     </div>
-                  </div>
+                </div>
             </div>
+
             <div class="col-4 my-2" id="job2">
                 <div class="card h-100">
                     <img src="Pets/kitten.jpg" class="card-img-top" alt="...">
@@ -201,19 +242,10 @@
         </div>
 
         
+
+
     </div>
 
-    <script>
-
-        function removeJob(job) {
-            var job_id = job.id.substr(job.id.length-1,1)
-            var job_to_remove = document.getElementById(`job${job_id}`)
-            job_to_remove.remove()
-            location.reload()
-        }
-
-
-    </script>
 
 
 
@@ -226,7 +258,5 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
     ></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
-    <script src="multiselect-dropdown.js" ></script>
 </body>
 </html>

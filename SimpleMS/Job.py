@@ -33,7 +33,6 @@ class Job(db.Model):
     __tablename__ = 'job'
 
     id = db.Column(db.Integer, primary_key =True)
-
     title = db.Column(db.String(25), nullable=False)
     desc=db.Column(db.Text, nullable =False)
     status = db.Column(db.String(8), nullable = False)
@@ -111,7 +110,7 @@ def get_jobTitle(jobID):
         return jsonify(
             {
                 "code":200,
-                "data": job.
+                "data": job.title
             
             }
         )

@@ -52,103 +52,143 @@
         <h1 class="display-1 text-center">My Jobs</h1>
  
         <div class="row my-3">
-            <div class="col">
+            <div class="col-4 my-2">
                 <div class="card h-100">
                     <img src="Pets/puppy.jpg" class="card-img-top">
                     <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                      <h5 class="card-title">[Job Owner 1]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                            <!-- View More Jobs Modal -->
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal">
+                                View More Info
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="jobModal" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="jobModalLabel">Modal title</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                        More Detailed Job Information Here
+                                        </div>
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Cancel Job -->
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelJobModal">
+                                Cancel Job
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="cancelJobModal" tabindex="-1">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="cancelJobModalLabel">Cancel Job?</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    Are you sure you want to cancel this Job? Note that cancellation of this job at this current period will result in a $20 penalty credited from your bank account. Failure to pay the penalty amount will result in your account being locked out.
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger">Cancel</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Don't Cancel</button>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
                     </div>
                   </div>
             </div>
-            <div class="col">
+            <div class="col-4 my-2">
                 <div class="card h-100">
                     <img src="Pets/kitten.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <h5 class="card-title">[Job Owner 2]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
                       <a href="#" class="btn btn-primary">Go somewhere</a>
                     </div>
                   </div>
             </div>
-            <div class="col">
+            <div class="col-4 my-2">
                 <div class="card h-100">
                     <img src="Pets/cow.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <h5 class="card-title">[Job Owner 3]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
                       <a href="#" class="btn btn-primary">Go somewhere</a>
                     </div>
                   </div>
             </div>
-        </div>
-
-        <div class="row my-3">
-            <div class="col">
+       
+            <div class="col-4 my-2">
                 <div class="card h-100">
                     <img src="Pets/goldfish.jpg" class="card-img-top">
                     <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <h5 class="card-title">[Job Owner 4]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
                       <a href="#" class="btn btn-primary">Go somewhere</a>
                     </div>
                   </div>
             </div>
-            <div class="col">
+            <div class="col-4 my-2">
                 <div class="card h-100">
                     <img src="Pets/turtle.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <h5 class="card-title">[Job Owner 5]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
                       <a href="#" class="btn btn-primary">Go somewhere</a>
                     </div>
                   </div>
             </div>
-            <div class="col">
+            <div class="col-4 my-2">
                 <div class="card h-100">
                     <img src="Pets/birds.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <h5 class="card-title">[Job Owner 6]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+        
+            <div class="col-4 my-2">
+                <div class="card h-100">
+                    <img src="Pets/guineapig.jpg" class="card-img-top">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 7]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-4 my-2">
+                <div class="card h-100">
+                    <img src="Pets/hamster.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 8]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-4 my-2">
+                <div class="card h-100">
+                    <img src="Pets/rabbit.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 9]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
                       <a href="#" class="btn btn-primary">Go somewhere</a>
                     </div>
                   </div>
             </div>
         </div>
 
-        <div class="row my-3">
-            <div class="col">
-                <div class="card h-100">
-                    <img src="Pets/guineapig.jpg" class="card-img-top">
-                    <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                      <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                  </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="Pets/hamster.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                      <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                  </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="Pets/rabbit.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                      <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                  </div>
-            </div>
-        </div>
+        
     </div>
 
 

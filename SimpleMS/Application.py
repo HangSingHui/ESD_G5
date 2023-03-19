@@ -12,6 +12,8 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import relationship
 
+from SimpleMS.Job import Job
+
 
 
 app = Flask(__name__)
@@ -24,17 +26,15 @@ db = SQLAlchemy(app)
 class Application(db.Model):
     __tablename__ = 'application'
 
-    #values needed: appID, sitterID (foreign key), jobID (foreign key), status, wait listed (nullable)
+    #values needed: appID, sitterID (child, foreign key), jobID (child, foreign key), status, wait listed)
 
-
-    appID = db.Column(db.String(13), primary_key =True)
-    status = db.Column(db.String(50), nullable=False)
-    waitList = db.Column(db.String(8), nullable = False)
+    id = db.Column(db.Integer, primary_key =True)
+    status = db.Column(db.String(10), nullable=False)
+    waitList = db.Column(db.String(5), nullable = False)
 
     #Foreign keys
-    id: Mapped[int] = mapped_column(primary_key=True)
-    pets: Mapped[List["Pet.petID"]] = relationship()
-
+    job_id=db.Column(db.Integer, db.ForeignKey('job.id'))
+    sitter_id=db.Column(db.Integer, db.ForeignKey('sitter.id'))
 
 
     def __init__(self, ownerID, ownerName, phoneNum, postal, cardInfo, pets):
@@ -55,3 +55,9 @@ class Application(db.Model):
             "pets":self.pets,
             "cardInfo":self.cardInfo
         }
+
+#Function 1: To get all applications given a jobID HTTP GET - by sending in jobID
+@app.route("/applications/<integer:id>")
+def getAllApps(id):
+    
+    

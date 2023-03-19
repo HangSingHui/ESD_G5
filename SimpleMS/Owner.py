@@ -4,9 +4,8 @@ from sqlalchemy.orm import relationship
 from flask_cors import CORS
 from os import environ
 
-
-#To reference to another file
-from SimpleMS.Pet import Pet, db
+from SimpleMS.Pet import Pet 
+#not too sure about this part and the foreign key part, can change once the data is added if it doesn't work
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
@@ -19,19 +18,18 @@ CORS(app)
 class Owner(db.Model):
     __tablename__ = 'owner'
 
-    id = db.Column(db.String(13), primary_key =True)
+    id = db.Column(db.Integer, primary_key =True)
     name = db.Column(db.String(50), nullable=False)
     phoneNum = db.Column(db.String(8), nullable = False)
     postal = db.Column(db.String(7), nullable = False)
     cardInfo = db.Column(db.String(20), nullable = False)
 
-    #pet
+    #Owner is PARENT to Pet (one to many)
     pets=db.relationship('Pet',backref='owner')
 
 
-
-    def __init__(self, ownerID, ownerName, phoneNum, postal, cardInfo, pets):
-        self.ownerID = ownerID
+    def __init__(self, id, ownerName, phoneNum, postal, cardInfo, pets):
+        self.id = id
         self.ownerName = ownerName
         self.phoneNum = phoneNum
         self.postal = postal
@@ -41,7 +39,7 @@ class Owner(db.Model):
     
     def json(self):
         return {
-            "ownerID": self.ownerID,
+            "id": self.id,
             'ownerName': self.ownerName,
             "phoneNum": self.phoneNum,
             "postal": self.postal,
@@ -70,11 +68,11 @@ def get_all():
     ), 404
 
 
-#Function 2: Get owner payment details by ownerID
-@app.route("/owner/payment/<string:ownerID>")
-def get_payment_details(ownerID):
-    #search if owner exists first with ownerID
-    owner=Owner.query.filter_by(ownerID=ownerID).first()
+#Function 2: Get owner payment details by id
+@app.route("/owner/payment/<integer:id>")
+def get_payment_details(id):
+    #search if owner exists first with id
+    owner=Owner.query.filter_by(id=id).first()
 
     if owner:
         return jsonify(
@@ -105,8 +103,8 @@ def get_payment_details(ownerID):
 #Function 4: Update owner details
 
 
-# @app.route("/owner/<string:ownerID>")
-# def find_by_ownerID(ownerID):
+# @app.route("/owner/<string:id>")
+# def find_by_id(id):
 #     owner = owner.query.filter_by(isbn13=isbn13).first()
 #     if (owner):
 #         return jsonify(

@@ -11,6 +11,8 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import relationship
 
+from SimpleMS.Application import Application
+
 
 class Base(DeclarativeBase):
     pass
@@ -30,19 +32,23 @@ CORS(app)
 class Job(db.Model):
     __tablename__ = 'job'
 
-    jobID = db.Column(db.Integer, primary_key =True)
+    id = db.Column(db.Integer, primary_key =True)
 
-    jobTitle = db.Column(db.String(25), nullable=False)
-    jobDescription=db.Column(db.Text, nullable =False)
+    title = db.Column(db.String(25), nullable=False)
+    desc=db.Column(db.Text, nullable =False)
     status = db.Column(db.String(8), nullable = False)
     startDT = db.Column(db.DateTime(), nullable=False)
     endDT = db.Column(db.DateTime(), nullable=False)
     payout= db.Column(db.Float(2), nullable=False)
+
+    #Foreign key - Job is PARENT to Application (One to Many)
+    applications=db.relationship('Application',backref='job')
+
    
     #Foreign Keys - not updated yet
-    ownerID = db.column(db.String(13), db.ForeignKey(Owner.ownerID)) #one owner many job (one to many)
-    petID = db.column(db.String(13), db.ForeignKey(Pet.petID)) #one pet to many job (one to many)
-    sitterID= db.column(db.String(13), db.ForeignKey(Sitter.sitterID), nullable=True) #one sitter to many job 
+    # ownerID = db.column(db.String(13), db.ForeignKey(Owner.ownerID)) #one owner many job (one to many)
+    # petID = db.column(db.String(13), db.ForeignKey(Pet.petID)) #one pet to many job (one to many)
+    # sitterID= db.column(db.String(13), db.ForeignKey(Sitter.sitterID), nullable=True) #one sitter to many job 
 
 
     def __init__(self, jobID, jobTitle, jobDescription, status, startDT, endDT, payout, ownerID, petID, sitterID):

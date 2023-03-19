@@ -13,7 +13,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import relationship
 
-from SimpleMS.Owner import Owner, db
+from SimpleMS.Owner import Owner #not too sure about this part and the foreign key part, can change once the data is added if it doesn't work
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
@@ -26,8 +26,8 @@ CORS(app)
 class Pet(db.Model):
     __tablename__ = 'pet'
 
-    petID= db.Column(db.Integer, primary_key=True)
-    petName = db.Column(db.String(50))
+    id= db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
     
-    #Putting foreign key on child
+    #Putting foreign key on pet, creating new column owner.id in pet database automatically
     owner_id=db.Column(db.Integer, db.ForeignKey('owner.id'))

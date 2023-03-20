@@ -25,6 +25,14 @@ CORS(app)
 class Payment(db.Model):
     __tablename__ = 'payment'
 
+    
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     app.run(port=5006, debug=True)

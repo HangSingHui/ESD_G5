@@ -15,9 +15,9 @@ CORS(app)
 
 
 notification_URL = "http://localhost:5002/notification"
-penalty_URL = "http://localhost:5200/Penalty_Handling"
-session_time_URL = "http://localhost:5003/session-time"
-close_session_URL = "http://localhost:5003/close-session"
+penalty_URL = "http://localhost:5300/Penalty_Handling"
+session_time_URL = "http://localhost:5004/session-time"
+close_session_URL = "http://localhost:5004/close-session"
 
 @app.route("/incident_handling", methods=['POST'])
 def incident_handling():

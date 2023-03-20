@@ -34,29 +34,30 @@ class Application(db.Model):
     sitter_id=db.Column(db.Integer, db.ForeignKey('sitter.id'))
 
 
-    def __init__(self, ownerID, ownerName, phoneNum, postal, cardInfo, pets):
-        self.ownerID = ownerID
-        self.ownerName = ownerName
-        self.phoneNum = phoneNum
-        self.postal = postal
-        self.pets = pets
-        self.cardInfo=cardInfo
+    def __init__(self, id, status, waitList, job_id, sitter_id):
+        self.id = id
+        self.status= status
+        self.waitList = waitList, #waitList takes in a string
+        self.job_id = job_id
+        self.sitter_id = sitter_id
+
+       
 
     
     def json(self):
         return {
-            "ownerID": self.ownerID,
-            'ownerName': self.ownerName,
-            "phoneNum": self.phoneNum,
-            "postal": self.postal,
-            "pets":self.pets,
-            "cardInfo":self.cardInfo
+            "id": self.id,
+            "status":self.status,
+            "waitList":self.waitList,
+            "job_id": self.job_id,
+            "sitter_id":self.sitter_id
         }
 
 #Function 1: To get all applications given a jobID HTTP GET - by sending in jobID
 @app.route("/application/<integer:jobID>")
 def getAll(id):
     appList=Application.query.filter_by(job_id=id)
+    
     if appList:
         return{
             "code":200,
@@ -68,43 +69,74 @@ def getAll(id):
         "data": "No applications are available for jobID " + str(id)
     },404
 
+@app.route("/application/<integer:appID>") #1 unique ID for each app
+def getAppByID(appID):
+    app=Application.query.filter_by(id=appID).first()
+    
+    if app:
+        return{
+            "code":200,
+            "data": app.json()
+        }
+
+    return{
+        "code":404,
+        "data": "No applications are available for jobID " + str(id)
+    },404
+
+
 
 #Function 2: Scenario - When an owner accepts a sitter for a job - To update job with accepted sitter (sitterID) and status to Matched)
 #id here is the 
-@app.route("/application/<integer:appID>", methods=['PUT'])
-def updateSitter(id):
-    #Send JSON in through placeOrder
-    oldApp=Application.query.filter_by(id=id)
-    db.session.delete(oldApp)
-    db.session.commit()
+@app.route("/application", methods=['PUT'])
+def updateSitter(appID):
+    #Fetch app
+    app=Application.query.filter_by(id=appID).first()
+    oldStatus = data["status"]
     
     #Get new data
-    data = request.get_json()
-    updatedApp = Application(id, **data) #data contains new sitterID and status
+    data = request.get_json() 
+    newStatus = data["jobStatus"]
 
     try:
-        db.session.add(updatedApp)
+        app.status = newStatus
         db.session.commit()
-    
+
     except:
         return jsonify(
         {
             "code":500, #internal error
-            "message": "Application failed to update"
+            "message": "Application failed to update status from " + oldStatus + " to " + newStatus
         }
      ),500   
 
     return jsonify(
         {
             "code":201,
-            "data": updatedApp.json()
+            "data": app.json()
         }
     ),201
 
 
+
+    
+    ########################
+    # sample info data format
+    # {
+    #     "sitterID":"Name",
+    #     "appID":123,
+    #     "ownerID": 456,
+    #     "jobID":789,
+    #     "jobStatus":"Accepted"
+    # }
+    ########################
+
+
+
+
 if __name__ == '__main__':
     # app.run(port=5001, debug=True)
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5008, debug=True)
 
     
 

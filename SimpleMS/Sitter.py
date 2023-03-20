@@ -43,9 +43,9 @@ class Sitter(db.Model):
 
     def json(self):
         return {
-            "id": self.isbn13, 
-            "name": self.title, 
-            "phoneNum": self.price, 
+            "id": self.id, 
+            "name": self.name, 
+            "phoneNum": self.phoneNum, 
             "postal": self.postal,
             "cardInfo": self.cardInfo,
             "outstanding_charges": self.outstanding_charges,

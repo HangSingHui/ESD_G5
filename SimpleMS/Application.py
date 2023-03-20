@@ -34,23 +34,24 @@ class Application(db.Model):
     sitter_id=db.Column(db.Integer, db.ForeignKey('sitter.id'))
 
 
-    def __init__(self, ownerID, ownerName, phoneNum, postal, cardInfo, pets):
-        self.ownerID = ownerID
-        self.ownerName = ownerName
-        self.phoneNum = phoneNum
-        self.postal = postal
-        self.pets = pets
-        self.cardInfo=cardInfo
+    def __init__(self, id, status, waitList, job_id, sitter_id):
+        self.id = id
+        self.status= status
+        self.waitList = waitList, #waitList takes in a stirng
+        self.job_id = job_id
+        self.sitter_id = sitter_id
+
+       
 
     
     def json(self):
         return {
-            "ownerID": self.ownerID,
-            'ownerName': self.ownerName,
-            "phoneNum": self.phoneNum,
-            "postal": self.postal,
-            "pets":self.pets,
-            "cardInfo":self.cardInfo
+            "id": self.id,
+            "status":self.status,
+            "waitList":self.waitList,
+            "job_id": self.job_id,
+            "sitter_id":self.sitter_id
+            
         }
 
 #Function 1: To get all applications given a jobID HTTP GET - by sending in jobID
@@ -71,21 +72,19 @@ def getAll(id):
 
 #Function 2: Scenario - When an owner accepts a sitter for a job - To update job with accepted sitter (sitterID) and status to Matched)
 #id here is the 
-@app.route("/application/<integer:appID>", methods=['PUT'])
-def updateSitter(id):
-    #Send JSON in through placeOrder
-    oldApp=Application.query.filter_by(id=id)
-    db.session.delete(oldApp)
-    db.session.commit()
+@app.route("/accept_app/<integer:appID>", methods=['PUT'])
+def updateSitter(appID):
+    #Fetch app
+    app=Application.query.filter_by(id=appID).first()
     
     #Get new data
-    data = request.get_json()
-    updatedApp = Application(id, **data) #data contains new sitterID and status
+    data = request.get_json() 
+    newStatus = data["jobStatus"]
 
     try:
-        db.session.add(updatedApp)
+        app.status = newStatus
         db.session.commit()
-    
+
     except:
         return jsonify(
         {
@@ -97,14 +96,29 @@ def updateSitter(id):
     return jsonify(
         {
             "code":201,
-            "data": updatedApp.json()
+            "data": app.json()
         }
     ),201
 
 
+    
+    ########################
+    # sample info data format
+    # {
+    #     "sitterID":"Name",
+    #     "appID":123,
+    #     "ownerID": 456,
+    #     "jobID":789,
+    #     "jobStatus":"Accepted"
+    # }
+    ########################
+
+
+
+
 if __name__ == '__main__':
     # app.run(port=5001, debug=True)
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5008, debug=True)
 
     
 

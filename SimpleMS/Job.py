@@ -101,8 +101,8 @@ def get_all():
 
 
 #Function 2: Get job title by jobID
-@app.route("/accept/<integer:jobID>")
-def get_jobTitle(jobID):
+@app.route("/job/<integer:jobID>")
+def getTitle(jobID):
     #search if job exists first with jobID
     job=job.query.filter_by(jobID=id).first()
 
@@ -118,7 +118,7 @@ def get_jobTitle(jobID):
     return jsonify(
             {
                 "code":404,
-                "data":"job not found."
+                "data":"Job not found."
             }
         ),404
 

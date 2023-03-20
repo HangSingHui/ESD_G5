@@ -42,7 +42,7 @@ class Session(db.Model):
         self.ownerDeposit = ownerDeposit
         self.sitterPaid = sitterPaid
         self.status = status
-        self.siterCompleted = sitterCompleted
+        self.sitterCompleted = sitterCompleted
         self.ownerCompleted = ownerCompleted
         self.jobId = jobId
 

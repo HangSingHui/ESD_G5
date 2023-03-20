@@ -72,15 +72,30 @@ def processAcceptApp(info):
     if code not in range(200,300):
         #Error
         return{
-            "code": 500,
-            "data": update_status["data"]
+            "code": update_status["code"],
+            "message": update_status["message"]
         }
 
 
-
-    #2.  Invoke Job to update status
+    #2.  Invoke Job to fetch title
+    getTitle = invoke_http(job_URL,method="GET", json=info["jobID"])
+    code = update_status["code"]
+    if code not in range(200,300):
+    #Error
+        return{
+            "code": getTitle["code"],
+            "message": getTitle["message"]
+     }   
 
     #3.  Invoke Session to update status
+    createSession = invoke_http(session_URL,method="POST", json=info)
+    code = createSession["code"]
+    if code not in range(200,300):
+    #Error
+        return{
+            "code": createSession["code"],
+            "message":  createSession["message"]
+     }   
 
     #4.  Invoke Sitter to update status
 

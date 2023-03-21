@@ -220,7 +220,7 @@ def return_session_time(sessionId) :
     #if not, return session not found
 
 # Function 5: close session by updating close session time and the session status
-@app.route("/close-session/<integer:sessionId>",method=['PUT'])
+@app.route("on/<int/close-sessieger:sessionId>",method=['PUT'])
 def close_session(sessionId) : 
     session = Session.query.filter_by(id=sessionId).first()
     if session:

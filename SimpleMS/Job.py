@@ -127,8 +127,63 @@ def getTitle(jobID):
 
 
 #Function 3: Create a new job
+@app.route("/job/<integer:OwnerID>", methods=['POST'])
+# URL PATH 
+def create_job(owner_id):
+    ## order.py lab 5 ##
+    # job_id = request.json.get('job_id', None)
+    # order = Job(job_id=job_id, status='NEW')
+
+    # cart_item = request.json.get('cart_item')
+    # for item in cart_item:
+    #     order.order_item.append(Order_Item(
+    #         book_id=item['book_id'], quantity=item['quantity']))
+
+    #  try:
+    #     db.session.add(order)
+    #     db.session.commit()
+    # except Exception as e:
+    #     return jsonify(
+    #         {
+    #             "code": 500,
+    #             "message": "An error occurred while creating the order. " + str(e)
+    #         }
+    #     ), 500
+
+    # return jsonify(
+    #     {
+    #         "code": 201,
+    #         "data": order.json()
+    #     }
+    # ), 201
+
+    # no validation for the same job by same ownerid? 
+
+    data = request.get_json()
+    new_job = Job(owner_id, **data)
+
+    try:
+        db.session.add(new_job)
+        db.session.commit()
+
+    except:
+        return jsonify(
+            {
+                "code": 500,
+                 "data": new_job.json(),
+                "message": "An error occurred creating the job."
+            }
+        ), 500
+    
+    return jsonify(
+        {
+            "code": 201,
+            "data": new_job.json()
+        }
+    ), 201
 
 #Function 4: Update job details
+
 
 
 # @app.route("/job/<string:jobID>")

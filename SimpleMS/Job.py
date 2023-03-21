@@ -199,16 +199,16 @@ def update_order(job_id):
             ), 404
 
         # update status
-        data = request.get_json()
-        if data['status']:
-            job.status = data['status']
-            db.session.commit()
-            return jsonify(
-                {
-                    "code": 200,
-                    "data": job.json()
-                }
-            ), 200
+        # data = request.get_json()
+        # if data['status']:
+        #     job.status = data['status']
+        #     db.session.commit()
+        #     return jsonify(
+        #         {
+        #             "code": 200,
+        #             "data": job.json()
+        #         }
+        #     ), 200
     except Exception as e:
         return jsonify(
             {

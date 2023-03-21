@@ -183,6 +183,42 @@ def create_job(owner_id):
     ), 201
 
 #Function 4: Update job details
+@app.route("/order/<string:JobID>", methods=['PUT'])
+def update_order(job_id):
+    try:
+        job = Job.query.filter_by(JobID=job_id).first()
+        if not job:
+            return jsonify(
+                {
+                    "code": 404,
+                    "data": {
+                        "JobID": job_id
+                    },
+                    "message": "Job not found."
+                }
+            ), 404
+
+        # update status
+        data = request.get_json()
+        if data['status']:
+            job.status = data['status']
+            db.session.commit()
+            return jsonify(
+                {
+                    "code": 200,
+                    "data": job.json()
+                }
+            ), 200
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {
+                    "JobID": job_id
+                },
+                "message": "An error occurred while updating the order. " + str(e)
+            }
+        ), 500
 
 
 

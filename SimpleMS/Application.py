@@ -140,8 +140,5 @@ if __name__ == '__main__':
 
     
 
-
-
-
     
-    
+#Return sitter info upon sending in appid

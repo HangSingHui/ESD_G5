@@ -4,62 +4,62 @@ from flask_cors import CORS
 from os import environ
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-#"mysql+mysqlconnector://root:root@localhost:3306/sitter
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# #"mysql+mysqlconnector://root:root@localhost:3306/sitter
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-CORS(app)
+# db = SQLAlchemy(app)
+# CORS(app)
 
-class Sitter(db.Model):
-    __tablename__ = 'sitter'
+# class Sitter(db.Model):
+#     __tablename__ = 'sitter'
 
-    id = db.Column(db.Integer, primary_key =True)
-    name = db.Column(db.String(50), nullable=False)
-    phoneNum = db.Column(db.String(8), nullable = False)
-    postal = db.Column(db.String(7), nullable = False)
-    cardInfo = db.Column(db.String(20), nullable = False)
-    outstanding_charges = db.Column(db.Float(precision=2), nullable=False)
-    is_blocked = db.Column(db.Boolean, nullable = False)
-    species_preference = db.Column(db.String(50), nullable = False)
-    region_preference = db.Column(db.String(50), nullable = False)
-    skills = db.Column(db.String(50), nullable = False)
-    hourly_rate = db.Column(db.Float(precision=2), nullable=False)
-    #stripe_details = db.Column(db.String(50), nullable = False)
+#     id = db.Column(db.Integer, primary_key =True)
+#     name = db.Column(db.String(50), nullable=False)
+#     phoneNum = db.Column(db.String(8), nullable = False)
+#     postal = db.Column(db.String(7), nullable = False)
+#     cardInfo = db.Column(db.String(20), nullable = False)
+#     outstanding_charges = db.Column(db.Float(precision=2), nullable=False)
+#     is_blocked = db.Column(db.Boolean, nullable = False)
+#     species_preference = db.Column(db.String(50), nullable = False)
+#     region_preference = db.Column(db.String(50), nullable = False)
+#     skills = db.Column(db.String(50), nullable = False)
+#     hourly_rate = db.Column(db.Float(precision=2), nullable=False)
+#     #stripe_details = db.Column(db.String(50), nullable = False)
 
-    # foreign key is jobId referring to the job table
-    jobId = db.Column(db.Integer, db.ForeignKey('job.id'))
+#     # foreign key is jobId referring to the job table
+#     jobId = db.Column(db.Integer, db.ForeignKey('job.id'))
 
 
-    def __init__(self, id, name, phoneNum, postal, cardInfo, outstanding_charges, is_blocked, species_preference, region_preference, skills, hourly_rate, jobId):
-        self.id = id
-        self.name = name
-        self.phoneNum = phoneNum
-        self.postal = postal
-        self.cardInfo = cardInfo
-        self.outstanding_charges = outstanding_charges
-        self.is_blocked = is_blocked
-        self.species_preference = species_preference
-        self.region_preference = region_preference
-        self.skills = skills
-        self.hourly_rate = hourly_rate
-        self.jobId = jobId
+#     def __init__(self, id, name, phoneNum, postal, cardInfo, outstanding_charges, is_blocked, species_preference, region_preference, skills, hourly_rate, jobId):
+#         self.id = id
+#         self.name = name
+#         self.phoneNum = phoneNum
+#         self.postal = postal
+#         self.cardInfo = cardInfo
+#         self.outstanding_charges = outstanding_charges
+#         self.is_blocked = is_blocked
+#         self.species_preference = species_preference
+#         self.region_preference = region_preference
+#         self.skills = skills
+#         self.hourly_rate = hourly_rate
+#         self.jobId = jobId
 
-    def json(self):
-        return {
-            "id": self.id, 
-            "name": self.name, 
-            "phoneNum": self.phoneNum, 
-            "postal": self.postal,
-            "cardInfo": self.cardInfo,
-            "outstanding_charges": self.outstanding_charges,
-            "is_blocked": self.is_blocked,
-            "species_preference": self.species_preference,
-            "region_preference": self.region_preference,
-            "skills": self.skills,
-            "hourly_rate": self.hourly_rate,
-            "jobId": self.jobId
-        }
+#     def json(self):
+#         return {
+#             "id": self.id, 
+#             "name": self.name, 
+#             "phoneNum": self.phoneNum, 
+#             "postal": self.postal,
+#             "cardInfo": self.cardInfo,
+#             "outstanding_charges": self.outstanding_charges,
+#             "is_blocked": self.is_blocked,
+#             "species_preference": self.species_preference,
+#             "region_preference": self.region_preference,
+#             "skills": self.skills,
+#             "hourly_rate": self.hourly_rate,
+#             "jobId": self.jobId
+#         }
 
 
 # Function 1: display ALL sitters

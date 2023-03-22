@@ -3,6 +3,9 @@ from flask import Flask
 from flask_mail import Mail, Message
 import os
 
+import json
+import amqp_setup
+
 app = Flask(__name__)
 
 mail_settings = {
@@ -17,10 +20,6 @@ mail_settings = {
 app.config.update(mail_settings)
 mail = Mail(app)
 
-import json
-import os
-
-import amqp_setup
 
 monitorBindingKey='*.notification'
 
@@ -47,16 +46,10 @@ if __name__ == '__main__':
     with app.app_context():
         msg = Message(subject="Hello",
                       sender=app.config.get("MAIL_USERNAME"),
-                      recipients=["<recipient email here>"], # replace with your email for testing
+                      recipients=["lebubbub@gmail.com"], # replace with your email for testing
                       body="This is a test email I sent with Gmail and Python!")
         mail.send(msg)
 
-
-
-# if __name__ == "__main__": 
-#     print("\nThis is " + os.path.basename(__file__), end='')
-#     print(": monitoring routing key '{}' in exchange '{}' ...".format(monitorBindingKey, amqp_setup.exchangename))
-#     receiveNotification()
 
 
 

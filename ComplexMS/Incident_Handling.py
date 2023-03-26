@@ -23,6 +23,8 @@ session_time_URL = "http://localhost:5004/session-time"
 close_session_URL = "http://localhost:5004/close-session"
 job_waitlist_URL = ""
 
+
+
 @app.route("/incident_handling", methods=['POST'])
 def incident_handling():
     # Simple check of input format and data of the request are JSON
@@ -30,10 +32,7 @@ def incident_handling():
         try:
             session = request.get_json()
             print("\nSession in JSON:", session)
-
-            # do the actual work
             # 1. Send incident info
-            
             result = processIncident(session)
             print('\n------------------------')
             print('\nresult: ', result)
@@ -57,6 +56,11 @@ def incident_handling():
         "message": "Invalid JSON input: " + str(request.get_data())
     }), 400
 
+
+
+
+
+
 def processIncident(session):
     sessionId = session['id']
     jobId = session['jobId']
@@ -66,6 +70,7 @@ def processIncident(session):
     closing_session_result = invoke_http(close_session_URL + sessionId, method='PUT', json=session)
     print('closing_session_result: ',closing_session_result)
 
+    # check if job was cancelled after 1 day
     if closing_session_result > timedelta(days = 1) : 
         invoke_http(penalty_URL, method='POST', json = session)
         print('Penalty Handling Result: ',closing_session_result)

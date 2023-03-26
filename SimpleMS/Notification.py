@@ -24,10 +24,8 @@ mail = Mail(app)
 monitorBindingKey='#.notification'
 
 def receiveNotif():
-    amqp_setup.check_setup()
-        
+    amqp_setup.check_setup() 
     queue_name = 'notification'
-    
     amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
     amqp_setup.channel.start_consuming() 
 

@@ -19,38 +19,15 @@
     <!-- MDB -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"rel="stylesheet"/>
 
+    <link rel="stylesheet" href="job_create.css">
+
     
 </head>
-<body onload="updateTime()">
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Pet's R Us</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="#">Features</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link disabled">Disabled</a>
-                </li>
-            </ul>
-            </div>
-        </div>
-    </nav>
-
+<body onload="updateTime()" id="page_body">
+    
     <div class="container" id="app">
         <div class="row align-items-start">
-          <div class="col-8 bg-info">
+          <div class="col bg-light bg-opacity-50 mx-5">
             <h1 class="text-center my-3">Create New Job</h1>
 
             <div class="container">
@@ -60,7 +37,7 @@
                         <!-- Date and Time -->
                         <div class="col">
                             <div>
-                                <label for="meeting-time">Select Date and Time:</label>
+                                <label for="meeting-time" style="font-weight: bold;">Select Date and Time:</label>
                             </div>
                             <input type="datetime-local" id="meeting-time"
                             name="meeting-time" value="2018-06-12T19:30"
@@ -69,7 +46,7 @@
                         <!-- Pay Rate -->
                         <div class="col">
                             <div>
-                                <label for="payrate">Select Pay Rate:</label>
+                                <label for="payrate" style="font-weight: bold;">Select Pay Rate:</label>
                             </div>
                             <select class="form-select form-select-sm">
                                 <option selected>Select Pay Rate</option>
@@ -89,7 +66,7 @@
               <div class="container">
                 <div class="row">
                     <!-- Select Pet -->
-                    <label>Select Pet</label>
+                    <label style="font-weight: bold;">Select Pet</label>
                     <select name="field1" id="field1" multiple onchange="console.log(Array.from(this.selectedOptions).map(x=>x.value??x.text))" multiselect-hide-x="false">
                         <option selected value="Dog">Dog</option>
                         <option selected value="Cat">Cat</option>
@@ -136,7 +113,7 @@
 
 
               <div class="mb-3">
-                <label for="formFileMultiple" class="form-label">Upload Relevant Images and File</label>
+                <label for="formFileMultiple" class="form-label" style="font-weight: bold;">Upload Relevant Images and File</label>
                 <input class="form-control" type="file" id="formFileMultiple" multiple>
               </div>
 
@@ -148,104 +125,9 @@
               
           </div>
 
-          <div class="col-4 bg-warning">
-            <div class="mb-5">
-                <h2 class="my-3 text-center">View Current Jobs</h2>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      A list item
-                        <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#OwnerJob1">
-                            View
-                        </button>
-                        
-                        <!-- Modal -->
-                        <div class="modal fade" id="OwnerJob1" tabindex="-1">
-                            <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="OwnerJob1Title">Job Title</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                <p>Date: 19 April 2023</p>
-                                <p>Time:  16:00</p>
-                                <p>Pets: Rabbit</p>
-                                <p>Sitter: Sing Hui</p>
-                                </div>
-                                <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Edit</button>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      A second list item
-                        <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#OwnerJob2">
-                            View
-                        </button>
-                        
-                        <!-- Modal -->
-                        <div class="modal fade" id="OwnerJob2" tabindex="-1">
-                            <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="OwnerJob2Title">Job Title</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Date: 20 April 2023</p>
-                                    <p>Time:  16:00</p>
-                                    <p>Pets: Cat</p>
-                                    <p>Sitter: Angie</p>
-                                </div>
-                                <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Edit</button>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      A third list item
-                        <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#OwnerJob3">
-                            View
-                        </button>
-                        
-                        <!-- Modal -->
-                        <div class="modal fade" id="OwnerJob3" tabindex="-1">
-                            <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="OwnerJob3Title">Job Title</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Date: 21 April 2023</p>
-                                    <p>Time:  16:00</p>
-                                    <p>Pets: Dog</p>
-                                    <p>Sitter: Izumi</p>
-                                </div>
-                                <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Edit</button>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                    </li>
-                  </ul>
-            </div>
-            
-            <div>
-                <h3>View Sitter's Profile</h3>
-            </div>
-            
+          <div class="col" style="margin-left: 150px; margin-top: 150px;">
+            <span class="display-4" style="color: aquamarine; font-weight: 400;">Find a Pet Sitter Today</span>
+            <p class="fs-4 text-light fw-bold">We know that finding a pet sitter is hard, but we are here to make the job easier for you. Create your first job listing with us and let us handle the rest.</p>
           </div>
         </div>
     </div>

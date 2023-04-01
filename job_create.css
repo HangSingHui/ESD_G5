@@ -1,0 +1,12 @@
+#page_body {
+	/* font-family: 'Lato', sans-serif; */
+	background-image: url('https://images5.alphacoders.com/466/466168.jpg');
+	background-size: cover;
+    background-repeat: no-repeat;
+	color: #191a1e;
+}
+
+#app{
+    margin-top: 15em;
+}
+

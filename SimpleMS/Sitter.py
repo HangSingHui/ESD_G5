@@ -27,8 +27,11 @@ class Sitter(db.Model):
     hourly_rate = db.Column(db.Float(precision=2), nullable=False)
     #stripe_details = db.Column(db.String(50), nullable = False)
 
+    # foreign key is jobId referring to the job table
+    jobId = db.Column(db.Integer, db.ForeignKey('job.id'))
 
-    def __init__(self, id, name, phoneNum, postal, cardInfo, outstanding_charges, is_blocked, species_preference, region_preference, skills, hourly_rate):
+
+    def __init__(self, id, name, phoneNum, postal, cardInfo, outstanding_charges, is_blocked, species_preference, region_preference, skills, hourly_rate, jobId):
         self.id = id
         self.name = name
         self.phoneNum = phoneNum
@@ -40,12 +43,13 @@ class Sitter(db.Model):
         self.region_preference = region_preference
         self.skills = skills
         self.hourly_rate = hourly_rate
+        self.jobId = jobId
 
     def json(self):
         return {
-            "id": self.isbn13, 
-            "name": self.title, 
-            "phoneNum": self.price, 
+            "id": self.id, 
+            "name": self.name, 
+            "phoneNum": self.phoneNum, 
             "postal": self.postal,
             "cardInfo": self.cardInfo,
             "outstanding_charges": self.outstanding_charges,
@@ -53,7 +57,8 @@ class Sitter(db.Model):
             "species_preference": self.species_preference,
             "region_preference": self.region_preference,
             "skills": self.skills,
-            "hourly_rate": self.hourly_rate
+            "hourly_rate": self.hourly_rate,
+            "jobId": self.jobId
         }
 
 
@@ -195,6 +200,11 @@ def delete_owner(id):
             "message": "sitter not found"
         }
     ),404
+
+# # Function 6: recommend replacement sitters
+# @app.route("/replacement_sitter/<integer:jobId>", methods=['GET'])
+# def find_replacements(jobId):
+#     replacementlist = Sitter.query.filter_by(id = id).first()
 
 
 

@@ -5,34 +5,38 @@ import os, sys
 
 import requests
 from invokes import invoke_http
+from SimpleMS import amqp_setup
+from datetime import datetime, timedelta
 
 from SimpleMS import amqp_setup_notification
 import pika
 import json
+
 
 app = Flask(__name__)
 CORS(app)
 
 
 notification_URL = "http://localhost:5002/notification"
-penalty_URL = "http://localhost:5003/Penalty_Handling"
-session_URL = "http://localhost:5004/session-time"
+penalty_URL = "http://localhost:5300/Penalty_Handling"
+session_time_URL = "http://localhost:5004/session-time"
+close_session_URL = "http://localhost:5004/close-session"
+job_waitlist_URL = ""
+
+
 
 @app.route("/incident_handling", methods=['POST'])
 def incident_handling():
     # Simple check of input format and data of the request are JSON
     if request.is_json:
         try:
-            incident = request.get_json()
-            print("\nReceived an order in JSON:", incident)
-
-            # do the actual work
+            session = request.get_json()
+            print("\nSession in JSON:", session)
             # 1. Send incident info
-            
-            # result = processIncident(incident)
-            # print('\n------------------------')
-            # print('\nresult: ', result)
-            # return jsonify(result), result["code"]
+            result = processIncident(session)
+            print('\n------------------------')
+            print('\nresult: ', result)
+            return jsonify(result), result["code"]
 
         except Exception as e:
             # Unexpected error in code
@@ -57,12 +61,60 @@ def incident_handling():
 
 
 
+def processIncident(session):
+    sessionId = session['id']
+    jobId = session['jobId']
+    # 2. Update session closing time
+    # Invoke session microservice
+    print('\n-----Update session closing time (session microservice)-----')
+    closing_session_result = invoke_http(close_session_URL + sessionId, method='PUT', json=session)
+    print('closing_session_result: ',closing_session_result)
+
+    # check if job was cancelled after 1 day
+    if closing_session_result > timedelta(days = 1) : 
+        invoke_http(penalty_URL, method='POST', json = session)
+        print('Penalty Handling Result: ',closing_session_result)
+    else:
+        pass
+
+    # 3. Retrieve recommended petsitters as replacement
+    # Invoke sitter microservice
+    print('\n-----Retrieve waitlist from job microservice-----')
+    sitter_replacements_result = invoke_http(job_waitlist_URL + jobId, method='GET')
+    print('Sitter Replacements Suggestion: ',sitter_replacements_result)
+
+    
+
+    # Send list of recommended pet sitter replacements
+    print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')
+
+    message = json.dumps(sitter_replacements_result)
+
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="replacement.notification", 
+        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    # make message persistent within the matching queues until it is received by some receiver 
+    # (the matching queues have to exist and be durable and bound to the exchange)
+
+    # - reply from the invocation is not used;
+    # continue even if this invocation fails        
+    print("\nSitter replacement status ({:d}) published to the RabbitMQ Exchange:", sitter_replacements_result)
+
+
+    # 7. Return confirmation of cancellation
+    return {
+        "code": 201,
+        "data": {
+            "cancellation": closing_session_result,
+            "cancelation_status": "confirmed"
+        }
+    }
+
 
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
-    print("This is flask " + os.path.basename(__file__) + " for placing an order...")
-    app.run(host="0.0.0.0", port=5100, debug=True)
+    print("This is flask " + os.path.basename(__file__) + " for handling an incident...")
+    app.run(host="0.0.0.0", port=5200, debug=True)
     # Notes for the parameters: 
     # - debug=True will reload the program automatically if a change is detected;
     #   -- it in fact starts two instances of the same flask program, and uses one of the instances to monitor the program changes;

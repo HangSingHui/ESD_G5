@@ -33,7 +33,6 @@ class Job(db.Model):
     __tablename__ = 'job'
 
     id = db.Column(db.Integer, primary_key =True)
-
     title = db.Column(db.String(25), nullable=False)
     desc=db.Column(db.Text, nullable =False)
     status = db.Column(db.String(8), nullable = False)
@@ -102,8 +101,8 @@ def get_all():
 
 
 #Function 2: Get job title by jobID
-@app.route("/accept/<integer:jobID>")
-def get_jobTitle(jobID):
+@app.route("/job/<integer:jobID>")
+def getTitle(jobID):
     #search if job exists first with jobID
     job=job.query.filter_by(jobID=id).first()
 
@@ -111,7 +110,7 @@ def get_jobTitle(jobID):
         return jsonify(
             {
                 "code":200,
-                "data": job.
+                "data": job.title
             
             }
         )
@@ -119,7 +118,7 @@ def get_jobTitle(jobID):
     return jsonify(
             {
                 "code":404,
-                "data":"job not found."
+                "data":"Job not found."
             }
         ),404
 
@@ -128,8 +127,99 @@ def get_jobTitle(jobID):
 
 
 #Function 3: Create a new job
+@app.route("/job/<integer:OwnerID>", methods=['POST'])
+# URL PATH 
+def create_job(owner_id):
+    ## order.py lab 5 ##
+    # job_id = request.json.get('job_id', None)
+    # order = Job(job_id=job_id, status='NEW')
+
+    # cart_item = request.json.get('cart_item')
+    # for item in cart_item:
+    #     order.order_item.append(Order_Item(
+    #         book_id=item['book_id'], quantity=item['quantity']))
+
+    #  try:
+    #     db.session.add(order)
+    #     db.session.commit()
+    # except Exception as e:
+    #     return jsonify(
+    #         {
+    #             "code": 500,
+    #             "message": "An error occurred while creating the order. " + str(e)
+    #         }
+    #     ), 500
+
+    # return jsonify(
+    #     {
+    #         "code": 201,
+    #         "data": order.json()
+    #     }
+    # ), 201
+
+    # no validation for the same job by same ownerid? 
+
+    data = request.get_json()
+    new_job = Job(owner_id, **data)
+
+    try:
+        db.session.add(new_job)
+        db.session.commit()
+
+    except:
+        return jsonify(
+            {
+                "code": 500,
+                 "data": new_job.json(),
+                "message": "An error occurred creating the job."
+            }
+        ), 500
+    
+    return jsonify(
+        {
+            "code": 201,
+            "data": new_job.json()
+        }
+    ), 201
 
 #Function 4: Update job details
+@app.route("/order/<string:JobID>", methods=['PUT'])
+def update_order(job_id):
+    try:
+        job = Job.query.filter_by(JobID=job_id).first()
+        if not job:
+            return jsonify(
+                {
+                    "code": 404,
+                    "data": {
+                        "JobID": job_id
+                    },
+                    "message": "Job not found."
+                }
+            ), 404
+
+        # update status
+        # data = request.get_json()
+        # if data['status']:
+        #     job.status = data['status']
+        #     db.session.commit()
+        #     return jsonify(
+        #         {
+        #             "code": 200,
+        #             "data": job.json()
+        #         }
+        #     ), 200
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {
+                    "JobID": job_id
+                },
+                "message": "An error occurred while updating the order. " + str(e)
+            }
+        ), 500
+
 
 
 # @app.route("/job/<string:jobID>")
@@ -250,4 +340,4 @@ def get_jobTitle(jobID):
 
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5005, debug=True)

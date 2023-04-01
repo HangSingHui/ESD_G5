@@ -13,8 +13,8 @@ mail_settings = {
     "MAIL_PORT": 465,
     "MAIL_USE_TLS": False,
     "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": os.environ['EMAIL_USER'],
-    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD']
+    "MAIL_USERNAME": os.environ['EMAIL_USER'], #noreply.petsrus@gmail.com
+    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'] #hyilskfcwghyotff
 }
 
 app.config.update(mail_settings)

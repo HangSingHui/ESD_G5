@@ -1,63 +1,23 @@
 from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import relationship
 from flask_cors import CORS
 from os import environ
 
-from typing import List
-from sqlalchemy import ForeignKey
-from sqlalchemy import Integer
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import relationship
-
-
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-#mysql+mysqlconnector://root:root@localhost:3306/application
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+import pymongo
 
-class Application(db.Model):
-    __tablename__ = 'application'
-
-    #values needed: appID, sitterID (parent Sitter, foreign key), jobID (parent Job, foreign key), status, wait listed)
-
-    id = db.Column(db.Integer, primary_key =True)
-    status = db.Column(db.String(10), nullable=False)
-    waitList = db.Column(db.String(5), nullable = False)
-
-    #Foreign keys
-    job_id=db.Column(db.Integer, db.ForeignKey('job.id'))
-    sitter_id=db.Column(db.Integer, db.ForeignKey('sitter.id'))
-
-
-    def __init__(self, id, status, waitList, job_id, sitter_id):
-        self.id = id
-        self.status= status
-        self.waitList = waitList, #waitList takes in a string
-        self.job_id = job_id
-        self.sitter_id = sitter_id
-
-       
-
-    
-    def json(self):
-        return {
-            "id": self.id,
-            "status":self.status,
-            "waitList":self.waitList,
-            "job_id": self.job_id,
-            "sitter_id":self.sitter_id
-        }
+client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
+app_db = client.get_database("job_application_db")
+app_col = app_db['job_application']
 
 #Function 1: To get all applications given a jobID HTTP GET - by sending in jobID
 @app.route("/application/<integer:jobID>")
 def getAll(id):
-    appList=Application.query.filter_by(job_id=id)
-    
+
+    query = {"JobID": id}
+    appList = app_col.find(query)
+
     if appList:
         return{
             "code":200,
@@ -71,7 +31,9 @@ def getAll(id):
 
 @app.route("/application/<integer:appID>") #1 unique ID for each app
 def getAppByID(appID):
-    app=Application.query.filter_by(id=appID).first()
+
+    query = {"ApplicationID": appID}
+    app=app_col.find_one(query)
     
     if app:
         return{
@@ -87,49 +49,51 @@ def getAppByID(appID):
 
 
 #Function 2: Scenario - When an owner accepts a sitter for a job - To update job with accepted sitter (sitterID) and status to Matched)
-#id here is the 
+
+#Change status from Pending to Accepted for application with applicationid = id
+#Change status of the remaining applications from Pending to rejected 
+
 @app.route("/application", methods=['PUT'])
-def updateSitter(appID):
-    #Fetch app
-    app=Application.query.filter_by(id=appID).first()
-    oldStatus = data["status"]
+def acceptUpdate(appID):
     
     #Get new data
     data = request.get_json() 
     newStatus = data["jobStatus"]
 
+    #Get jobID
+    queryApp = {"ApplicationID":appID}
+    queryJobID = {"JobID":1, "_id":0}
+    jobID = app_col.find_one(queryApp,queryJobID)["JobID"]
+
+    #Change all applications with the id=jobID from pending to rejected
+    queryAll = {"JobID":jobID}
+    rejectStatus = {"$set":{"Status":"Rejected"}}
+    acceptStatus = {"$set":{"Status":newStatus}}
+
+
+
     try:
-        app.status = newStatus
-        db.session.commit()
+        app_col.update_all(queryAll,rejectStatus)
+        app_col.update_one(queryApp,acceptStatus)
 
     except:
         return jsonify(
         {
             "code":500, #internal error
-            "message": "Application failed to update status from " + oldStatus + " to " + newStatus
+            "message": "Internal error. Application failed to update status from Pending to Accepted."
         }
      ),500   
+
+    app = getAppByID(appID)
 
     return jsonify(
         {
             "code":201,
-            "data": app.json()
+            "data": app["data"]
         }
     ),201
 
 
-
-    
-    ########################
-    # sample info data format
-    # {
-    #     "sitterID":"Name",
-    #     "appID":123,
-    #     "ownerID": 456,
-    #     "jobID":789,
-    #     "jobStatus":"Accepted"
-    # }
-    ########################
 
 
 
@@ -141,4 +105,3 @@ if __name__ == '__main__':
     
 
     
-#Return sitter info upon sending in appid

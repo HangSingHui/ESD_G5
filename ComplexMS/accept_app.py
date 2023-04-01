@@ -1,10 +1,15 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
+import amqp_setup
+
 import os, sys
+
+sys.path.insert(0, 'SimpleMS')
 
 import requests
 from invokes import invoke_http
+import pika
 
 app = Flask(__name__)
 CORS(app)
@@ -97,82 +102,28 @@ def processAcceptApp(info):
             "message":  createSession["message"]
      }   
 
-    #4.  Invoke Sitter to update status
+    #4.  Get sitter email
+    getSitter = invoke_http(sitter_URL, method="GET", json=info["sitterID"])
+    code = getSitter["code"]
+    if code not in range(200,300):
+        return{
+            "code": getSitter["code"],
+            "message":  getSitter["message"]
+        } 
 
-    #5.  Invoke Notif to update status
+    sitterEmail = getSitter["sitterEmail"]
 
-    #6.  AMQP Place payment
+    #5.  Invoke Notif to send confirmation acceptance to sitter
+    
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
+
 
     #7. Return status to uI
-
-
-
-    # 2. Send the order info {cart items}
-    # Invoke the order microservice
-
-    #Note: order is in the following format:
-    # {
-    #    "customer_id": "Apple TAN",
-    #    "cart_item": [{
-    #       "book_id": "9781434474234",
-    #       "quantity": 1
-    #    },
-    #    {
-    #       "book_id": "9781449474212",
-    #       "quantity": 1
-    #    }]
-    # }
-
-    new_order = invoke_http(order_URL, method="POST", json=order)
-
-
-    # 4. Record new order
-    # record the activity log anyway
-
-    invoke_http(activity_log_URL, method="POST", json=new_order)
-
-
-    # Check the order result; if a failure, send it to the error microservice.
-    code = new_order["code"]
-    if code not in range(200,300):
-        invoke_http(error_URL, method="POST", json = new_order)
-    
-        return {
-            "code": 500,
-            "message": "Order creation failure sent for error handling."
-        }
-
-    # Inform the error microservice
-
-    # 7. Return error
-
-    # 5. Send new order to shipping
-    # Invoke the shipping record microservice
-    shipping_record = invoke_http(shipping_record_URL, method="POST", json = new_order["data"])
-    code = shipping_record["code"]
-    if code not in range(200,300):
-        invoke_http(error_URL, method="POST", json = shipping_record)
-        return {
-            "code":400,
-            "message": "Order should be in JSON."
-        }
-    
-
-    # Check the shipping result;
-    # if a failure, send it to the error microservice.
-
-    # Inform the error microservice
-
-    # 7. Return error
-
-    # 7. Return created order, shipping record
-    return {
-        "code":201,
-        "data":{
-            "order_result": new_order,
-            "shipping_result": shipping_record
-        }
+    return{
+        "code":200,
+        "message": "You have successfully accepted your desired sitter."
     }
+
 
 
 # Execute this program if it is run as a main script (not by 'import')

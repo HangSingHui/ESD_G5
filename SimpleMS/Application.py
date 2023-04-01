@@ -71,6 +71,7 @@ def acceptUpdate(appID):
     acceptStatus = {"$set":{"Status":newStatus}}
 
 
+
     try:
         app_col.update_all(queryAll,rejectStatus)
         app_col.update_one(queryApp,acceptStatus)
@@ -79,14 +80,16 @@ def acceptUpdate(appID):
         return jsonify(
         {
             "code":500, #internal error
-            "message": "Application failed to update status from " + oldStatus + " to " + newStatus
+            "message": "Internal error. Application failed to update status from Pending to Accepted."
         }
      ),500   
+
+    app = getAppByID(appID)
 
     return jsonify(
         {
             "code":201,
-            "data": app.json()
+            "data": app["data"]
         }
     ),201
 

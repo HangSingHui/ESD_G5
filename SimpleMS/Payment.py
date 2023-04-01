@@ -14,7 +14,7 @@ import json
 import stripe
 
 # testing API key
-stripe.api_key = 'sk_test_51Mo1LqL5uIojK8Z6pRnFG1BBFjvCTx6qqFWw9j87GVvcloPgkLZZA2dp4Fd2sbMiPvY91KaqC0midYiICEvcHdDC00k4wIer53'
+stripe.api_key = 'sk_test_51Mo1LqL5uIojK8Z6pRnFG1BBFjvCTx6qqFWw9j87GVvcloPgkLZZA2dp4Fd2sAbMiPvY91KaqC0midYiICEvcHdDC00k4wIer53'
 
 
 app = Flask(__name__)

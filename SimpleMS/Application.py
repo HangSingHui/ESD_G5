@@ -29,7 +29,7 @@ def getAll(id):
         "data": "No applications are available for jobID " + str(id)
     },404
 
-@app.route("/application/<integer:appID>") #1 unique ID for each app
+@app.route("/application/<string:appID>") #1 unique ID for each app
 def getAppByID(appID):
 
     query = {"ApplicationID": appID}
@@ -54,22 +54,30 @@ def getAppByID(appID):
 #Change status of the remaining applications from Pending to rejected 
 
 @app.route("/application", methods=['PUT'])
-def acceptUpdate(appID):
-    
+def acceptUpdate():
+
+    #Info JSON format:
+    # {   
+    #     "sitterID":1234,
+    #     "jobID": 4567,
+    #     "ownerID":7890
+    #     "appID"1234,
+    #     "jobStatus":"Accepted"
+    # }
+
     #Get new data
-    data = request.get_json() 
+    data = request.get_json() #get Info JSON 
     newStatus = data["jobStatus"]
+    appID = data["appID"]
+    jobID = data["jobID"]
 
     #Get jobID
-    queryApp = {"ApplicationID":appID}
-    queryJobID = {"JobID":1, "_id":0}
-    jobID = app_col.find_one(queryApp,queryJobID)["JobID"]
+    queryApp = {"_id":ObjectId(str(appID))}
 
     #Change all applications with the id=jobID from pending to rejected
-    queryAll = {"JobID":jobID}
+    queryAll = {"JobID":ObjectId(str(jobID))}
     rejectStatus = {"$set":{"Status":"Rejected"}}
     acceptStatus = {"$set":{"Status":newStatus}}
-
 
     try:
         app_col.update_all(queryAll,rejectStatus)
@@ -79,19 +87,18 @@ def acceptUpdate(appID):
         return jsonify(
         {
             "code":500, #internal error
-            "message": "Application failed to update status from " + oldStatus + " to " + newStatus
+            "message": "Internal error. Application failed to update status from Pending to Accepted."
         }
      ),500   
+
+    app = getAppByID(appID)
 
     return jsonify(
         {
             "code":201,
-            "data": app.json()
+            "data": app["data"]
         }
     ),201
-
-
-
 
 
 

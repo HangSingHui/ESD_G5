@@ -52,7 +52,7 @@ def processNotif(notif,routing_key):
     #Step 1: Check the routing key of the message
     if routing_key == "accept.sitter.notification":
         subject = "[Job Offered: ]" + str(notif.jobID)
-        body= "Dear " + notif.sitterName + ",\n We are pleased to inform you that your application for the job titled: "  + notif.jobTitle + "(" + str(notif.jobID) + ") has been accepted by the owner. Kindly indicate your acceptance of the offer in the Pet's R Us mobile application within the next 12 hours." 
+        body= "Dear " + notif.sitterName + ",\n We are pleased to inform you that your application for the job titled: "  + notif.jobTitle + "(" + str(notif.jobID) + ") has been accepted by the owner. Should you wish to turn down the offer, kindly indicate in the Pet's R Us mobile application within the next 12 hours." 
         recipient = notif.sitterEmail
     
      #structure of AMQP message (JSON - routing key = hold.payment.notification)
@@ -65,9 +65,9 @@ def processNotif(notif,routing_key):
     #       "cardInfo": 1314 #last 4 numbers
     # }
     
-    elif routing_key=="hold.payment.notification":
-        subject = "[On-hold Payment: ]" + str(notif.jobID)
-        body= "Dear " + notif.ownerName + ",\n Your accepted sitter" + notif.sitterName + " has confirmed the acceptance of your job posting titled " + notif.jobTitle + "(" + str(notif.jobID) + "). We have successfully placed a hold of " + notif.totalPayable + " on your card ending with " + str(notif.cardInfo) + "."    
+    elif routing_key=="opt.hold.success.notification":
+        subject = "[On-hold Payment] for job " + str(notif.jobID)
+        body= "Dear " + notif.ownerName + ",\n You" + notif.sitterName + " has confirmed the acceptance of your job posting titled " + notif.jobTitle + "(" + str(notif.jobID) + "). We have successfully placed a hold of " + notif.totalPayable + " on your card ending with " + str(notif.cardInfo) + "."    
         recipient = notif.ownerEmail
     
     body += mail_signature

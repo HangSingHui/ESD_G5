@@ -4,90 +4,46 @@ from flask_cors import CORS
 from os import environ
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 #"mysql+mysqlconnector://root:root@localhost:3306/sitter
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
 CORS(app)
 
-class Sitter(db.Model):
-    __tablename__ = 'sitter'
+import pymongo
 
-    id = db.Column(db.Integer, primary_key =True)
-    name = db.Column(db.String(50), nullable=False)
-    phoneNum = db.Column(db.String(8), nullable = False)
-    postal = db.Column(db.String(7), nullable = False)
-    cardInfo = db.Column(db.String(20), nullable = False)
-    outstanding_charges = db.Column(db.Float(precision=2), nullable=False)
-    is_blocked = db.Column(db.Boolean, nullable = False)
-    species_preference = db.Column(db.String(50), nullable = False)
-    region_preference = db.Column(db.String(50), nullable = False)
-    skills = db.Column(db.String(50), nullable = False)
-    hourly_rate = db.Column(db.Float(precision=2), nullable=False)
-    #stripe_details = db.Column(db.String(50), nullable = False)
-
-    # foreign key is jobId referring to the job table
-    jobId = db.Column(db.Integer, db.ForeignKey('job.id'))
-
-
-    def __init__(self, id, name, phoneNum, postal, cardInfo, outstanding_charges, is_blocked, species_preference, region_preference, skills, hourly_rate, jobId):
-        self.id = id
-        self.name = name
-        self.phoneNum = phoneNum
-        self.postal = postal
-        self.cardInfo = cardInfo
-        self.outstanding_charges = outstanding_charges
-        self.is_blocked = is_blocked
-        self.species_preference = species_preference
-        self.region_preference = region_preference
-        self.skills = skills
-        self.hourly_rate = hourly_rate
-        self.jobId = jobId
-
-    def json(self):
-        return {
-            "id": self.id, 
-            "name": self.name, 
-            "phoneNum": self.phoneNum, 
-            "postal": self.postal,
-            "cardInfo": self.cardInfo,
-            "outstanding_charges": self.outstanding_charges,
-            "is_blocked": self.is_blocked,
-            "species_preference": self.species_preference,
-            "region_preference": self.region_preference,
-            "skills": self.skills,
-            "hourly_rate": self.hourly_rate,
-            "jobId": self.jobId
-        }
+client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
+pet_sitter_db = client.get_database("pet_sitter_db")
+pet_sitter_col = pet_sitter_db['pet_sitter']
 
 
 # Function 1: display ALL sitters
 @app.route("/sitter")
 def get_all():
-    sitterList = Sitter.query.all()
+    sitterList = pet_sitter_col.find()
+
     if len(sitterList):
         return jsonify(
             {
-                "code": 200,
-                "data": {
-                    "sitters": [sitter.json() for sitter in sitterList]
-                }
+                "code":200, 
+                "data": [sitter.json() for sitter in sitterList]
             }
         )
+    
     return jsonify(
         {
             "code": 404,
-            "message": "There are no sitters."
+            "message": "There are no existing sitters."
         }
     ), 404
 
 
 
 # Function 2: display sitter info by ID
-@app.route("/sitter/<integer:id>")
+@app.route("/sitter/<string:id>")
 def find_by_id(id):
-    sitter = Sitter.query.filter_by(id=id).first()
+    query={"sitterID":id}
+    sitter=pet_sitter_col.find_one(query)
+
     if sitter:
         return jsonify(
             {

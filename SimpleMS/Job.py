@@ -2,6 +2,9 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from os import environ
+from datetime import datetime
+
+from bson.objectid import ObjectId
 
 import pymongo
 
@@ -37,7 +40,7 @@ def get_all():
 
 
 #Function 2: Get job by jobid
-@app.route("/job/<integer:jobID>")
+@app.route("/job/<string:jobID>")
 def getJob(jobID):
     #search if job exists first with jobID
     query={"JobID":ObjectId(jobID)}
@@ -95,8 +98,29 @@ def create_job(owner_id):
 
     # no validation for the same job by same ownerid? 
 
+
+    data = request.get_json() 
+
+    #Job details
+    # _id
+    # OwnerID 
+    # Created (Created datetime in UNIX format e.g. 1680421271) 
+    # PetID (Array of pet _id involved)
+    # SitterID (When a Pet Sitter is hired)
+    # Title
+    # Description
+    # Status (Open - No Pet Sitter hired, Matched - Pet Sitter hired, Closed - Job Closed, Completed - Session linked to this job is completed)
+    # Start_datetime
+    # End_datetime
+    # Hourly_rate
+    # Payout (Amount to be paid to Pet Sitter) (Hourly rate * End_datetime - Start_datetime)
+    
+
+    details = { "name": "John", "address": "Highway 37" }
+
+    x = mycol.insert_one(mydict)
+
     data = request.get_json()
-    new_job = Job(owner_id, **data)
 
     try:
         db.session.add(new_job)

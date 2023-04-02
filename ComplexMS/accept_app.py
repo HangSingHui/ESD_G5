@@ -114,8 +114,8 @@ def processAcceptApp(info):
     
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
 
-    #6. Invoke place_pmt complex to charge owner
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="hold.payment", body=getJob["data"] , properties=pika.BasicProperties(delivery_mode = 2))
+    # #6. Invoke place_pmt complex to charge owner
+    # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="hold.payment", body=getJob["data"] , properties=pika.BasicProperties(delivery_mode = 2))
 
 
 

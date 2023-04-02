@@ -1,11 +1,13 @@
 from datetime import datetime
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import Mapped
-from sqlalchemy import Integer
-from sqlalchemy import ForeignKey
-from typing import List
+
+# from sqlalchemy.orm import relationship
+# from sqlalchemy.orm import DeclarativeBase
+# from sqlalchemy.orm import mapped_column
+# from sqlalchemy.orm import Mapped
+# from sqlalchemy import Integer
+# from sqlalchemy import ForeignKey
+# from typing import List
+
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -30,7 +32,7 @@ def calculate_order_amount(charge):
     # Replace this constant with a calculation of the order's amount
     # Calculate the order total on the server to prevent
     # people from directly manipulating the amount on the client
-    total = charge*1.17  # GST
+    total = charge*1.18  # GST
     return total
 
 

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Create a Job</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+    <!-- Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"rel="stylesheet"/>
+
+    <link rel="stylesheet" href="job_create.css">
+
+    
+</head>
+<body onload="updateTime()" id="page_body">
+    
+    <div class="container" id="app">
+        <div class="row align-items-start">
+          <div class="col bg-light bg-opacity-50 mx-5">
+            <h1 class="text-center my-3">Create New Job</h1>
+
+            <div class="row align-items-center my-3">
+                <!-- Date and Time -->
+                <div class="col">
+                    <div>
+                        <label for="meeting-time" style="font-weight: bold;">Select Date and Time:</label>
+                    </div>
+                    <input type="datetime-local" id="appointment-time"
+                    name="appointment-time" value="2018-06-12T19:30"
+                    min="2018-06-07T00:00" max="2053-12-31T23:59">
+                </div>
+                <!-- Pay Rate -->
+                <div class="col">
+                    <div>
+                        <label for="payrate" style="font-weight: bold;">Select Pay Rate:</label>
+                    </div>
+                    <select class="form-select form-select-sm" id="pay_rate">
+                        <option selected>Select Pay Rate</option>
+                        <option value="1">$10-$20/hr</option>
+                        <option value="2">$21-$30/hr</option>
+                        <option value="3">$31-$40/hr</option>
+                        <option value="4">$41-$50/hr</option>
+                        <option value="5">>$50/hr</option>
+                    </select>
+                </div>
+            </div>
+             
+            <!-- Select Pet  -->
+              
+            <div class="row">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" />
+                    <label class="form-check-label" for="inlineCheckbox1">1</label>
+                  </div>
+                  
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2" />
+                    <label class="form-check-label" for="inlineCheckbox2">2</label>
+                  </div>
+                  
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3" disabled />
+                    <label class="form-check-label" for="inlineCheckbox3">3 (disabled)</label>
+                  </div>
+            </div>
+            
+              
+              <!-- Job Description -->
+              <div class="form-floating my-5">
+                <textarea class="form-control" id="job_desc"></textarea>
+                <label for="job_desc">Enter Job Description...</label>
+              </div>
+
+              <!-- Specifications -->
+              <div class="container text-center my-5">
+                <div class="row align-items-center">
+                  <div class="col">
+                    <label for="specifications" class="form-label fw-bold">Enter Specifications</label>
+                    <div class="d-flex">
+                        <input class="form-control" type="text" placeholder="Any Requirements?" id="specification" v-model="spec_text">
+                    <button class="btn btn-success mx-2" @click="enterSpec()" :disabled="spec_text.length==0" >Enter</button>
+                    </div>
+                    
+                  </div>
+                  <div class="col">
+                    <strong>Current Specifications</strong>
+                    <div id="curr_specs">
+                        <p id="spec_placeholder">No Specifications Entered<p>
+                        <ul class="list-group d-none" id="spec_list">
+                        </ul>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="mb-3">
+                <label for="formFileMultiple" class="form-label" style="font-weight: bold;">Upload Relevant Images and File</label>
+                <input class="form-control" type="file" id="formFileMultiple" multiple>
+              </div>
+
+
+              <div class="d-grid gap-2 my-5">
+                <button class="btn btn-primary" type="button" onclick="submit_job()">Submit Job</button>
+              </div>
+              
+              
+          </div>
+
+          <div class="col" style="margin-left: 150px; margin-top: 150px;">
+            <span class="display-4" style="color: aquamarine; font-weight: 400;">Find a Pet Sitter Today</span>
+            <p class="fs-4 text-light fw-bold">We know that finding a pet sitter is hard, but we are here to make the job easier for you. Create your first job listing with us and let us handle the rest.</p>
+          </div>
+        </div>
+    </div>
+
+    <!-- Vue -->
+    <script>
+        const app = Vue.createApp({
+        data() {
+            return {
+                spec_text: ''
+            }
+        },
+        methods:{
+            enterSpec(){
+                document.getElementById("spec_placeholder").innerText = ""
+                var spec_list = document.getElementById("spec_list")
+                var curr_spec = document.getElementById("specification").value
+                spec_list.setAttribute("class", "list-group")
+                spec_list.innerHTML += 
+                `<li class="list-group-item d-flex justify-content-between align-items-center" id="${curr_spec}">
+                    ${curr_spec}
+                <button class="btn btn-danger" onclick="removeSpec('${curr_spec}')">X</button>
+                </li>`
+                document.getElementById("specification").value = ""
+
+                this.spec_text = ""
+            }
+        }
+        })
+
+        const vm = app.mount('#app')
+        function updateTime() {
+            const date = new Date()
+            var year = date.getFullYear()
+            var month = date.getMonth() + 1
+            var day = date.getDate()
+            var hours = date.getHours();
+            var min = date.getMinutes();
+
+            if (month < 10) {
+                month = "0" + month
+            }
+
+            if (day < 10) {
+                day = "0" + day
+            }
+
+            if (hours < 10) {
+                hours = "0" + hours
+            }
+
+            if (min < 10) {
+                min = "0" + min
+            }
+
+            document.getElementById("appointment-time").value = `${year}-${month}-${day}T${hours}:${min}`
+
+            document.getElementById("appointment-time").min = `${year}-${month}-${day}T${hours}:${min}`
+        }
+
+        function removeSpec(spec) {
+            document.getElementById(spec).remove()
+            ifEmpty();
+        }
+
+        function ifEmpty() {
+            var spec_list = document.getElementById("spec_list")
+            if (spec_list.getElementsByTagName("li").length == 0) {
+                document.getElementById("spec_placeholder").innerText = "No Specifications Entered"
+                console.log(document.getElementById("spec_placeholder"));
+                spec_list.setAttribute("class", "list-group d-none")
+            }
+        }
+    </script>
+
+    <script>
+
+        function submit_job() {
+            var appointment_time = document.getElementById("appointment-time").value;
+            var pay_rate  = document.getElementById("pay_rate").value;
+            var pets = document.getElementById("pets");
+            var job_desc = document.getElementById("job_desc").value;
+            var spec_arr = [];
+            var spec_list = document.getElementById("spec_list");
+            var files = document.getElementById("formFileMultiple").value;
+
+            console.log(appointment_time);
+            console.log(pay_rate);
+            console.log(pets);
+            console.log(job_desc);
+            console.log(spec_list);
+            console.log(files);
+        }
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+    <!-- MDB -->
+    <script
+    type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>    
+</body>
+</html>

@@ -65,7 +65,7 @@ def processNotif(notif,routing_key):
     #       "cardInfo": 1314 #last 4 numbers
     # }
     
-    elif routing_key=="hold.payment.notification":
+    elif routing_key=="opt.hold.success.notification":
         subject = "[On-hold Payment] for job " + str(notif.jobID)
         body= "Dear " + notif.ownerName + ",\n You" + notif.sitterName + " has confirmed the acceptance of your job posting titled " + notif.jobTitle + "(" + str(notif.jobID) + "). We have successfully placed a hold of " + notif.totalPayable + " on your card ending with " + str(notif.cardInfo) + "."    
         recipient = notif.ownerEmail

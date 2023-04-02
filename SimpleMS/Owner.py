@@ -3,29 +3,15 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from os import environ
 
-# from SimpleMS.Pet import Pet 
-#not too sure about this part and the foreign key part, can change once the data is added if it doesn't work
-
 app = Flask(__name__)
 
-#     def __init__(self, id, ownerName, phoneNum, postal, cardInfo, pets):
-#         self.id = id
-#         self.ownerName = ownerName
-#         self.phoneNum = phoneNum
-#         self.postal = postal
-#         self.pets = pets
-#         self.cardInfo=cardInfo
 
-    
-#     def json(self):
-#         return {
-#             "id": self.id,
-#             'ownerName': self.ownerName,
-#             "phoneNum": self.phoneNum,
-#             "postal": self.postal,
-#             "pets":self.pets,
-#             "cardInfo":self.cardInfo
-#         }
+import pymongo
+
+client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
+owner_db = client.get_database("pet_owner_db")
+owner_col = owner_db['pet_owner']
+
 
 #Function 1: Get all owners - to display on the interface
 @app.route("/owner")
@@ -49,20 +35,17 @@ def get_all():
 
 
 #Function 2: Get owner
-@app.route("/owner/<integer:id>")
+@app.route("/owner/<string:id>")
 def get_payment_details(id):
     #search if owner exists first with id
-    owner=Owner.query.filter_by(id=id).first()
+    query={"_id":ObjectId(id)}
+    owner=owner_col.find_one(query)
 
     if owner:
         return jsonify(
             {
                 "code":200,
-                "data":
-                {
-                    "cardInfo":owner.json().cardInfo,
-                    "ownerNum":owner.json().phoneNum
-                }
+                "data":owner.json()
             
             }
         )

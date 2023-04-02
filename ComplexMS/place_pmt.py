@@ -46,16 +46,50 @@ def paymentNotif():
 #Actions on the message - send to the Payment MS
 def callback(channel, method, properties, body): 
     print("\nReceived notification by " + __file__)
-    holdPayment(json.loads(body),method.routing_key)
+    managePayment(json.loads(body),method.routing_key)
     print() # print a new line feed
 
-def holdPayment(jobDetails, routingkey):
+#Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
+def managePayment(jobDetails, routing_key):
     #get owner account number 
     getOwner = invoke_http(owner_URL+"/"+str(jobDetails["OwnerID"]),method=["GET"])
     code = getOwner["code"]
     if code not in range(200,300):
-        #it is an error
-        
+        # error handling
+        pass
+    if routing_key == "hold_payment":
+        data = jsonify({
+            "charge": jobDetails["payout"],
+            "accNumber":getOwner["data"]["cardInfo"] #This part not sure what's required on the payment side
+        })
+        holdOwnerPayment = holdPayment(data)
+
+def holdPayment(data):
+    status = invoke_http(payment_URL,method=["POST"],json=data)
+    code = status["code"]
+    if code not in range(200,300):
+        #Error handling
+        return jsonify({
+            "code": code,
+            "message": "Error in Stripe API. Unable to place a hold on owner's card."
+        })
+    #To invoke notification to send a notif to inform owner of the charge placed on his card
+    data = jsonify({
+        "ownerName": 
+    })
+    notifyOwner()
+
+def notifyOwner():
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pmt.hold.success.notification", body=data, properties=pika.BasicProperties(delivery_mode = 2))
+    
+
+
+
+    
+    
+
+       
+
    
 
 

@@ -74,9 +74,6 @@ def holdPayment(data):
             "message": "Error in Stripe API. Unable to place a hold on owner's card."
         })
     #To invoke notification to send a notif to inform owner of the charge placed on his card
-    data = jsonify({
-        "ownerName": 
-    })
     notifyOwner()
 
 def notifyOwner():

@@ -69,6 +69,15 @@
                             <input class="form-check-input me-1" type="checkbox" value="rabbit" id="rabbit">
                             <label class="form-check-label">Rabbit</label>
                         </li>
+                        <li class="list-group-item">
+                            <input class="form-check-input me-1" type="checkbox" value="bird" id="bird">
+                            <label class="form-check-label">Bird</label>
+                        </li>
+                        <li class="list-group-item">
+                            <input class="form-check-input me-1" type="checkbox" value="turtle" id="turtle">
+                            <label class="form-check-label">Turtle</label>
+                        </li>
+                        
                     </ul>
                 </div>
 
@@ -193,11 +202,13 @@
     </script>
 
     <script>
+        const test_route = "http://localhost:5000/test"
 
         function submit_job() {
             var appointment_time = document.getElementById("appointment-time").value;
-            var pay_rate  = document.getElementById("payrate").value;
+            var payrate  = document.getElementById("payrate").value;
             var pets = document.getElementById("pets");
+            var pets_arr = []
             var job_desc = document.getElementById("job_desc").value;
             var spec_arr = [];
             var spec_list = document.getElementById("spec_list");
@@ -205,21 +216,50 @@
 
 
             var checkboxes = pets.getElementsByTagName("input");
-            for(testcheck of checkboxes){
-                if (testcheck.checked == true) {
-                    console.log(testcheck.id);
+            for(pet of checkboxes){
+                if (pet.checked == true) {
+                    pets_arr.push(pet.id);
                 }
             }
             
+            var specs = spec_list.getElementsByTagName("li");
+            for(spec of specs){
+                spec_arr.push(spec.id)
+            }
+
 
 
 
             console.log(appointment_time);
-            console.log(pay_rate);
-            console.log(pets);
+            console.log(payrate);
+            console.log(pets_arr);
             console.log(job_desc);
-            console.log(spec_list);
-            console.log(files);
+            console.log(spec_arr);
+            // console.log(files);
+
+            let jsonData = JSON.stringify({
+                appointment_time : appointment_time,
+                payrate : payrate,
+                pets : pets_arr,
+                job_desc : job_desc,
+                spec_list : spec_arr,
+            })
+
+            fetch(test_route,  {
+                method : "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: jsonData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                result = data.data;
+                console.log(result);
+            })
+
+
         }
     </script>
 

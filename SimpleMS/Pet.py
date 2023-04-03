@@ -16,7 +16,7 @@ app = Flask(__name__)
 # # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # db = SQLAlchemy(app)
-# CORS(app)
+CORS(app)
 
 import pymongo
 
@@ -78,7 +78,7 @@ def get_jobTitle(id):
             
     else:
         pass #do next time
-
+    '''
 
 if __name__ == "__main__":
     app.run(port=5007, debug=True)

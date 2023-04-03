@@ -27,7 +27,7 @@
 
         <div class="row">
             <!-- Form -->
-            <div class="col bg-light bg-opacity-50">
+            <div class="col-7 bg-light bg-opacity-50">
 
                 <h1 class="text-center my-3">Create New Job</h1>
 
@@ -69,27 +69,6 @@
                 <div class="mt-3">
                     <label for="pets" class="fw-bold">Select Pets:</label>
                     <ul class="list-group" id="pets">
-                        <li class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" value="dog" id="dog">
-                            <label class="form-check-label">Dog</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" value="cat" id="cat">
-                            <label class="form-check-label">Cat</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" value="rabbit" id="rabbit">
-                            <label class="form-check-label">Rabbit</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" value="bird" id="bird">
-                            <label class="form-check-label">Bird</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" value="turtle" id="turtle">
-                            <label class="form-check-label">Turtle</label>
-                        </li>
-                        
                     </ul>
                 </div>
 
@@ -223,9 +202,29 @@
         const pet_response = fetch(`${fetch_pets_route}/${ownerID}`)
         .then(response => response.json())
         .then(data => {
-            console.log(data);
-            result = data.data;
-            console.log(result);
+            pets = data.data;
+
+            li_string = "";
+
+            for (let index = 0; index < pets.length; index++) {
+                pet = pets[index];
+                pet_id = pet["_id"]["$oid"]
+                pet_name = pet["Name"]
+                pet_breed = pet["Breed"]
+
+                
+                temp_li_string = `
+                
+                <li class="list-group-item">
+                    <input class="form-check-input me-1" type="checkbox" value="${pet_id}" id="${pet_id}">
+                    <label class="form-check-label">${pet_name} the ${pet_breed}</label>
+                </li>
+                `
+
+                li_string += temp_li_string
+            }
+
+            document.getElementById("pets").innerHTML = temp_li_string;
         })
 
 

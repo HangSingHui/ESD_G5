@@ -86,7 +86,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <ul class="list-group list-group-flush">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center" id="job1app1">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center" id="job1app1" value="64293aea06864f6b8cac1f3a">
                                             Application 1 
                                             <button class="btn btn-primary" data-bs-target="#job1app1modal" data-bs-toggle="modal">View More</button>
                                         </li>
@@ -268,19 +268,43 @@
 
     <script>
 
-        
-        // var MongoClient = require('mongodb').MongoClient;
-        // var url = "mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority"
-
-        // MongoClient.connect(url, function (er,db) {
-        //     if (err) throw err;
-        //     var dbo = db.db("job_db");
-        //     dbo.collection('job').findOne({}, function(err, result){
-        //         if (err) throw err;
-        //         console.log(result.Title);
-        //         db.close();
-        //     });
+        // const get_all_url = "http://localhost:5005/job"
+        // fetch(get_all_url)
+        // .then(response => response.json())
+        // .then(data => {
+        //     console.log(response);
+        //     if (data.code === 404) {
+        //         console.log("Jobs not found");
+        //     }
+        //     else{
+        //         console.log(data);
+        //     }
         // })
+        // .catch(error => {
+        //     console.log(error);
+        // })
+
+        // const get_all_job_applications = 
+
+        var test_application_id = '64293aea06864f6b8cac1f3a';
+        const accept_application_route = "http://localhost:5100/accept_app";
+
+        fetch(`${accept_application_route}/${test_application_id}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(response);
+            if (data.code === 404) {
+                console.log("Application not found");
+            }
+            else{
+                console.log(data);
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        })
+
+        
 
 
         window.sessionStorage

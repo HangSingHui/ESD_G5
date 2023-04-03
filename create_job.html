@@ -31,25 +31,37 @@
 
                 <h1 class="text-center my-3">Create New Job</h1>
 
+                <label for="job_title" class="fw-bold">Enter Job Title</label>
+                <input type="text" class="form-control" name="job_title" id="job_title">
+
+                <!-- Job Description -->
+                <div class="form-floating my-3">
+                    <textarea class="form-control" id="job_desc"></textarea>
+                    <label for="job_desc">Enter Job Description...</label>
+                </div>
+
+
                 <div class="row">
-                    <!-- Date & Time -->
+                    <!-- Start Date & Time -->
                     <div class="col">
-                        <label for="appointment-time" style="font-weight: bold;">Select Date and Time:</label>
-                        <input type="datetime-local" id="appointment-time" name="appointment-time" value="2018-06-12T19:30"
+                        <label for="appointment-time" style="font-weight: bold;">Select Start Date and Time:</label>
+                        <input type="datetime-local" id="start-time" name="start-time" value="2018-06-12T19:30"
                         min="2018-06-07T00:00" max="2053-12-31T23:59">
                     </div>
 
+                    <!-- End Date & Time -->
+                    <div class="col">
+                        <label for="appointment-time" style="font-weight: bold;">Select End Date and Time:</label>
+                        <input type="datetime-local" id="end-time" name="end-time" value="2018-06-12T19:30"
+                        min="2018-06-07T00:00" max="2053-12-31T23:59">
+                    </div>
+                </div>
+
+                <div class="row">
                     <!-- Pay Rate -->
                     <div class="col">
                         <label for="payrate" style="font-weight: bold;">Select Pay Rate:</label>
-                        <select class="form-select form-select-sm" id="payrate">
-                            <option selected>Select Pay Rate</option>
-                            <option value="1">$10-$20/hr</option>
-                            <option value="2">$21-$30/hr</option>
-                            <option value="3">$31-$40/hr</option>
-                            <option value="4">$41-$50/hr</option>
-                            <option value="5">>$50/hr</option>
-                        </select>
+                        <input type="number" class="form-control" name="payrate" id="payrate">
                     </div>
                 </div>
 
@@ -81,12 +93,7 @@
                     </ul>
                 </div>
 
-                <!-- Job Description -->
-                <div class="form-floating my-3">
-                    <textarea class="form-control" id="job_desc"></textarea>
-                    <label for="job_desc">Enter Job Description...</label>
-                </div>
-
+                
                 <!-- Specifications -->
                 <div class="row align-items-center text-center">
                     <div class="col">
@@ -181,9 +188,13 @@
                 min = "0" + min
             }
 
-            document.getElementById("appointment-time").value = `${year}-${month}-${day}T${hours}:${min}`
+            document.getElementById("start-time").value = `${year}-${month}-${day}T${hours}:${min}`
 
-            document.getElementById("appointment-time").min = `${year}-${month}-${day}T${hours}:${min}`
+            document.getElementById("start-time").min = `${year}-${month}-${day}T${hours}:${min}`
+
+            document.getElementById("end-time").value = `${year}-${month}-${day}T${hours}:${min}`
+
+            document.getElementById("end-time").min = `${year}-${month}-${day}T${hours}:${min}`
         }
 
         function removeSpec(spec) {
@@ -202,14 +213,58 @@
     </script>
 
     <script>
+
+        function string_out(date_str) {
+            return_arr = [];
+            year = date_str.substring(0,4);
+            month = date_str.substring(5,7);
+            day = date_str.substring(8,10);
+            hour = date_str.substring(11,13);
+            minute = date_str.substring(15,17)
+
+            return_arr.push(year)
+            return_arr.push(month)
+            return_arr.push(day)
+            return_arr.push(hour)
+            return_arr.push(minute)
+            return_arr.push(0)
+
+            // console.log(return_arr);
+
+            return return_arr
+        }
+
+        function toTimestamp(year,month,day,hour,minute,second){
+            var datum = new Date(Date.UTC(year,month-1,day,hour,minute,second));
+            // console.log(datum);
+            return datum.getTime()/1000;
+        }
+
         const test_route = "http://localhost:5000/test"
 
         function submit_job() {
-            var appointment_time = document.getElementById("appointment-time").value;
+
+            var job_title = document.getElementById("job_title").value;
+            var job_desc = document.getElementById("job_desc").value;
+            
+
+            var start_time_raw = document.getElementById("start-time").value;
+            var end_time_raw = document.getElementById("end-time").value;
+
+            var start_time_arr = string_out(start_time_raw);
+            var start_time_unix = toTimestamp(start_time_arr[0],start_time_arr[1],start_time_arr[2],start_time_arr[3],start_time_arr[4],start_time_arr[5]);
+
+            var end_time_arr = string_out(end_time_raw);
+            var end_time_unix = toTimestamp(end_time_arr[0],end_time_arr[1],end_time_arr[2],end_time_arr[3],end_time_arr[4],end_time_arr[5]);
+
+
+
+
+
             var payrate  = document.getElementById("payrate").value;
             var pets = document.getElementById("pets");
             var pets_arr = []
-            var job_desc = document.getElementById("job_desc").value;
+            
             var spec_arr = [];
             var spec_list = document.getElementById("spec_list");
             var files = document.getElementById("formFileMultiple").value;
@@ -227,21 +282,21 @@
                 spec_arr.push(spec.id)
             }
 
-
-
-
-            console.log(appointment_time);
-            console.log(payrate);
-            console.log(pets_arr);
-            console.log(job_desc);
-            console.log(spec_arr);
+            // console.log(start_time_unix);
+            // console.log(end_time_unix);
+            // console.log(payrate);
+            // console.log(pets_arr);
+            // console.log(job_desc);
+            // console.log(spec_arr);
             // console.log(files);
 
             let jsonData = JSON.stringify({
-                appointment_time : appointment_time,
+                job_title : job_title,
+                job_desc : job_desc,
+                start_time : start_time_unix,
+                end_time : end_time_unix,
                 payrate : payrate,
                 pets : pets_arr,
-                job_desc : job_desc,
                 spec_list : spec_arr,
             })
 

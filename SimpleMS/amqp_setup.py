@@ -57,6 +57,71 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.penal
     # bind the queue to the exchange via the key
     # 'routing_key=#' => any routing_key would be matched
 
+# direct exchange 
+exchangename="job_type_direct"
+exchangetype="direct"
+channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
+
+# regions - Central / East / North / North-East / West
+# pets - Dog / Cat / Rabbit / Bird 
+
+############   Pets - Dog queue   #############
+#delcare Error queue
+queue_name = 'DogNorth'
+channel.queue_declare(queue=queue_name, durable=True) 
+    # 'durable' makes the queue survive broker restarts
+#bind Error queue
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.central ') 
+    # bind the queue to the exchange via the key
+    # any routing_key with two words and ending with '.error' will be matched
+
+queue_name = 'DogCentral'
+channel.queue_declare(queue=queue_name, durable=True) 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.central') 
+
+queue_name = 'DogEast'
+channel.queue_declare(queue=queue_name, durable=True) 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.east') 
+
+queue_name = 'DogWest'
+channel.queue_declare(queue=queue_name, durable=True) 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.west') 
+
+ueue_name = 'DogNorthEast'
+channel.queue_declare(queue=queue_name, durable=True) 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.northeast') 
+
+
+# ############   Pets - Cat queue   #############
+# queue_name = 'Cat'
+# channel.queue_declare(queue=queue_name, durable=True) 
+# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='cat') 
+
+# ############   Pets - Rabbit queue   #############
+# queue_name = 'Rabbit'
+# channel.queue_declare(queue=queue_name, durable=True) 
+# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='rabbit') 
+
+# ############   Pets - Bird queue   #############
+# queue_name = 'Bird'
+# channel.queue_declare(queue=queue_name, durable=True) 
+# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='bird') 
+
+# ############   Pets - Cat queue   #############
+# queue_name = 'Cat'
+# channel.queue_declare(queue=queue_name, durable=True) 
+# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='cat') 
+
+# ############   Pets - Rabbit queue   #############
+# queue_name = 'Rabbit'
+# channel.queue_declare(queue=queue_name, durable=True) 
+# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='rabbit') 
+
+# ############   Pets - Bird queue   #############
+# queue_name = 'Bird'
+# channel.queue_declare(queue=queue_name, durable=True) 
+# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='bird') 
+
 
 
 def check_setup():
@@ -84,3 +149,5 @@ def is_connection_open(connection):
         print("AMQP Error:", e)
         print("...creating a new connection.")
         return False
+
+

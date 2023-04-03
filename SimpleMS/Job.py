@@ -73,7 +73,11 @@ def getJob(jobID):
 
 
 #Function 3: Create a new job
+<<<<<<< Updated upstream
 @app.route("/createjob/<string:OwnerID>", methods=['POST'])
+=======
+@app.route("/createjob/<string:OwnerID>", methods=["POST"])
+>>>>>>> Stashed changes
 # URL PATH 
 def create_job(OwnerID):
 
@@ -96,6 +100,7 @@ def create_job(OwnerID):
     creation_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
     '''
 
+    '''
     #TEST DATA FOR CREATING JOB
     owner_id = '64291e7a06864f6b8cac1f28'
     title = 'Test_title'
@@ -105,15 +110,18 @@ def create_job(OwnerID):
     rate = '45'
     test_duration = '5'
     payout = '150'
+    '''
 
     new_job = { "OwnerID" : ObjectId(owner_id),
-                "Title": title, 
-               "desc" : desc,
-               "start_datetime" : start_datetime,
-               "end_datetime" : end_datetime,
-               "rate" : rate,
-               "test_duration" : test_duration,
-               "payout" : payout
+                "Title": request.json.get('Title'), 
+               "Desc" : request.json.get('Description'),
+               "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
+               "Start_datetime" : request.json.get('Start_datetime'),
+               "End_datetime" : request.json.get('End_datetime'),
+               "Hourly_rate" : request.json.get('Hourly_rate'),
+               "Duration" : find_hours(start_datetime, end_datetime), #strings in seconds if correct,
+               "Payout" : format(numHours * rate, '.2f'),
+
                }
 
     try:
@@ -143,7 +151,7 @@ def create_job(OwnerID):
     ), 201
 
 #Function 4: Update job details
-@app.route("/job/<string:JobID>", methods=['PUT'])
+@app.route("/updatejob/<string:JobID>", methods=['PUT'])
 def update_job(job_id):
 
     #Get new data
@@ -207,7 +215,6 @@ def update_job(job_id):
 def find_hours(startTime, endTime):
     numSec = endTime - startTime
     return numSec/3600
-
 
 
 if __name__ == "__main__":

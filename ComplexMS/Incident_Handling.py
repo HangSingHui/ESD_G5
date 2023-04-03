@@ -26,7 +26,7 @@ open_job_URL = "http://localhost:5005/job/"
 
 
 
-@app.route("/incident_handling", methods=['POST'])
+@app.route("/incident_handling/<string:SessionID", methods=['POST'])
 def incident_handling():
     # Simple check of input format and data of the request are JSON
     if request.is_json:

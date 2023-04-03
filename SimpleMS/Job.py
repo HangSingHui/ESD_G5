@@ -3,9 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from os import environ
 from datetime import datetime
-
-from bson import ObjectId
-
+from bson.json_util import dumps
+from bson.objectid import ObjectId
+import json
 import pymongo
 
 client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
@@ -23,12 +23,15 @@ CORS(app)
 @app.route("/job")
 def get_all():
     jobList = job_col.find()
-
-    if len(jobList):
+    num_jobs = job_db.job.count_documents({})
+    if num_jobs > 0:
+        jobs = list(jobList)
+        json_data = dumps(jobs)
+        json_data = json.loads(json_data)
         return jsonify(
             {
                 "code":200, 
-                "data": [job.json() for job in jobList]
+                "data": json_data
             }
         )
     
@@ -127,20 +130,44 @@ def create_job(owner_id):
     ), 201
 
 #Function 4: Update job details
-@app.route("/order/<string:JobID>", methods=['PUT'])
-def update_order(job_id):
+@app.route("/job/<string:JobID>", methods=['PUT'])
+def update_job(job_id):
+
+    #Get new data
+    data = request.get_json() #get Info JSON 
+    newStatus = data["Status"]
+    ownerID = data['OwnerID']
+    sitterID = data['sitterID']
+    hourly_rate = data['Hourly_rate']
+    desc = data['Description']
+    title = data['Title']
+
+    #Change job's status with the id=jobID from matched to open
+    queryJob = {"_id":ObjectId(str(job_id))}
+    openStatus = {"$set":{"Status":newStatus}}
+
     try:
-        job = Job.query.filter_by(JobID=job_id).first()
-        if not job:
-            return jsonify(
-                {
-                    "code": 404,
-                    "data": {
-                        "JobID": job_id
-                    },
-                    "message": "Job not found."
-                }
-            ), 404
+        job_col.update_one(queryJob, openStatus)
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "JobID": job_id
+                },
+                "message": "Job status updated to Open. " + str(e)
+            }
+        ), 200
+
+        # if not job:
+        #     return jsonify(
+        #         {
+        #             "code": 404,
+        #             "data": {
+        #                 "JobID": job_id
+        #             },
+        #             "message": "Job not found."
+        #         }
+        #     ), 404
 
         # update status
         # data = request.get_json()
@@ -160,7 +187,7 @@ def update_order(job_id):
                 "data": {
                     "JobID": job_id
                 },
-                "message": "An error occurred while updating the order. " + str(e)
+                "message": "An error occurred while updating the job. " + str(e)
             }
         ), 500
 

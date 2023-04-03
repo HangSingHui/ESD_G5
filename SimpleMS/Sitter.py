@@ -2,6 +2,11 @@ from flask import Flask, request, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from os import environ
+from bson.json_util import dumps
+from bson.objectid import ObjectId
+import json
+
+
 
 app = Flask(__name__)
 #"mysql+mysqlconnector://root:root@localhost:3306/sitter
@@ -20,12 +25,16 @@ pet_sitter_col = pet_sitter_db['pet_sitter']
 @app.route("/sitter")
 def get_all():
     sitterList = pet_sitter_col.find()
+    len_sitters = pet_sitter_db.pet_sitter.count_documents({})
 
-    if len(sitterList):
+    if len_sitters > 0:
+        list_sitterList = list(sitterList)
+        json_data = dumps(list_sitterList)
+        json_data = json.loads(json_data)
         return jsonify(
             {
                 "code":200, 
-                "data": [sitter.json() for sitter in sitterList]
+                "data": json_data
             }
         )
     
@@ -41,14 +50,18 @@ def get_all():
 # Function 2: display sitter info by ID
 @app.route("/sitter/<string:id>")
 def find_by_id(id):
-    query={"sitterID":id}
-    sitter=pet_sitter_col.find_one(query)
-
-    if sitter:
+    query={"_id":ObjectId(id)}
+    sitter=pet_sitter_col.find(query)
+    num_sitter = pet_sitter_db.pet_sitter.count_documents({})
+    
+    if num_sitter > 0:
+        sitter = list(sitter)
+        json_data = dumps(sitter)
+        json_data = json.loads(json_data)
         return jsonify(
             {
                 "code": 200,
-                "data": sitter.json()
+                "data": json_data
             }
         )
     return jsonify(
@@ -58,8 +71,7 @@ def find_by_id(id):
         }
     ), 404
 
-
-
+'''
 # Function 3: create new sitter
 @app.route("/sitter/<integer:id>", methods=['POST'])
 def create_sitter(id):
@@ -97,8 +109,9 @@ def create_sitter(id):
             "data": sitter.json()
         }
     ), 201
+'''
 
-
+'''
 # Function 4: update sitter details
 @app.route("/sitter/<integer:id>", methods=['PUT'])
 def update_sitter(id):
@@ -130,9 +143,9 @@ def update_sitter(id):
             "data": new_sitter.json()
         }
     ),201
+'''
 
-
-
+'''
 # Function 5: delete sitter
 @app.route("/sitter/<integer:id>", methods=['DELETE'])
 def delete_owner(id):
@@ -156,7 +169,7 @@ def delete_owner(id):
             "message": "sitter not found"
         }
     ),404
-
+'''
 # # Function 6: recommend replacement sitters
 # @app.route("/replacement_sitter/<integer:jobId>", methods=['GET'])
 # def find_replacements(jobId):

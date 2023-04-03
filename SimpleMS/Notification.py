@@ -69,6 +69,11 @@ def processNotif(notif,routing_key):
         subject = "[On-hold Payment] for job " + str(notif.jobID)
         body= "Dear " + notif.ownerName + ",\n You" + notif.sitterName + " has confirmed the acceptance of your job posting titled " + notif.jobTitle + "(" + str(notif.jobID) + "). We have successfully placed a hold of " + notif.totalPayable + " on your card ending with " + str(notif.cardInfo) + "."    
         recipient = notif.ownerEmail
+
+    elif routing_key == 'penalty.notification':
+        subject = "[Penalty Charged] for job " + str(notif.jobID)
+        body= "Dear " + notif.sitterName + ",\n You have been charged a penalty fee of $20 due to the last-minute pull out from job "+ str(notif.jobID) + ". We have also deduct your user score by 50 points. Your current user score is "+ notif.sitterUserScore +". Please avoid pulling out from a job more than a day after the job has been confirmed. Thank you."   
+        recipient = notif.sitterEmail
     
     body += mail_signature
     with app.app_context():

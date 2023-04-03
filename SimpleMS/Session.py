@@ -4,37 +4,34 @@ from flask_cors import CORS
 from os import environ
 import json
 import pymongo
-
-from datetime import datetime
-
+from bson.json_util import dumps
 from bson.objectid import ObjectId
-
+import json
+from datetime import datetime
+from bson.objectid import ObjectId
 app = Flask(__name__)
-
 
 client = pymongo.MongoClient(
     "mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
 session_db = client.get_database("session_db")
 session_col = session_db['session']
 
-
 # Function 1a: get all created sessions for owner
 
-
-@app.route("/all_sessions/owner/<string:ownerId>")
+@app.route("/owner_all_sessions/<string:ownerId>")
 def get_all_owner_sessions(ownerId):
     # sessionslist = Session.query.filter_by(ownerId=ownerId)
-
-    query = {"OwnerID": ObjectId(ownerId)}
-    sessionslist = session_col.find(query)
-
-    if len(sessionslist):
+    query= {'OwnerID': ObjectId(ownerId)}
+    sessions = session_col.find(query)
+    num_sessions = session_db.session.count_documents(query)
+    if num_sessions>0:
+        sessions = list(sessions)
+        json_data = dumps(sessions)
+        json_data = json.loads(json_data)
         return jsonify(
             {
                 "code": 200,
-                "data": {
-                    "sessions": [session.json() for session in sessionslist]
-                }
+                "data": json_data
             }
         )
     return jsonify(
@@ -43,23 +40,22 @@ def get_all_owner_sessions(ownerId):
             "message": "Owner has no sessions."
         }
     ), 404
-
 # Function 1b: get all created sessions for sitter
 
-
-@app.route("/all_sessions/sitter/<string:sitterId>")
+@app.route("/sitter_all_sessions/<string:sitterId>")
 def get_all_sitter_sessions(sitterId):
     # sessionslist = Session.query.filter_by(sitterId=sitterId)
-
-    query = {"SitterID": ObjectId(sitterId)}
-    sessionslist = session_col.find(query)
-    if len(sessionslist):
+    query= {'SitterID': ObjectId(sitterId)}
+    sessions = session_col.find(query)
+    num_sessions = session_db.session.count_documents(query)
+    if num_sessions>0:
+        sessions = list(sessions)
+        json_data = dumps(sessions)
+        json_data = json.loads(json_data)
         return jsonify(
             {
                 "code": 200,
-                "data": {
-                    "sessions": [session.json() for session in sessionslist]
-                }
+                "data": json_data
             }
         )
     return jsonify(
@@ -68,18 +64,14 @@ def get_all_sitter_sessions(sitterId):
             "message": "Sitter has no sessions."
         }
     ), 404
-
 # Function 2a: get created owner's sessions based on session status (closed/in-progress/cancelled)
-
 
 @app.route("/sessions/<string:ownerId>/<string:status>")
 def get_owner_sessions_by_status(ownerId, status):
     # sessionslist = Session.query.filter_by(ownerId=ownerId,status=status)
-
     query = {"OwnerID": ObjectId(ownerId),
              "status": status}
     sessionslist = session_col.find(query)
-
     if len(sessionslist):
         return jsonify(
             {
@@ -95,16 +87,13 @@ def get_owner_sessions_by_status(ownerId, status):
             "message": "No sessions found."
         }
     ), 404
-
 # Function 2b: get created sitter's sessions based on session status (closed/in-progress/cancelled)
 @app.route("/sessions/<string:sitterId>/<string:status>")
 def get_sitter_sessions_by_status(sitterId, status):
     # sessionslist = Session.query.filter_by(sitterId=sitterId, status=status)
-
     query = {"SitterID": ObjectId(sitterId),
              "status": status}
     sessionslist = session_col.find(query)
-
     if len(sessionslist):
         return jsonify(
             {
@@ -120,7 +109,6 @@ def get_sitter_sessions_by_status(sitterId, status):
             "message": "No sessions found."
         }
     ), 404
-
 
 # Function 3: create session once sitter's confirmation of taking the job is received
 @app.route("/create_session/<string:id>", methods=['POST'])
@@ -128,11 +116,9 @@ def create_session(sessionId):
     jobId = request.json.get('jobId')
     ownerId = request.json.get('ownerId')
     sitterId = request.json.get('sitterId')
-
     now = datetime.now()
     creation_time = now.strftime(
         "%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
-
     # session = Session(jobId=jobId,
     #                   ownerId=ownerId,
     #                   sitterId=sitterId,
@@ -141,14 +127,11 @@ def create_session(sessionId):
     #                   sitterPaid=0,
     #                   sitterCompleted=0,
     #                   ownerCompleted=0)
-
     # cart_item = request.json.get('cart_item')
     # for item in cart_item:
     #     session.order_item.append(Order_Item(
     #         book_id=item['book_id'], quantity=item['quantity']))
-
     try:
-
         session_col.insert_one({'JobID':jobId,
                                 'OwnerID': ownerId,
                                 'sitterID': sitterId,
@@ -166,14 +149,11 @@ def create_session(sessionId):
                 "message": "An error occurred while creating the session. " + str(e)
             }
         ), 500
-
     query = {"SessionID": ObjectId(sessionId)}
     session = session_col.find_one(query)
-
     # convert a JSON object to a string and print
     print(json.dumps(session.json(), default=str))
     print()
-
     return jsonify(
         {
             "code": 201,
@@ -181,15 +161,12 @@ def create_session(sessionId):
         }
     ), 201
 
-
 # Function 4: return session time when called
 @app.route("/session-time/<string:sessionId>")
 def return_session_time(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()
-
     query = {"SessionID": ObjectId(sessionId)}
     session = session_col.find_one(query)
-
     if session:
         return jsonify(
             {
@@ -201,57 +178,46 @@ def return_session_time(sessionId):
                 }
             }
         )
-
     return jsonify(
         {
             "code": 404,
                 "data": "Session not found."
         }
     ), 404
-
     # if not, return session not found
-
 # Function 5: close session by updating close session time and the session status
-
-# @app.route("on/<int/close-sessieger:sessionId>", method=['PUT'])
-# def close_session(sessionId):
-#     # session = Session.query.filter_by(id=sessionId).first()
-
-#     query = {"SessionID": ObjectId(sessionId)}
-#     session = session_col.find_one(query)
-
-#     if session:
-#         data = request.get_json()
-#         now = datetime.now()
-#         closing_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
-
-#         update_query = {"status": "In-Progress", "sessionTimeClosed": None}
-#         new_values = { '$set' : {"status" : "Closed",
-#                                  "sessionTimeClosed" : closing_time}}
-#         session.update_one(update_query,new_values)
-
-#         session_duration = closing_time - data['sessionTimeCreated']
-#         return jsonify(
-#             {
-#                 "code": 200,
-#                 "data":
-#                 {
-#                     "sessionId": sessionId,
-#                     "sessionDuration": session_duration
-#                 }
-
-#             }
-#         )
-
-#     return jsonify(
-#         {
-#             "code": 404,
-#                 "data": "Session not found."
-#         }
-#     ), 404
-
+'''
+@app.route("on/<int/close-sessieger:sessionId>", method=['PUT'])
+def close_session(sessionId):
+    # session = Session.query.filter_by(id=sessionId).first()
+    query = {"SessionID": ObjectId(sessionId)}
+    session = session_col.find_one(query)
+    if session:
+        data = request.get_json()
+        now = datetime.now()
+        closing_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
+        update_query = {"status": "In-Progress", "sessionTimeClosed": None}
+        new_values = { '$set' : {"status" : "Closed",
+                                 "sessionTimeClosed" : closing_time}}
+        session.update_one(update_query,new_values)
+        session_duration = closing_time - data['sessionTimeCreated']
+        return jsonify(
+            {
+                "code": 200,
+                "data":
+                {
+                    "sessionId": sessionId,
+                    "sessionDuration": session_duration
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+                "data": "Session not found."
+        }
+    ), 404
     # if not, return session not found
-
-
+'''
 if __name__ == "__main__":
     app.run(port=5004, debug=True)

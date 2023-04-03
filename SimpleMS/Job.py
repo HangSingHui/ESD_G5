@@ -7,7 +7,7 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 import json
 import pymongo
-
+import time
 
 
 client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
@@ -101,22 +101,29 @@ def create_job(OwnerID):
     creation_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
     '''
     
+    Start_datetime = data_json['Start_datetime']
+    End_datetime = data_json['End_datetime']
+    duration_seconds = int(End_datetime) - int(Start_datetime)
+ 
+    duration_hours = duration_seconds // 3600
+    payout = float(data_json['Hourly_rate']) * duration_hours
+    print(payout)
     
-    #  new_job = { "OwnerID" : data_json['OwnerID'],
-    #              "Title": data_json['Title'], 
-    #             "Desc" : data_json['Description'],
-    #             "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
-    #            "Start_datetime" : data_json['Start_datetime'],
-    #             "End_datetime" : data_json['End_datetime'],
-    #             "Hourly_rate" : data_json['Hourly_rate'],
-    #             "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
-    #             "Payout" : format( data_json * rate, '.2f'),
+     new_job = { "OwnerID" : data_json['OwnerID'],
+                 "Title": data_json['Title'], 
+                "Desc" : data_json['Description'],
+                "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
+               "Start_datetime" : data_json['Start_datetime'],
+                "End_datetime" : data_json['End_datetime'],
+                "Hourly_rate" : data_json['Hourly_rate'],
+                "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
+                "Payout" : format( data_json * rate, '.2f'),
 
-    #             }
+                }
 
     
-    # try:
-    #     job_col.insert_one( new_job )
+    try:
+        job_col.insert_one( new_job )
         
         
     # Status (Open - No Pet Sitter hired, Matched - Pet Sitter hired, Closed - Job Closed, Completed - Session linked to this job is completed)
@@ -124,9 +131,6 @@ def create_job(OwnerID):
     # End_datetime
     # Hourly_rate
     # Payout (Amount to be paid to Pet Sitter) (Hourly rate * End_datetime - Start_datetime)
-
-
-    '''
     except Exception as e:
         return jsonify(
             {
@@ -141,7 +145,7 @@ def create_job(OwnerID):
             "message": "New job successfully created."
         }
     ), 201
-'''
+
 #Function 4: Update job details
 @app.route("/updatejob/<string:JobID>", methods=['PUT'])
 def update_job(job_id):

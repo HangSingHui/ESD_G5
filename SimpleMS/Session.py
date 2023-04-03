@@ -21,7 +21,7 @@ session_col = session_db['session']
 # Function 1a: get all created sessions for owner
 
 
-@app.route("/all_sessions/<integer:ownerId>")
+@app.route("/all_sessions/owner/<string:ownerId>")
 def get_all_owner_sessions(ownerId):
     # sessionslist = Session.query.filter_by(ownerId=ownerId)
 
@@ -47,7 +47,7 @@ def get_all_owner_sessions(ownerId):
 # Function 1b: get all created sessions for sitter
 
 
-@app.route("/all_sessions/<integer:sitterId>")
+@app.route("/all_sessions/sitter/<string:sitterId>")
 def get_all_sitter_sessions(sitterId):
     # sessionslist = Session.query.filter_by(sitterId=sitterId)
 
@@ -72,7 +72,7 @@ def get_all_sitter_sessions(sitterId):
 # Function 2a: get created owner's sessions based on session status (closed/in-progress/cancelled)
 
 
-@app.route("/sessions/<integer:ownerId>/<string:status>")
+@app.route("/sessions/<string:ownerId>/<string:status>")
 def get_owner_sessions_by_status(ownerId, status):
     # sessionslist = Session.query.filter_by(ownerId=ownerId,status=status)
 
@@ -97,7 +97,7 @@ def get_owner_sessions_by_status(ownerId, status):
     ), 404
 
 # Function 2b: get created sitter's sessions based on session status (closed/in-progress/cancelled)
-@app.route("/sessions/<integer:sitterId>/<string:status>")
+@app.route("/sessions/<string:sitterId>/<string:status>")
 def get_sitter_sessions_by_status(sitterId, status):
     # sessionslist = Session.query.filter_by(sitterId=sitterId, status=status)
 
@@ -123,7 +123,7 @@ def get_sitter_sessions_by_status(sitterId, status):
 
 
 # Function 3: create session once sitter's confirmation of taking the job is received
-@app.route("/create_session/<integer:id>", methods=['POST'])
+@app.route("/create_session/<string:id>", methods=['POST'])
 def create_session(sessionId):
     jobId = request.json.get('jobId')
     ownerId = request.json.get('ownerId')
@@ -183,7 +183,7 @@ def create_session(sessionId):
 
 
 # Function 4: return session time when called
-@app.route("/session-time/<integer:sessionId>")
+@app.route("/session-time/<string:sessionId>")
 def return_session_time(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()
 
@@ -213,42 +213,42 @@ def return_session_time(sessionId):
 
 # Function 5: close session by updating close session time and the session status
 
-@app.route("on/<int/close-sessieger:sessionId>", method=['PUT'])
-def close_session(sessionId):
-    # session = Session.query.filter_by(id=sessionId).first()
+# @app.route("on/<int/close-sessieger:sessionId>", method=['PUT'])
+# def close_session(sessionId):
+#     # session = Session.query.filter_by(id=sessionId).first()
 
-    query = {"SessionID": ObjectId(sessionId)}
-    session = session_col.find_one(query)
+#     query = {"SessionID": ObjectId(sessionId)}
+#     session = session_col.find_one(query)
 
-    if session:
-        data = request.get_json()
-        now = datetime.now()
-        closing_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
+#     if session:
+#         data = request.get_json()
+#         now = datetime.now()
+#         closing_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
 
-        update_query = {"status": "In-Progress", "sessionTimeClosed": None}
-        new_values = { '$set' : {"status" : "Closed",
-                                 "sessionTimeClosed" : closing_time}}
-        session.update_one(update_query,new_values)
+#         update_query = {"status": "In-Progress", "sessionTimeClosed": None}
+#         new_values = { '$set' : {"status" : "Closed",
+#                                  "sessionTimeClosed" : closing_time}}
+#         session.update_one(update_query,new_values)
 
-        session_duration = closing_time - data['sessionTimeCreated']
-        return jsonify(
-            {
-                "code": 200,
-                "data":
-                {
-                    "sessionId": sessionId,
-                    "sessionDuration": session_duration
-                }
+#         session_duration = closing_time - data['sessionTimeCreated']
+#         return jsonify(
+#             {
+#                 "code": 200,
+#                 "data":
+#                 {
+#                     "sessionId": sessionId,
+#                     "sessionDuration": session_duration
+#                 }
 
-            }
-        )
+#             }
+#         )
 
-    return jsonify(
-        {
-            "code": 404,
-                "data": "Session not found."
-        }
-    ), 404
+#     return jsonify(
+#         {
+#             "code": 404,
+#                 "data": "Session not found."
+#         }
+#     ), 404
 
     # if not, return session not found
 

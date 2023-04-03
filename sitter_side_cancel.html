@@ -32,8 +32,8 @@
 </head>
 <body id="page_body">    
     <div class="container bg-light my-5">
-        <h1 class="display-1 text-center fw-bold">My Upcoming Jobs</h1>
-        <p class="text-center fs-3">View and manage the jobs that you have currently accepted.</p>
+        <h1 class="display-1 text-center fw-bold">Job Sessions</h1>
+        <p class="text-center fs-3">View and manage upcoming jobs that you have currently accepted, and view all previous sessions that were completed or cancelled.</p>
 
         <div class="row my-3" id="job_list">
             <div class="col-4 my-2" id="job1">
@@ -177,19 +177,33 @@
 
     <script>
 
-      // need to send over session id
+      // need to send over session id for session rejection
 
-      const sitter_rejection_url = "http://localhost:5200/incident_handling";
-      var session_id = "642943d606864f6b8cac1f46";
+      // const sitter_rejection_url = "http://localhost:5200/incident_handling";
+      // var session_id = "642943d606864f6b8cac1f46";
 
-      fetch(`${sitter_rejection_url}/${session_id}`)
-      .then(response => response.js())
+      // fetch(`${sitter_rejection_url}/${session_id}`)
+      // .then(response => response.js())
+      // .then(data => {
+      //   console.log(response);
+      // })
+      // .catch(error => {
+      //   console.log(error);
+      // })
+
+      var sitter_id = '642935cb06864f6b8cac1f39'
+
+      const session_get_url = "http://localhost:5004/all_sessions/sitter";
+
+      const fetch_sessions = 
+      fetch(`${session_get_url}/${sitter_id}`)
+      .then(response => response.json)
       .then(data => {
-        console.log(response);
+        console.log(data);
       })
-      .catch(error => {
-        console.log(error);
-      })
+      
+
+
 
 
 

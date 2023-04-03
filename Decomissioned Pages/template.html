@@ -1,135 +1,38 @@
-<div class="col-lg-4 col-md-6 my-2" id="job1">
+<div class="col-4 my-2" id="job1">
     <div class="card h-100">
         <img src="Pets/puppy.jpg" class="card-img-top">
         <div class="card-body">
-            <h5 class="card-title">[Job 1]</h5>
+            <h5 class="card-title">[Job Owner 1]</h5>
             <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
-        </div>
-    
-        <div class="card-footer d-flex justify-content-between">
-            <!-- View More Info Modal -->
-            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#job1Modal" id="job1viewinfo">
+            <!-- View More Jobs Modal -->
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal">
                 View More Info
             </button>
             <!-- Modal -->
-            <div class="modal fade" id="job1Modal" tabindex="-1">
+            <div class="modal fade" id="jobModal" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="jobModalLabel">Job title</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body" id="job1_info">
-                            <p>More Detailed Job Information Here</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cancel Sitter -->
-            <button class="btn btn-danger btn-sm d-none" onclick="cancel_sitter(this)" id="job1cancel">Cancel Sitter</button>
-
-            <!-- View Job Application Modals -->
-            <button class="btn btn-primary btn-sm" data-bs-target="#job1app" data-bs-toggle="modal" id="job1all" onclick="viewApplication()">View Applications</button>
-
-            <div class="modal fade" id="job1app" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5">Applications</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <h1 class="modal-title fs-5" id="jobModalLabel">Modal title</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center" id="job1app1" value="64293aea06864f6b8cac1f3a">
-                                    Application 1 
-                                    <button class="btn btn-primary" data-bs-target="#job1app1modal" data-bs-toggle="modal">View More</button>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center" id="job1app2">
-                                    Application 2
-                                    <button class="btn btn-primary" data-bs-target="#job1app2modal" data-bs-toggle="modal">View More</button>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center" id="job1app3">
-                                    Application 3
-                                    <button class="btn btn-primary" data-bs-target="#job1app3modal" data-bs-toggle="modal">View More</button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal fade" id="job1app1modal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <div id="job1app1_sitter_info">
-                                <p>Sitter: <span id="job1app1_sitter">Sitter 1 Name</span></p>
-                                <p>Location: <span id="job1app1_location">Sitter's Location</span></p>
-                                <p>Specialities: <span id="job1app1_specialities">Sitter's Specialities</span></p>
-                            </div>
-                            
-                            <br>
-
-                            <button class="btn btn-success" id="job1app1accept" onclick="accept_application(this)">Accept</button>
-                            <button class="btn btn-danger" id="job1app1reject" onclick="reject_application(this)">Reject</button>
+                        More Detailed Job Information Here
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" data-bs-target="#job1app" data-bs-toggle="modal">Back to All Applications</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- Cancel Job -->
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelJobModal">
+                Cancel Job
+            </button>
+            <!-- Modal -->
 
-            <div class="modal fade" id="job1app2modal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="job1app2label">Application 2</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="job1app2_sitter_info">
-                                <p>Sitter: <span id="job1app2_sitter">Sitter 2 Name</span></p>
-                                <p>Location: <span id="job1app2_location">Sitter's Location</span></p>
-                                <p>Specialities: <span id="job1app2_specialities">Sitter's Specialities</span></p>
-                            </div>
-                            <button class="btn btn-success" id="job1app2accept" onclick="accept_application(this)">Accept</button>
-                            <button class="btn btn-danger" id="job1app2reject" onclick="reject_application(this)">Reject</button>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" data-bs-target="#job1app" data-bs-toggle="modal">Back to All Applications</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <button class="btn btn-danger disabled">Cancelled</button>
             
-            <div class="modal fade" id="job1app3modal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="job1app3Label">Application 3</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="job1app3_sitter_info">
-                                <p>Sitter: <span id="job1app3_sitter">Sitter 3 Name</span></p>
-                                <p>Location: <span id="job1app3_location">Sitter's Location</span></p>
-                                <p>Specialities: <span id="job1app3_specialities">Sitter's Specialities</span></p>
-                            </div>
-                            <button class="btn btn-success" id="job1app3accept" onclick="accept_application(this)">Accept</button>
-                            <button class="btn btn-danger" id="job1app3reject" onclick="reject_application(this)">Reject</button>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" data-bs-target="#job1app" data-bs-toggle="modal">Back to All Applications</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>

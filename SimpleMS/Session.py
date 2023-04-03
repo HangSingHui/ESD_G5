@@ -10,6 +10,7 @@ import json
 from datetime import datetime
 from bson.objectid import ObjectId
 app = Flask(__name__)
+CORS(app)
 
 client = pymongo.MongoClient(
     "mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")

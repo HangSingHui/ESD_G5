@@ -102,21 +102,21 @@ def create_job(OwnerID):
     '''
     
     
-     new_job = { "OwnerID" : data_json['OwnerID'],
-                 "Title": data_json['Title'], 
-                "Desc" : data_json['Description'],
-                "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
-               "Start_datetime" : data_json['Start_datetime'],
-                "End_datetime" : data_json['End_datetime'],
-                "Hourly_rate" : data_json['Hourly_rate'],
-                "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
-                "Payout" : format( data_json * rate, '.2f'),
+    #  new_job = { "OwnerID" : data_json['OwnerID'],
+    #              "Title": data_json['Title'], 
+    #             "Desc" : data_json['Description'],
+    #             "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
+    #            "Start_datetime" : data_json['Start_datetime'],
+    #             "End_datetime" : data_json['End_datetime'],
+    #             "Hourly_rate" : data_json['Hourly_rate'],
+    #             "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
+    #             "Payout" : format( data_json * rate, '.2f'),
 
-                }
+    #             }
 
     
-    try:
-        job_col.insert_one( new_job )
+    # try:
+    #     job_col.insert_one( new_job )
         
         
     # Status (Open - No Pet Sitter hired, Matched - Pet Sitter hired, Closed - Job Closed, Completed - Session linked to this job is completed)

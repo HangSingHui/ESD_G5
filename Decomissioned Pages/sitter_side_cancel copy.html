@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Jobs</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+    <!-- Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
+    <!-- MDB -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"rel="stylesheet"/> -->
+
+    <style>
+      #page_body {
+          /* font-family: 'Lato', sans-serif; */
+          background-image: url('Pets/pets.jpg');
+          background-size: cover;
+          background-repeat: no-repeat;
+          color: #191a1e;
+      }
+  </style>
+
+</head>
+<body id="page_body">    
+    <div class="container bg-light my-5">
+        <h1 class="display-1 text-center fw-bold">Job Sessions</h1>
+        <p class="text-center fs-3">View and manage upcoming jobs that you have currently accepted, and view all previous sessions that were completed or cancelled.</p>
+
+        <div class="row my-3" id="job_list">
+            <div class="col-4 my-2" id="job1">
+                <div class="card h-100">
+                    <img src="Pets/puppy.jpg" class="card-img-top">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 1]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                            <!-- View More Jobs Modal -->
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal">
+                                View More Info
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="jobModal" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="jobModalLabel">Modal title</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                        More Detailed Job Information Here
+                                        </div>
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Cancel Job -->
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelJobModal">
+                                Cancel Job
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="cancelJobModal" tabindex="-1">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="cancelJobModalLabel">Cancel Job?</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    Are you sure you want to cancel this Job? Note that cancellation of this job at this current period will result in a $20 penalty credited from your bank account. Failure to pay the penalty amount will result in your account being locked out.
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" onclick="removeJob(this)" id="job_cancel1">Cancel</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Don't Cancel</button>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-4 my-2" id="job2">
+                <div class="card h-100">
+                    <img src="Pets/kitten.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 2]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-4 my-2" id="job3">
+                <div class="card h-100">
+                    <img src="Pets/cow.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 3]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+       
+            <div class="col-4 my-2" id="job4">
+                <div class="card h-100">
+                    <img src="Pets/goldfish.jpg" class="card-img-top">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 4]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-4 my-2" id="job5">
+                <div class="card h-100">
+                    <img src="Pets/turtle.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 5]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-4 my-2" id="job6">
+                <div class="card h-100">
+                    <img src="Pets/birds.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 6]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+        
+            <div class="col-4 my-2" id="job7">
+                <div class="card h-100">
+                    <img src="Pets/guineapig.jpg" class="card-img-top">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 7]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-4 my-2" id="job8">
+                <div class="card h-100">
+                    <img src="Pets/hamster.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 8]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-4 my-2" id="job9">
+                <div class="card h-100">
+                    <img src="Pets/rabbit.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">[Job Owner 9]</h5>
+                      <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <script>
+
+      // need to send over session id for session rejection
+
+      // const sitter_rejection_url = "http://localhost:5200/incident_handling";
+      // var session_id = "642943d606864f6b8cac1f46";
+
+      // fetch(`${sitter_rejection_url}/${session_id}`)
+      // .then(response => response.js())
+      // .then(data => {
+      //   console.log(response);
+      // })
+      // .catch(error => {
+      //   console.log(error);
+      // })
+
+      var sitter_id = '642935cb06864f6b8cac1f39'
+
+      const session_get_url = "http://localhost:5004/sitter_all_sessions";
+      const get_job_url = "http://localhost:5005/job";
+      let jobs;
+
+      const fetch_sessions = 
+      fetch(`${session_get_url}/${sitter_id}`)
+      .then(response => response.json())
+      .then(data => {
+        // console.log(fetch_sessions);
+        // console.log(data);
+        var curr_sessions = data.data;
+        temp_jobs_status = {};
+        for (let index = 0; index < curr_sessions.length; index++) {
+          var curr_session = curr_sessions[index];
+          console.log(curr_session);
+          var job_id = curr_session["JobID"]["$oid"];
+          var status = curr_session["status"];
+          console.log(job_id, status);
+          temp_jobs_status[job_id] = status;
+        }
+        // console.log(temp_jobs_status);
+        jobs = temp_jobs_status
+        // console.log(jobs);
+
+        populate_data(jobs)
+
+      })
+
+      function populate_data(job_dict) {
+        var index_dict = [];
+        for (item in job_dict) {
+          index_dict.push(item)
+        }
+
+        for (let index = 0; index < index_dict.length; index++) {
+          var curr_id = index_dict[index];
+          const fetch_job = fetch(`${get_job_url}/${curr_id}`)
+          .then(response => response.json())
+          .then(data => {
+            // console.log(data);
+            var job_data = data.data[0]
+            // console.log(job_data);
+            
+            var job_title = job_data["Title"];
+            var job_desc = job_data["Description"];
+            var image = job_data["Image_Path"]
+            var start_time = Number(job_data["Start_datetime"]);
+            var end_time = Number(job_data["End_datetime"]);
+            var status = job_data["Status"]
+            var hourly_rate = job_data["Hourly_rate"]["$numberDecimal"]
+
+            var start_format_date = new Date(start_time).toLocaleDateString("en-US");
+            var start_format_time = new Date(start_time).toLocaleTimeString("en-SG");
+            var end_format_date = new Date(end_time).toLocaleDateString("en-SG");
+            var end_format_time = new Date(end_time).toLocaleTimeString("en-SG");
+
+            // console.log(job_title, job_desc, image, start_format_date, start_format_time, end_format_date, end_format_time, status, hourly_rate);
+
+
+
+          })
+          
+        }
+
+      }
+      
+
+
+
+
+
+
+      function removeJob(job) {
+          var job_id = job.id.substr(job.id.length-1,1)
+          var job_to_remove = document.getElementById(`job${job_id}`)
+          job_to_remove.remove()
+          location.reload()
+      }
+
+
+    </script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+    <!-- MDB -->
+    <!-- <script
+    type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script> -->
+</body>
+</html>

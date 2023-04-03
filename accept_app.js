@@ -1,18 +1,18 @@
-// const get_all_url = "http://localhost:5005/job"
-// fetch(get_all_url)
-// .then(response => response.json())
-// .then(data => {
-//     console.log(response);
-//     if (data.code === 404) {
-//         console.log("Jobs not found");
-//     }
-//     else{
-//         console.log(data);
-//     }
-// })
-// .catch(error => {
-//     console.log(error);
-// })
+const get_all_url = "http://localhost:5005/job"
+fetch(get_all_url)
+.then(response => response.json())
+.then(data => {
+    console.log(response);
+    if (data.code === 404) {
+        console.log("Jobs not found");
+    }
+    else{
+        console.log(data);
+    }
+})
+.catch(error => {
+    console.log(error);
+})
 
 // const get_all_job_applications = 
 

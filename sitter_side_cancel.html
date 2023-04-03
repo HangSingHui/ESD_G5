@@ -177,12 +177,29 @@
 
     <script>
 
-        function removeJob(job) {
-            var job_id = job.id.substr(job.id.length-1,1)
-            var job_to_remove = document.getElementById(`job${job_id}`)
-            job_to_remove.remove()
-            location.reload()
-        }
+      // need to send over session id
+
+      const sitter_rejection_url = "http://localhost:5200/incident_handling";
+      var session_id = "642943d606864f6b8cac1f46";
+
+      fetch(`${sitter_rejection_url}/${session_id}`)
+      .then(response => response.js())
+      .then(data => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+
+
+
+
+      function removeJob(job) {
+          var job_id = job.id.substr(job.id.length-1,1)
+          var job_to_remove = document.getElementById(`job${job_id}`)
+          job_to_remove.remove()
+          location.reload()
+      }
 
 
     </script>

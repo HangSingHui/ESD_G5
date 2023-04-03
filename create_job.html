@@ -240,14 +240,13 @@
             return datum.getTime()/1000;
         }
 
-        const test_route = "http://localhost:5100/createjob"
+        const test_route = "http://localhost:5005/createjob"
 
         function submit_job() {
 
             var job_title = document.getElementById("job_title").value;
             var job_desc = document.getElementById("job_desc").value;
             
-
             var start_time_raw = document.getElementById("start-time").value;
             var end_time_raw = document.getElementById("end-time").value;
 
@@ -287,9 +286,12 @@
             // console.log(spec_arr);
             // console.log(files);
 
+            var ownerID = '64291e7a06864f6b8cac1f28'
+
             var image = "Pets/puppy.jpg"
 
             let jsonData = JSON.stringify({
+                ownerID : ownerID,
                 job_title : job_title,
                 job_desc : job_desc,
                 start_time : start_time_unix,
@@ -300,7 +302,7 @@
                 Image : image,
             })
 
-            fetch(test_route,  {
+            fetch(`${test_route}/${ownerID}`,  {
                 method : "POST",
                 headers: {
                     "Content-type": "application/json"

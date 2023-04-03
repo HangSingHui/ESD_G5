@@ -13,28 +13,33 @@ const response = fetch(get_all_url).then(response => response.json())
         // console.log(job_id);
 
         var job_title = job["Title"];
-        var job_desc = job["Desc"];
-        var image = job["Image"]
-        var start_time = job["Start_datetime"];
-        var end_time = job["End_datetime"];
-        
-        console.log(start_time);
-        console.log(end_time);
+        var job_desc = job["Description"];
+        var image = job["Image_Path"]
+        var start_time = Number(job["Start_datetime"]);
+        var end_time = Number(job["End_datetime"]);
+        var status = job["Status"]
+        var hourly_rate = job["Hourly_rate"]["$numberDecimal"]
 
         var start_format_date = new Date(start_time).toLocaleDateString("en-US");
         var start_format_time = new Date(start_time).toLocaleTimeString("en-SG");
         var end_format_date = new Date(end_time).toLocaleDateString("en-SG");
         var end_format_time = new Date(end_time).toLocaleTimeString("en-SG");
 
-        console.log(start_format_date, start_format_time, end_format_date, end_format_time);
-
-
+        // console.log(job_title, job_desc, image, start_format_date, start_format_time, end_format_date, end_format_time, status, hourly_rate);
 
         const app_response = fetch(`${application_get_url}/${job_id}`)
         .then(response => response.json())
         .then(data => {
             console.log(data);
         })
+
+
+        if (status == "Open") {
+            
+            
+
+
+        }
 
     }
 

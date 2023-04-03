@@ -60,7 +60,6 @@ def getJob(jobID):
             {
                 "code":200,
                 "data": json_data
-            
             }
         )
     #if not, return job not found
@@ -74,9 +73,11 @@ def getJob(jobID):
 
 
 #Function 3: Create a new job
-@app.route("/createjob/<string:OwnerID>")
+@app.route("/createjob/<string:OwnerID>", methods=['POST'])
 # URL PATH 
 def create_job(OwnerID):
+
+    
 
     # no validation for the same job by same ownerid? 
     # SitterID (When a Pet Sitter is hired)

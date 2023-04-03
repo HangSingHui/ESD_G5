@@ -217,6 +217,11 @@ def delete_owner(id):
 # def find_replacements(jobId):
 #     replacementlist = Sitter.query.filter_by(id = id).first()
 
+# Function 7: retrieve sitter pet preference 
+@app.route("/sitter/<string:species>/<string:rate>", methods=['GET'])
+def retrieve_sitters():
+    pass
+
 
 
 

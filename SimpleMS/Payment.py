@@ -56,14 +56,14 @@ def create_payment():
     except Exception as e:
         return jsonify(error=str(e)), 403
 
-@app.route('/capture-payment', methods=['POST'])
-def capture_payment():
+@app.route('/send_payout', methods=['POST'])
+def send_payout(card_info):
     try:
         payout = stripe.Payout.create(
         amount=1000,
         currency='sgd',
         method='instant',
-        destination='card_xyz',
+        destination=card_info,
         )
         return jsonify({
                 'clientSecret': payout['client_secret']

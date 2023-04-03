@@ -137,7 +137,7 @@
 
 
 
-    <!-- Vue -->
+    <!-- Vue for Dynamic Specs-->
     <script>
         const app = Vue.createApp({
         data() {
@@ -214,6 +214,21 @@
 
     <script>
 
+        var ownerID = '64291e7a06864f6b8cac1f28'
+
+        const create_route = "http://localhost:5005/createjob"
+        
+        const fetch_pets_route = "http://localhost:5007/pets"
+
+        const pet_response = fetch(`${fetch_pets_route}/${ownerID}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            result = data.data;
+            console.log(result);
+        })
+
+
         function string_out(date_str) {
             return_arr = [];
             year = date_str.substring(0,4);
@@ -239,8 +254,6 @@
             // console.log(datum);
             return datum.getTime()/1000;
         }
-
-        const test_route = "http://localhost:5005/createjob"
 
         function submit_job() {
 
@@ -286,7 +299,7 @@
             // console.log(spec_arr);
             // console.log(files);
 
-            var ownerID = '64291e7a06864f6b8cac1f28'
+            
 
             var image = "Pets/puppy.jpg"
 
@@ -302,7 +315,7 @@
                 Image : image,
             })
 
-            fetch(`${test_route}/${ownerID}`,  {
+            fetch(`${create_route}/${ownerID}`,  {
                 method : "POST",
                 headers: {
                     "Content-type": "application/json"
@@ -315,9 +328,9 @@
                 result = data.data;
                 console.log(result);
             })
-
-
         }
+
+        
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>

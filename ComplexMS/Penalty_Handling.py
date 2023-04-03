@@ -14,8 +14,10 @@ import json
 
 app = Flask(__name__)
 
-get_sitter_card_info_URL = "http://localhost/card-info/"
-deduct_penalty_URL = "http://localhost/create-payment/"
+get_sitter_payment_info_URL = "http://localhost:5001/payment-info/"
+deduct_penalty_URL = "http://localhost:5006/charge-penalty/"
+deduct_score_URL = "http://localhost:5001/sitter/rating/"
+get_sitter_URL = "http://localhost:5001/sitter/"
 
 # binding key
 monitorBindingKey='#.penalty'
@@ -34,26 +36,39 @@ def listenToAMQP():
 
 def processPenalty(message,routing_key):
     # 1. Check the routing key of the message
-    if routing_key == "invoke.penalty":
-        sitter_id = message.sitterID
+    if routing_key == "sitter.penalty":
+        sitter_id = message.sitterId
+        job_id = message.jobId
 
-    # 2. Get pet sitter's card info
-    print('\n-----Get card info (sitter microservice)-----')
-    get_card_info_result = invoke_http(get_sitter_card_info_URL + sitter_id, method='GET')
-    print('get_card_info_result: ',get_card_info_result)
+    # 2. Get pet sitter's stripe id
+    print('\n-----Get stripe id (sitter microservice)-----')
+    get_payment_info_result = invoke_http(get_sitter_payment_info_URL + sitter_id, method='GET')
+    print('get_payment_info_result: ',get_payment_info_result)
 
     # 3. Deduct payment
     # Invoke payment microservice
-    print('\n-----Create Payment Intent (payment microservice)-----')
+    print('\n-----Charge penalty fee (payment microservice)-----')
     # Penalty is $20 (before GST)
-    amount = jsonify({'data':{'Charge' : 20}})
-    deduct_penalty = invoke_http(deduct_penalty_URL + sitter_id, method='POST', json=amount)
-    print('deduct_penalty_result: ',deduct_penalty)
+    penalty_amount = jsonify({'data':{'Charge' : 20}})
+    deduct_penalty_result = invoke_http(deduct_penalty_URL + sitter_id, method='POST', json=get_payment_info_result)
+    print('deduct_penalty_result: ',deduct_penalty_result)
 
     # 4. Lower sitter rating score by 50 points
     # Invoke sitter microservice
     print('\n-----Deduct sitter score (sitter microservice)-----')
-    
+    deduct_score_result = invoke_http(deduct_score_URL + sitter_id, method='PUT')
+    print('deduct_score_result: ',deduct_score_result)
+
+    # 5. Send message to sitter that penalty has been charged and rating has been lowered due to last-minute pulling out
+    print('\n-----Publish message to AMQP with routing_key=penalty.notification (AMQP)-----')
+    sitter_info = invoke_http(get_sitter_URL+sitter_id, method='GET')
+    message = json.dumps({'data':{'sitterName': sitter_info['Name'],
+                                  'sitterEmail': sitter_info['Email'], 
+                                  'sitterUserScore': sitter_info['User_score'],
+                                  'jobID': job_id}})
+
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="penalty.notification", 
+        body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
 
 # Execute this program if it is run as a main script (not by 'import')

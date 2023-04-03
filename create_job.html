@@ -27,7 +27,7 @@
 
         <div class="row">
             <!-- Form -->
-            <div class="col bg-light bg-opacity-50">
+            <div class="col-7 bg-light bg-opacity-50">
 
                 <h1 class="text-center my-3">Create New Job</h1>
 
@@ -69,27 +69,6 @@
                 <div class="mt-3">
                     <label for="pets" class="fw-bold">Select Pets:</label>
                     <ul class="list-group" id="pets">
-                        <li class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" value="dog" id="dog">
-                            <label class="form-check-label">Dog</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" value="cat" id="cat">
-                            <label class="form-check-label">Cat</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" value="rabbit" id="rabbit">
-                            <label class="form-check-label">Rabbit</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" value="bird" id="bird">
-                            <label class="form-check-label">Bird</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-1" type="checkbox" value="turtle" id="turtle">
-                            <label class="form-check-label">Turtle</label>
-                        </li>
-                        
                     </ul>
                 </div>
 
@@ -137,7 +116,7 @@
 
 
 
-    <!-- Vue -->
+    <!-- Vue for Dynamic Specs-->
     <script>
         const app = Vue.createApp({
         data() {
@@ -214,6 +193,41 @@
 
     <script>
 
+        var ownerID = '64291e7a06864f6b8cac1f28'
+
+        const create_route = "http://localhost:5005/createjob"
+        
+        const fetch_pets_route = "http://localhost:5007/pets"
+
+        const pet_response = fetch(`${fetch_pets_route}/${ownerID}`)
+        .then(response => response.json())
+        .then(data => {
+            pets = data.data;
+
+            li_string = "";
+
+            for (let index = 0; index < pets.length; index++) {
+                pet = pets[index];
+                pet_id = pet["_id"]["$oid"]
+                pet_name = pet["Name"]
+                pet_breed = pet["Breed"]
+
+                
+                temp_li_string = `
+                
+                <li class="list-group-item">
+                    <input class="form-check-input me-1" type="checkbox" value="${pet_id}" id="${pet_id}">
+                    <label class="form-check-label">${pet_name} the ${pet_breed}</label>
+                </li>
+                `
+
+                li_string += temp_li_string
+            }
+
+            document.getElementById("pets").innerHTML = temp_li_string;
+        })
+
+
         function string_out(date_str) {
             return_arr = [];
             year = date_str.substring(0,4);
@@ -240,14 +254,11 @@
             return datum.getTime()/1000;
         }
 
-        const test_route = "http://localhost:5100/createjob"
-
         function submit_job() {
 
             var job_title = document.getElementById("job_title").value;
             var job_desc = document.getElementById("job_desc").value;
             
-
             var start_time_raw = document.getElementById("start-time").value;
             var end_time_raw = document.getElementById("end-time").value;
 
@@ -256,9 +267,6 @@
 
             var end_time_arr = string_out(end_time_raw);
             var end_time_unix = toTimestamp(end_time_arr[0],end_time_arr[1],end_time_arr[2],end_time_arr[3],end_time_arr[4],end_time_arr[5]);
-
-
-
 
 
             var payrate  = document.getElementById("payrate").value;
@@ -290,7 +298,12 @@
             // console.log(spec_arr);
             // console.log(files);
 
+            
+
+            var image = "Pets/puppy.jpg"
+
             let jsonData = JSON.stringify({
+                ownerID : ownerID,
                 job_title : job_title,
                 job_desc : job_desc,
                 start_time : start_time_unix,
@@ -298,9 +311,10 @@
                 payrate : payrate,
                 pets : pets_arr,
                 spec_list : spec_arr,
+                Image : image,
             })
 
-            fetch(test_route,  {
+            fetch(`${create_route}/${ownerID}`,  {
                 method : "POST",
                 headers: {
                     "Content-type": "application/json"
@@ -313,9 +327,9 @@
                 result = data.data;
                 console.log(result);
             })
-
-
         }
+
+        
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>

@@ -10,6 +10,13 @@ import os, sys
 import requests
 from invokes import invoke_http
 
+from SimpleMS import amqp_setup
+from datetime import datetime, timedelta
+
+from SimpleMS import amqp_setup_notification
+import pika
+import json
+
 app = Flask(__name__)
 CORS(app)
 
@@ -21,14 +28,23 @@ def create_job():
     # Simple check of input format and data of the request are JSON
     if request.is_json:
         try:
-            new_job = request.get_json()
+            new_job = request.get_json() #entire job info
             print("\nReceived a job creation request in JSON:", new_job)
 
-            # do the actual work
-            # 1. Send job info {}
-            # if request's format is JSON and data is valid JSON, this function invokes processPlacejob() to do the actual work. Result returned by processPlacejob() is sent back to the user as a JSON response. 
+            # Create job by invoking func processJobCreation
+            # func results either success or failure response 
             result = processJobCreation(new_job)
+            code = result["code"]
+
+            if code in range(200, 300):     
+                # if the job creation is successful, send the message to the fanout exchange 
+                published_result = processPublishJob(new_job) # new_job contains entire job info 
+
             return jsonify(result), result["code"]
+        
+        #if is 201, then access rate and species -pasas into amqp
+        # filter the hourly rate into categories 
+        # 3 hoursly rates
 
         except Exception as e:
             # Unexpected error in code
@@ -41,7 +57,7 @@ def create_job():
                 "code": 500,
                 "message": "createJob.py internal error: " + ex_str
             }), 500
-
+    
     # if reached here, not a JSON request.
     return jsonify({
         "code": 400,
@@ -52,124 +68,73 @@ def create_job():
 def processJobCreation(new_job):
     # called by create_job function to create job
     # invoke job microservice which will create job in the DB 
-    # result returned by job MS? 
 
     data = request.get_json()
     print('\n-----Invoking job microservice-----')
-    job_result = invoke_http(job_URL, method='POST', json=data)
+    owner_id = request.json.get("OwnerID") #ASSUME THIS IS STRING
+    job_result = invoke_http(job_URL+"/"+owner_id, method='POST', json=data)
     print('job_result:', job_result)
 
     # Check the job result; if a failure, return error status 
     code = job_result["code"]
-    if code not in range(200, 300):
-
-    # 7. Return error
+    if code not in range(200, 300):     
+        # Return error
         return {
                 "code": 500,
                 "data": {"job_result": job_result},
                 "message": "Job creation failure sent for error handling."
             }
-
-
-def processPlaceJob(new_job):
-    '''publish messages to the queues that the pet sitters are subscribed to'''
-    # retrieve the pet sitter data? look at sitter preferences & region preference 
-    # 2. Send the job info {cart items}
-    # Invoke the job microservice
-    print('\n-----Invoking job microservice-----')
-    new_job_result = invoke_http(job_URL, method='POST', json=new_job)
-    print('job_result:', new_job_result)
-  
-
-    # Check the job result; if a failure, send it to the error microservice.
-    code = new_job_result["code"]
-    message = json.dumps(new_job_result)
-
-    if code not in range(200, 300):
-        # Inform the error microservice
-        #print('\n\n-----Invoking error microservice as job fails-----')
-        print('\n\n-----Publishing the (job error) message with routing_key=job.error-----')
-
-        # invoke_http(error_URL, method="POST", json=job_result)
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="job.error", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-        # make message persistent within the matching queues until it is received by some receiver 
-        # (the matching queues have to exist and be durable and bound to the exchange)
-
-        # - reply from the invocation is not used;
-        # continue even if this invocation fails        
-        print("\njob status ({:d}) published to the RabbitMQ Exchange:".format(
-            code), job_result)
-
-        # 7. Return error
-        return {
-            "code": 500,
-            "data": {"job_result": job_result},
-            "message": "job creation failure sent for error handling."
-        }
-
-    # Notice that we are publishing to "Activity Log" only when there is no error in job creation.
-    # In http version, we first invoked "Activity Log" and then checked for error.
-    # Since the "Activity Log" binds to the queue using '#' => any routing_key would be matched 
-    # and a message sent to “Error” queue can be received by “Activity Log” too.
-
-    else:
-        # 4. Record new job
-        # record the activity log anyway
-        #print('\n\n-----Invoking activity_log microservice-----')
-        print('\n\n-----Publishing the (job info) message with routing_key=job.info-----')        
-
-        # invoke_http(activity_log_URL, method="POST", json=job_result)            
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="job.info", 
-            body=message)
-        # If there is no error, it publishes the message with routing_key=job.info. Only Activity Log  will receive the message.
-    
-    print("\njob published to RabbitMQ Exchange.\n")
-    # - reply from the invocation is not used;
-    # continue even if this invocation fails
-    
-    # 5. Send new job to shipping
-    # Invoke the shipping record microservice
-    print('\n\n-----Invoking shipping_record microservice-----')    
-    
-    shipping_result = invoke_http(
-        shipping_record_URL, method="POST", json=job_result['data'])
-    print("shipping_result:", shipping_result, '\n')
-
-    # Check the shipping result;
-    # if a failure, send it to the error microservice.
-    code = shipping_result["code"]
-    if code not in range(200, 300):
-        # Inform the error microservice
-        #print('\n\n-----Invoking error microservice as shipping fails-----')
-        print('\n\n-----Publishing the (shipping error) message with routing_key=shipping.error-----')
-
-        # invoke_http(error_URL, method="POST", json=shipping_result)
-        message = json.dumps(shipping_result)
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="shipping.error", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2))
-
-        print("\nShipping status ({:d}) published to the RabbitMQ Exchange:".format(
-            code), shipping_result)
-
-        # 7. Return error
-        return {
-            "code": 400,
-            "data": {
-                "job_result": job_result,
-                "shipping_result": shipping_result
-            },
-            "message": "Simulated shipping record error sent for error handling."
-        }
-
-    # 7. Return created job, shipping record
+    # if successful job creation, return code 201
     return {
         "code": 201,
-        "data": {
-            "job_result": job_result,
-            "shipping_result": shipping_result
-        }
+        "data": { "job_result": job_result}, 
     }
+
+
+# def processPublishJob(new_job):
+#     '''publish messages to the queues that the pet sitters are subscribed to'''
+
+#     # if this function is reached, it is assumed that the job has been successfully created
+#     # there is no need to check success of status
+#     # extract the pet type and publish to the queues 
+
+#     job_id = new_job['_id'] # python string  
+
+#     # json. dumps() method - convert a python object into an equivalent JSON object
+#     message = json.dumps(job_id)
+
+#     # filter by pet 
+#     # if dog -> routing key = dog.*
+#     # if cat -> routing key = cat.*
+
+
+    
+#     print('\n\n-----Publishing the (new job post id) message with routing_key=job.-----')
+
+#     # invoke_http(error_URL, method="POST", json=job_result)
+#     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="job.error", 
+#         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+#     # make message persistent within the matching queues until it is received by some receiver 
+#     # (the matching queues have to exist and be durable and bound to the exchange)
+
+#     # - reply from the invocation is not used;
+#     # continue even if this invocation fails        
+#     print("\njob status ({:d}) published to the RabbitMQ Exchange:".format(
+#         code), job_result)
+
+#     # 7. Return error
+#     return {
+#         "code": 500,
+#         "data": {"job_result": job_result},
+#         "message": "job creation failure sent for error handling."
+#     }
+
+ 
+    
+#     print("\njob published to RabbitMQ Exchange.\n")
+
+#     print('\n\n-----Invoking shipping_record microservice-----')    
+    
 
 
 # Execute this program if it is run as a main script (not by 'import')

@@ -2,8 +2,9 @@ from flask import Flask, jsonify, request
 
 from flask_cors import CORS
 from os import environ
-
+from bson.json_util import dumps
 app = Flask(__name__)
+import json
 
 import pymongo
 
@@ -18,15 +19,18 @@ owner_col = owner_db['pet_owner']
 @app.route("/owner")
 def get_all():
     ownerList = owner_col.find()
-
-    if len(ownerList):
+    num_owners = owner_db.pet_owner.count_documents({})
+    if num_owners > 0:
+        list_ownerList = list(ownerList)
+        json_data = dumps(list_ownerList)
+        json_data = json.loads(json_data)
         return jsonify(
             {
-                "code":200, 
-                "data": [owner.json() for owner in ownerList]
+            "code": 200,
+            "data": json_data
             }
         )
-    
+
     return jsonify(
         {
             "code": 404,
@@ -39,24 +43,27 @@ def get_all():
 @app.route("/owner/<string:id>")
 def get_payment_details(id):
     #search if owner exists first with id
+        #search if job exists first with jobID
     query={"_id":ObjectId(id)}
-    owner=owner_col.find_one(query)
-
-    if owner:
+    #job=job_col.find(query)
+    num_owner = owner_db.pet_owner.count_documents({})
+    owner = owner_col.find(query)
+    if num_owner > 0:
+        owner = list(owner)
+        json_data = dumps(owner)
+        json_data = json.loads(json_data)
+    
         return jsonify(
             {
                 "code":200,
-                "data":owner.json()
-            
+                "data": json_data
             }
         )
-
-     #if not, return owner not found
-
+    #if not, return owner not found
     return jsonify(
             {
                 "code":404,
-                "data":"Owner not found."
+                "message":"Owner not found."
             }
         ),404
 

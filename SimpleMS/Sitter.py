@@ -89,7 +89,7 @@ def get_payment_info(sitter_id):
         })
 
 # Function 4: change rating of sitter
-@app.route('sitter/rating/<string:id>', methods=['PUT'])
+@app.route('/sitter/rating/<string:id>', methods=['PUT'])
 def update_rating(sitter_id):
     # find sitter by id
     query={"_id":ObjectId(sitter_id)}

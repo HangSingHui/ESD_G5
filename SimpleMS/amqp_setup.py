@@ -44,8 +44,6 @@ queue_name = "payment"
 channel.queue_declare(queue=queue_name, durable=True)
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.payment') 
 
-
-
 ############   penalty queue    #############
 #delcare message queue
 queue_name = 'penalty'
@@ -57,7 +55,34 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.penal
     # bind the queue to the exchange via the key
     # 'routing_key=#' => any routing_key would be matched
 
+# direct exchange 
+exchangename="job_filterby_pet_topic"
+exchangetype="topic"
+channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
 
+# pets - Dog / Cat / Rabbit / Bird 
+# hourly rate - filter in notification.py 
+
+############   Pets - Dog queue   #############
+#delcare Error queue
+ueue_name = 'Dog'
+channel.queue_declare(queue=queue_name, durable=True) 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.*') 
+
+############   Pets - Cat queue   #############
+queue_name = 'Cat'
+channel.queue_declare(queue=queue_name, durable=True) 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='cat.*') 
+
+############   Pets - Rabbit queue   #############
+queue_name = 'Rabbit'
+channel.queue_declare(queue=queue_name, durable=True) 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='rabbit.*') 
+
+############   Pets - Bird queue   #############
+queue_name = 'Bird'
+channel.queue_declare(queue=queue_name, durable=True) 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='bird.*') 
 
 def check_setup():
     # The shared connection and channel created when the module is imported may be expired, 
@@ -84,3 +109,5 @@ def is_connection_open(connection):
         print("AMQP Error:", e)
         print("...creating a new connection.")
         return False
+
+

@@ -71,7 +71,7 @@ def find_by_id(id):
     ), 404
 
 # Function 3: retrieve card info by sitter ID
-@app.route('sitter/payment-info/<string:id>')
+@app.route('/sitter/payment-info/<string:id>')
 def get_payment_info(sitter_id):
     query={"_id":ObjectId(sitter_id)}
     sitter_doc = pet_sitter_col.find_one(query)

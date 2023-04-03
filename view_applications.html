@@ -34,7 +34,7 @@
 
     <script>
 
-       
+        const accept_application_route = "http://localhost:5100/accept_app";
         const application_get_url = "http://localhost:5008/application/job";
         const sitter_info_url = "http://localhost:5001/sitter"
         // window.sessionStorage
@@ -133,7 +133,11 @@
         }
 
         function accept_application(item) {
-            console.log(item);
+            const accept_response = fetch(`${accept_application_route}/${item}`)
+            .then(response => response)
+            .then(data => {
+                console.log(data);
+            })
         }
 
         function reject_application(item) {

@@ -5,7 +5,8 @@ from os import environ
 import json
 import pymongo
 
-from datetime import datetime
+import calendar
+import datetime
 
 from bson.objectid import ObjectId
 
@@ -123,15 +124,17 @@ def get_sitter_sessions_by_status(sitterId, status):
 
 
 # Function 3: create session once sitter's confirmation of taking the job is received
-@app.route("/create_session/<integer:id>", methods=['POST'])
-def create_session(sessionId):
-    jobId = request.json.get('jobId')
-    ownerId = request.json.get('ownerId')
-    sitterId = request.json.get('sitterId')
+@app.route("/create_session", methods=['POST'])
+def create_session():
 
-    now = datetime.now()
-    creation_time = now.strftime(
-        "%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
+    #Only these 3 are sent as a request
+    job_id= request.json.get('job_id')
+    owner_id = request.json.get('owner_id')
+    sitter_id = request.json.get('sitter_id')
+
+    #Get current date time to log when session is created
+    date = datetime.datetime.utcnow()
+    utc_time = calendar.timegm(date.utctimetuple())
 
     # session = Session(jobId=jobId,
     #                   ownerId=ownerId,
@@ -149,11 +152,11 @@ def create_session(sessionId):
 
     try:
 
-        session_col.insert_one({'JobID':jobId,
-                                'OwnerID': ownerId,
-                                'sitterID': sitterId,
+        session_col.insert_one({'JobID':ObjectId(job_id),
+                                'OwnerID': ObjectId(owner_id),
+                                'sitterID': ObjectId(sitter_id),
                                 'status': 'In Progress',
-                                'sessionTimeCreated': creation_time,
+                                'sessionTimeCreated': utc_time,
                                 'ownerDeposit':0,
                                 'sitterPaid': 0,
                                 'sitterCompleted': 0,

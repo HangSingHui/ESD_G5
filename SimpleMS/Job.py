@@ -4,7 +4,7 @@ from flask_cors import CORS
 from os import environ
 from datetime import datetime
 
-from bson.objectid import ObjectId
+from bson import ObjectId
 
 import pymongo
 

@@ -8,6 +8,8 @@ const response = fetch(get_all_url).then(response => response.json())
     // console.log(jobs);
     for (let index = 0; index < jobs.length; index++) {
         console.log(jobs[index]);
+        var curr_job = `job${index+1}`
+
         var job = jobs[index];
         var job_id = jobs[index]["_id"]["$oid"];
         // console.log(job_id);
@@ -27,11 +29,39 @@ const response = fetch(get_all_url).then(response => response.json())
 
         // console.log(job_title, job_desc, image, start_format_date, start_format_time, end_format_date, end_format_time, status, hourly_rate);
 
+        var modal_str = 
+        `
+        <!-- View Job Application Modals -->
+        <button class="btn btn-primary btn-sm" data-bs-target="#${curr_job}app" data-bs-toggle="modal" id="${curr_job}all">View Applications</button>
+        <div class="modal fade" id="${curr_job}app" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Applications</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group list-group-flush">
+        `
+
+        modal_li_str = "";
+        modal_info_str = ""
+
         const app_response = fetch(`${application_get_url}/${job_id}`)
         .then(response => response.json())
         .then(data => {
             console.log(data);
+            applications = data.data;
+
+            for (let index = 0; index < applications.length; index++) {
+                
+                
+            }
+
         })
+
+        
+
 
 
         if (status == "Open") {

@@ -258,9 +258,6 @@
             var end_time_unix = toTimestamp(end_time_arr[0],end_time_arr[1],end_time_arr[2],end_time_arr[3],end_time_arr[4],end_time_arr[5]);
 
 
-
-
-
             var payrate  = document.getElementById("payrate").value;
             var pets = document.getElementById("pets");
             var pets_arr = []
@@ -290,6 +287,8 @@
             // console.log(spec_arr);
             // console.log(files);
 
+            var image = "Pets/puppy.jpg"
+
             let jsonData = JSON.stringify({
                 job_title : job_title,
                 job_desc : job_desc,
@@ -298,6 +297,7 @@
                 payrate : payrate,
                 pets : pets_arr,
                 spec_list : spec_arr,
+                Image : image,
             })
 
             fetch(test_route,  {

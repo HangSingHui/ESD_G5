@@ -38,7 +38,9 @@ def get_jobTitle(id):
     #search if job first exists
     query = {'OwnerID': id}
     pets = pet_col.find(query)
-    num_pets = pet_db.pet.count_documents({})
+    num_pets = pet_db.pet.count_documents({query})
+    print(num_pets)
+    '''
     if num_pets > 0:
         pets = list(pets)
         json_data = dumps(pets)

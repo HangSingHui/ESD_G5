@@ -47,18 +47,22 @@ def get_all():
 @app.route("/job/<string:jobID>")
 def getJob(jobID):
     #search if job exists first with jobID
-    query={"JobID":ObjectId(jobID)}
-    job=job_col.find_one(query)
-
-    if job:
+    query={"_id":ObjectId(jobID)}
+    #job=job_col.find(query)
+    num_jobs = job_db.job.count_documents(query)
+    job = job_col.find(query)
+    if num_jobs > 0:
+        jobs = list(job)
+        json_data = dumps(jobs)
+        json_data = json.loads(json_data)
+    
         return jsonify(
             {
                 "code":200,
-                "data": job.json()
+                "data": json_data
             
             }
         )
-    
     #if not, return job not found
     return jsonify(
             {
@@ -70,41 +74,49 @@ def getJob(jobID):
 
 
 #Function 3: Create a new job
-@app.route("/job/<string:OwnerID>", methods=['POST'])
+@app.route("/createjob/<string:OwnerID>")
 # URL PATH 
-def create_job(owner_id):
+def create_job(OwnerID):
 
     # no validation for the same job by same ownerid? 
     # SitterID (When a Pet Sitter is hired)
-    
+    '''
     ownerId = owner_id
     title = request.json.get('Title')
     desc = request.json.get('Description')
     start_datetime = request.json.get('Start_datetime')
     end_datetime = request.json.get('End_datetime')
-    rate = request.json.get('Hourly_rate')
+    rate = request.json.get('Hourly_rate')  
     numHours = find_hours(start_datetime, end_datetime) #strings in seconds if correct
     payout = format(numHours * rate, '.2f')
     pets = request.json.get('PetID')
 
     now = datetime.now()
     creation_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
+    '''
+
+    #TEST DATA FOR CREATING JOB
+    owner_id = '64291e7a06864f6b8cac1f28'
+    title = 'Test_title'
+    desc = 'Test_description'
+    start_datetime = 'Test_start'
+    end_datetime = 'Test_end'
+    rate = '45'
+    test_duration = '5'
+    payout = '150'
+
+    new_job = { "OwnerID" : ObjectId(owner_id),
+                "Title": title, 
+               "desc" : desc,
+               "start_datetime" : start_datetime,
+               "end_datetime" : end_datetime,
+               "rate" : rate,
+               "test_duration" : test_duration,
+               "payout" : payout
+               }
 
     try:
-
-        job_col.insert_one({
-                            'OwnerID': ObjectId(ownerId),
-                            'Title': title,
-                            'Created': creation_time,
-                            'SitterID': "", #set to empty string first since there is no accepted sitter yet
-                            'PetID':pets ,
-                            'Description':desc,
-                            'Status': "Open",
-                            'Start_datetime': start_datetime,
-                            'End_datetime': end_datetime,
-                            'Hourly_rate':rate,
-                            'Payout':payout
-                                                    })
+        job_col.insert_one( new_job )
         
     # Status (Open - No Pet Sitter hired, Matched - Pet Sitter hired, Closed - Job Closed, Completed - Session linked to this job is completed)
     # Start_datetime

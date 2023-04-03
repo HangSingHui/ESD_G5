@@ -1,18 +1,18 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-import amqp_setup
-
 import os, sys
 
 sys.path.insert(0, 'SimpleMS')
+
+import amqp_setup
 
 import requests
 from invokes import invoke_http
 import pika
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
 
 owner_URL = "http://localhost:5000/owner"
 sitter_URL = "http://localhost:5001/sitter"
@@ -21,8 +21,6 @@ session_URL = "http://localhost:5004/session"
 job_URL = "http://localhost:5005/job"
 payment_URL = "http://localhost:5006/payment"
 application_URL = "http://localhost:5008/application"
-
-
 
 @app.route("/accept_app", methods=['PUT'])
 def acceptApp():

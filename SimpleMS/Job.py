@@ -77,7 +77,7 @@ def getJob(jobID):
 # URL PATH 
 def create_job(OwnerID):
     
-    data = request.json()  
+    data = request.get_json();  
     print(data)
 
     
@@ -111,17 +111,17 @@ def create_job(OwnerID):
     payout = '150'
     '''
 
-    new_job = { "OwnerID" : ObjectId(owner_id),
-                "Title": request.json.get('Title'), 
-               "Desc" : request.json.get('Description'),
-               "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
-               "Start_datetime" : request.json.get('Start_datetime'),
-               "End_datetime" : request.json.get('End_datetime'),
-               "Hourly_rate" : request.json.get('Hourly_rate'),
-               "Duration" : find_hours(start_datetime, end_datetime), #strings in seconds if correct,
-               "Payout" : format(numHours * rate, '.2f'),
+    # new_job = { "OwnerID" : ObjectId(owner_id),
+    #             "Title": request.json.get('Title'), 
+    #            "Desc" : request.json.get('Description'),
+    #            "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
+    #            "Start_datetime" : request.json.get('Start_datetime'),
+    #            "End_datetime" : request.json.get('End_datetime'),
+    #            "Hourly_rate" : request.json.get('Hourly_rate'),
+    #            "Duration" : find_hours(start_datetime, end_datetime), #strings in seconds if correct,
+    #            "Payout" : format(numHours * rate, '.2f'),
 
-               }
+    #            }
 
     try:
         job_col.insert_one( new_job )

@@ -49,7 +49,7 @@ def create_job():
     }), 400
 
 
-def processJobCreation(order):
+def processJobCreation(new_job):
     # called by create_job function to create job
     # invoke job microservice which will create job in the DB 
     # result returned by job MS? 
@@ -58,19 +58,9 @@ def processJobCreation(order):
     job_result = invoke_http(job_URL, method='POST', json=order)
     print('order_result:', job_result)
 
-    # Check the order result; if a failure, send it to the error microservice.
+    # Check the order result; if a failure, return error status 
     code = job_result["code"]
     if code not in range(200, 300):
-
-    # Inform the error microservice
-        print('\n\n-----Invoking error microservice as order fails-----')
-        invoke_http(error_URL, method="POST", json=order_result)
-        # - reply from the invocation is not used; 
-        # continue even if this invocation fails
-        # {:d} - formatting character. it tells the formatter to treat the argument as an integer number and format it as such. Other valid formatters could be x to format it as a hexadecimal number, or b for binary etc. 
-        print("Order status ({:d}) sent to the error microservice:".format(
-            code), order_result)
-
 
     # 7. Return error
         return {
@@ -79,61 +69,20 @@ def processJobCreation(order):
                 "message": "Job creation failure sent for error handling."
             }
 
-    # 5. Send new order to shipping
-    # Invoke the shipping record microservice
-    print('\n\n-----Invoking shipping_record microservice-----')
-    shipping_result = invoke_http(
-        shipping_record_URL, method="POST", json=order_result['data'])
-    print("shipping_result:", shipping_result, '\n')
 
-
-    # Check the shipping result;
-    # if a failure, send it to the error microservice.
-    code = shipping_result["code"]
-    if code not in range(200, 300):
-
-    # Inform the error microservice
-        print('\n\n-----Invoking error microservice as shipping fails-----')
-        invoke_http(error_URL, method="POST", json=shipping_result)
-        print("Shipping status ({:d}) sent to the error microservice:".format(
-            code), shipping_result)
-
-
-
-    # 7. Return error
-        return {
-                    "code": 400,
-                    "data": {
-                        "order_result": order_result,
-                        "shipping_result": shipping_result
-                    },
-                    "message": "Simulated shipping record error sent for error handling."
-                }
-
-
-    # 7. Return created order, shipping record
-    return {
-        "code": 201, 
-        "data": {
-            "order_result" : order_result, 
-            "shipping_result": shipping_result
-        }
-    }
-
-
-def processPlaceOrder(order):
+def processPlaceJob(new_job):
     '''publish messages to the queues that the pet sitters are subscribed to'''
     # retrieve the pet sitter data? look at sitter preferences & region preference 
     # 2. Send the order info {cart items}
     # Invoke the order microservice
     print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(order_URL, method='POST', json=order)
-    print('order_result:', order_result)
+    new_job_result = invoke_http(job_URL, method='POST', json=new_job)
+    print('order_result:', new_job_result)
   
 
     # Check the order result; if a failure, send it to the error microservice.
-    code = order_result["code"]
-    message = json.dumps(order_result)
+    code = new_job_result["code"]
+    message = json.dumps(new_job_result)
 
     if code not in range(200, 300):
         # Inform the error microservice

@@ -17,15 +17,16 @@ app = Flask(__name__)
 CORS(app)
 
 
-notification_URL = "http://localhost:5002/notification"
-penalty_URL = "http://localhost:5300/Penalty_Handling"
-session_time_URL = "http://localhost:5004/session-time"
-close_session_URL = "http://localhost:5004/close-session"
+notification_URL = "http://localhost:5002/notification/"
+penalty_URL = "http://localhost:5300/Penalty_Handling/"
+session_time_URL = "http://localhost:5004/session-time/"
+close_session_URL = "http://localhost:5004/close-session/"
 job_waitlist_URL = ""
+open_job_URL = "http://localhost:5005/job/"
 
 
 
-@app.route("/incident_handling", methods=['POST'])
+@app.route("/incident_handling/<string:SessionID", methods=['POST'])
 def incident_handling():
     # Simple check of input format and data of the request are JSON
     if request.is_json:
@@ -57,35 +58,44 @@ def incident_handling():
     }), 400
 
 
-
-
-
-
 def processIncident(session):
     sessionId = session['id']
     jobId = session['jobId']
-    # 2. Update session closing time
+
+
+    # 2. Update session closing time and change session status to closed
     # Invoke session microservice
-    print('\n-----Update session closing time (session microservice)-----')
+    print('\n-----Close session (session microservice)-----')
     closing_session_result = invoke_http(close_session_URL + sessionId, method='PUT', json=session)
     print('closing_session_result: ',closing_session_result)
 
-    # check if job was cancelled after 1 day
+    # 3. Change job status to 'Open'
+    print('\n-----Update job status from "Matched" to "Open" (job microservice)-----')
+    newStatus = jsonify({'data': {
+        'Status': 'Open'
+    }})
+    open_job_result = invoke_http(open_job_URL + jobId, method='PUT', json=newStatus)
+    print('open_job_result: ',open_job_result)
+
+
+    # 4. check if job was cancelled after 1 day
+    # if yes, invoke penalty handling (complex MS)
     if closing_session_result > timedelta(days = 1) : 
         invoke_http(penalty_URL, method='POST', json = session)
         print('Penalty Handling Result: ',closing_session_result)
     else:
+    # if no, ignore
         pass
 
-    # 3. Retrieve recommended petsitters as replacement
+
+    # 5. Retrieve recommended petsitters as replacement
     # Invoke sitter microservice
     print('\n-----Retrieve waitlist from job microservice-----')
     sitter_replacements_result = invoke_http(job_waitlist_URL + jobId, method='GET')
     print('Sitter Replacements Suggestion: ',sitter_replacements_result)
 
-    
 
-    # Send list of recommended pet sitter replacements
+    # 6. Send list of recommended pet sitter replacements
     print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')
 
     message = json.dumps(sitter_replacements_result)

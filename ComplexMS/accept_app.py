@@ -22,8 +22,8 @@ job_URL = "http://localhost:5005/job"
 payment_URL = "http://localhost:5006/payment"
 application_URL = "http://localhost:5008/application"
 
-@app.route("/accept_app", methods=['PUT'])
-def acceptApp():
+@app.route("/accept_app/<string:app_id>", methods=['PUT'])
+def acceptApp(app_id):
     # Simple check of input format and data of the request are JSON
 
     if request.is_json:

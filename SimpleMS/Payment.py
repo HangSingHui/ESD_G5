@@ -36,13 +36,13 @@ def calculate_order_amount(charge):
     return total
 
 
-@app.route('/create-payment-intent/<integer:ownerId>', methods=['POST'])
+@app.route('/create-payment/<integer:id>', methods=['POST'])
 def create_payment():
     try:
         data = json.loads(request.data)
         # Create a PaymentIntent with the order amount and currency
         intent = stripe.PaymentIntent.create(
-            amount=calculate_order_amount(data['charge']),
+            amount=calculate_order_amount(data['Charge']),
             currency='sgd', 
             payment_method_types=['card'],
             # capture_method='manual',

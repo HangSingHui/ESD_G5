@@ -1,10 +1,12 @@
 from os import environ
 import json
-from flask_pymongo import PyMongo
+# from flask_pymongo import pymongo
+import pymongo
 import flask
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import bson.json_util as json_util
+from bson.json_util import dumps
 
 app = flask.Flask(__name__)
 CORS(app)
@@ -13,87 +15,53 @@ CORS(app)
 import pymongo
 
 from bson import ObjectId
+
 client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
 app_db = client.get_database("job_application_db")
 app_col = app_db['job_application']
 
 
-# ObjectId = require('mongodb').ObjectID
-
 #Function 1: To get all applications given a jobID HTTP GET - by sending in jobID
-@app.route("/application/<string:jobID>")
-def getAll(jobID):
+@app.route("/application/job/<string:job_id>")
+def getAll(job_id):
 
-    query={"JobID":ObjectId(jobID)}
-    appCursor = app_col.find(query)
+    query={"JobID":ObjectId(job_id)}
 
-    # if appCursor == None:
-    #     return{
-    #         "code": 400,
-    #         "message": "There is no job with the id "+ jobID
-    #     }
-    
-    appList =[]
+    app_doc = app_col.find(query)
+    len_app = app_db.job_application.count_documents({})
 
-    for app in appCursor:
-        appList.append(json_util.dumps(app))
-    
-    if len(appList)>0:
-
-        return {
-            "code":200,
-            "data":appList
-        }
+    if len_app > 0:
+        list_app = list(app_doc)
+        json_data = dumps(list_app)
+        json_data = json.loads(json_data)
+        return jsonify(
+            {"code":200,
+            "data": json_data
+    })
 
     return{
         "code": 404,
-        "message": "No applications are available for jobID: " + jobID
+        "message": "No applications are available for jobID: " + job_id
     },404
         
 
-@app.route("/application/<string:appID>") #1 unique ID for each app
-def getAppByID(appID):
+@app.route("/application/<string:app_id>") #1 unique ID for each app
+def getAppByID(app_id):
 
-    # query = {"ApplicationID": ObjectId(appID)}
-    # app=app_col.find_one(query)
-    
-    # if app:
-    #     return{
-    #         "code":200,
-    #         "data": app.json()
-    #     }
+    query={"_id":ObjectId(app_id)}
+    app_doc = app_col.find_one(query)
+    if app_doc is None:
+        return{
+            "code": 404,
+            "message": "There is no application with the app id: " + app_id
+        },404
 
-    # return{
-    #     "code":404,
-    #     "data": "No applications are available for jobID " + str(id)
-    # },404
-
-
-    query={"ApplicationID":ObjectId(appID)}
-    appCursor = app_col.find(query)
-
-    # if appCursor == None:
-    #     return{
-    #         "code": 400,
-    #         "message": "There is no applications with the id "+ jobID
-    #     }
-    
-    appList =[]
-
-    for app in appCursor:
-        appList.append(json_util.dumps(app))
-    
-    if len(appList)>0:
-
-        return {
-            "code":200,
-            "data":appList
-        }
-
-    return{
-        "code": 404,
-        "message": "No applications are available for jobID: " + jobID
-    },404
+    json_data = dumps(app_doc)
+    json_data = json.loads(json_data)
+    return jsonify(
+        {"code":200,
+        "data": json_data
+        })
 
 
 #Function 2: Scenario - When an owner accepts a sitter for a job - To update job with accepted sitter (sitterID) and status to Matched)
@@ -101,34 +69,25 @@ def getAppByID(appID):
 #Change status from Pending to Accepted for application with applicationid = id
 #Change status of the remaining applications from Pending to rejected 
 
-@app.route("/application", methods=['PUT'])
-def acceptUpdate():
+@app.route("/application/accept/<string:app_id>", methods=['PUT'])
+def acceptUpdate(app_id):
 
-    #Info JSON format:
-    # {   
-    #     "sitterID":1234,
-    #     "jobID": 4567,
-    #     "ownerID":7890
-    #     "appID"1234,
-    #     "jobStatus":"Accepted"
-    # }
+    #Get job_id from app_id
+    queryApp = {"_id": ObjectId(app_id)}  
+    job_id = app_col.find_one(queryApp)["JobID"] #This returns an ObjectId
+    # print(job_id)
+    # print(type(job_id))
 
-    #Get new data
-    data = request.get_json() #get Info JSON 
-    newStatus = data["jobStatus"]
-    appID = data["appID"]
-    jobID = data["jobID"]
-
-    #Get jobID
-    queryApp = {"_id":ObjectId(str(appID))}
+    # #Get jobID
+    # queryApp = {"_id":job_id}
 
     #Change all applications with the id=jobID from pending to rejected
-    queryAll = {"JobID":ObjectId(str(jobID))}
+    queryAll = {"JobID":job_id}
     rejectStatus = {"$set":{"Status":"Rejected"}}
-    acceptStatus = {"$set":{"Status":newStatus}}
+    acceptStatus = {"$set":{"Status":"Accepted"}}
 
     try:
-        app_col.update_all(queryAll,rejectStatus)
+        app_col.update_many(queryAll,rejectStatus)
         app_col.update_one(queryApp,acceptStatus)
 
     except:
@@ -139,16 +98,24 @@ def acceptUpdate():
         }
      ),500   
 
-    app = getAppByID(appID)
+    #Get appid of all applications with jobid = given jobid
+    waitList = []
+    all_applications = getAll(job_id).json
+    for data in all_applications["data"]:
+        if data["Status"] == "Rejected":
+            waitList.append(data["_id"]["$oid"])
+
 
     return jsonify(
         {
             "code":201,
-            "data": app["data"]
+            "message": "Application successfully updated from Pending to Accepted.",
+            "waitList":waitList
         }
     ),201
 
 ##Add prompt to be waitlisted
+    
 
 
 

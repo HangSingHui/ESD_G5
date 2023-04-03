@@ -44,8 +44,6 @@ queue_name = "payment"
 channel.queue_declare(queue=queue_name, durable=True)
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.payment') 
 
-
-
 ############   penalty queue    #############
 #delcare message queue
 queue_name = 'penalty'
@@ -58,71 +56,33 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.penal
     # 'routing_key=#' => any routing_key would be matched
 
 # direct exchange 
-exchangename="job_type_direct"
-exchangetype="direct"
+exchangename="job_filterby_pet_topic"
+exchangetype="topic"
 channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
 
-# regions - Central / East / North / North-East / West
 # pets - Dog / Cat / Rabbit / Bird 
+# hourly rate - filter in notification.py 
 
 ############   Pets - Dog queue   #############
 #delcare Error queue
-queue_name = 'DogNorth'
+ueue_name = 'Dog'
 channel.queue_declare(queue=queue_name, durable=True) 
-    # 'durable' makes the queue survive broker restarts
-#bind Error queue
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.central ') 
-    # bind the queue to the exchange via the key
-    # any routing_key with two words and ending with '.error' will be matched
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.*') 
 
-queue_name = 'DogCentral'
+############   Pets - Cat queue   #############
+queue_name = 'Cat'
 channel.queue_declare(queue=queue_name, durable=True) 
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.central') 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='cat.*') 
 
-queue_name = 'DogEast'
+############   Pets - Rabbit queue   #############
+queue_name = 'Rabbit'
 channel.queue_declare(queue=queue_name, durable=True) 
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.east') 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='rabbit.*') 
 
-queue_name = 'DogWest'
+############   Pets - Bird queue   #############
+queue_name = 'Bird'
 channel.queue_declare(queue=queue_name, durable=True) 
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.west') 
-
-ueue_name = 'DogNorthEast'
-channel.queue_declare(queue=queue_name, durable=True) 
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.northeast') 
-
-
-# ############   Pets - Cat queue   #############
-# queue_name = 'Cat'
-# channel.queue_declare(queue=queue_name, durable=True) 
-# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='cat') 
-
-# ############   Pets - Rabbit queue   #############
-# queue_name = 'Rabbit'
-# channel.queue_declare(queue=queue_name, durable=True) 
-# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='rabbit') 
-
-# ############   Pets - Bird queue   #############
-# queue_name = 'Bird'
-# channel.queue_declare(queue=queue_name, durable=True) 
-# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='bird') 
-
-# ############   Pets - Cat queue   #############
-# queue_name = 'Cat'
-# channel.queue_declare(queue=queue_name, durable=True) 
-# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='cat') 
-
-# ############   Pets - Rabbit queue   #############
-# queue_name = 'Rabbit'
-# channel.queue_declare(queue=queue_name, durable=True) 
-# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='rabbit') 
-
-# ############   Pets - Bird queue   #############
-# queue_name = 'Bird'
-# channel.queue_declare(queue=queue_name, durable=True) 
-# channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='bird') 
-
-
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='bird.*') 
 
 def check_setup():
     # The shared connection and channel created when the module is imported may be expired, 

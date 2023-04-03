@@ -1,15 +1,40 @@
 const get_all_url = "http://localhost:5005/job";
-const application_get_url = "http://localhost:5008/application";
+const application_get_url = "http://localhost:5008/application/job";
 
 
 const response = fetch(get_all_url).then(response => response.json())
 .then(data => {
     var jobs = data["data"]
-    console.log(jobs);
+    // console.log(jobs);
     for (let index = 0; index < jobs.length; index++) {
         console.log(jobs[index]);
+        var job = jobs[index];
+        var job_id = jobs[index]["_id"]["$oid"];
+        // console.log(job_id);
+
+        var job_title = job["Title"];
+        var job_desc = job["Desc"];
+        var image = job["Image"]
+        var start_time = job["Start_datetime"];
+        var end_time = job["End_datetime"];
         
-        const app_response = 
+        console.log(start_time);
+        console.log(end_time);
+
+        var start_format_date = new Date(start_time).toLocaleDateString("en-US");
+        var start_format_time = new Date(start_time).toLocaleTimeString("en-SG");
+        var end_format_date = new Date(end_time).toLocaleDateString("en-SG");
+        var end_format_time = new Date(end_time).toLocaleTimeString("en-SG");
+
+        console.log(start_format_date, start_format_time, end_format_date, end_format_time);
+
+
+
+        const app_response = fetch(`${application_get_url}/${job_id}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
 
     }
 
@@ -18,7 +43,7 @@ const response = fetch(get_all_url).then(response => response.json())
         console.log("Jobs not found");
     }
     else{
-        console.log(data);
+        // console.log(data);
     }
 })
 .catch(error => {

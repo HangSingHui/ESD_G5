@@ -146,28 +146,7 @@ if (payment_made != null) {
     cancel_button.setAttribute('class', new_cancel_class_str);
 
     var sitter_info = document.getElementById(`${job_id}${app_id}_sitter_info`).innerHTML;
-    // console.log(sitter_info);
     document.getElementById(`${job_id}_info`).innerHTML += sitter_info
-
-    // const pay_route = "http://localhost:5000/test";
-            
-    // let jsonData = JSON.stringify({
-    //     payment_made : "true"
-    // })
-
-    // fetch(pay_route, {
-    //     method : "POST",
-    //     headers:{
-    //         "Content-type":"application/json"
-    //     },
-    //     body: jsonData
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //     console.log(data);
-    //     result = data.data;
-    //     console.log(result);
-    // })
 }
 
 function accept_application(application) {

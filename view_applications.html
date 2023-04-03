@@ -133,6 +133,7 @@
         }
 
         function accept_application(item) {
+            var confirmation = confirm(`Confirm ${sitter_name}'s application?`)
             const accept_response = fetch(`${accept_application_route}/${item}`)
             .then(response => response)
             .then(data => {
@@ -141,6 +142,7 @@
         }
 
         function reject_application(item) {
+            reject_sitter = confirm("Reject sitter?")
             console.log(item);
         }
 

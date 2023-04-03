@@ -76,6 +76,9 @@ def getJob(jobID):
 @app.route("/createjob/<string:OwnerID>", methods=["POST"])
 # URL PATH 
 def create_job(OwnerID):
+    
+    data = request.json()  
+    print(data)
 
     
 

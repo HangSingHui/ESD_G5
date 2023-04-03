@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 import json
 import pymongo
 
+
 client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
 job_db = client.get_database("job_db")
 job_col = job_db['job']
@@ -73,13 +74,12 @@ def getJob(jobID):
 
 
 #Function 3: Create a new job
-@app.route("/createjob/<string:OwnerID>", methods=["POST"])
+@app.route("/createjob/<string:OwnerID>", methods=['GET', 'POST'])
 # URL PATH 
 def create_job(OwnerID):
     
-    data = request.get_json();  
+    data = request.data.decode('UTF-8')
     print(data)
-
     
 
     # no validation for the same job by same ownerid? 
@@ -123,8 +123,10 @@ def create_job(OwnerID):
 
     #            }
 
+    '''
     try:
         job_col.insert_one( new_job )
+        '''
         
     # Status (Open - No Pet Sitter hired, Matched - Pet Sitter hired, Closed - Job Closed, Completed - Session linked to this job is completed)
     # Start_datetime
@@ -133,7 +135,7 @@ def create_job(OwnerID):
     # Payout (Amount to be paid to Pet Sitter) (Hourly rate * End_datetime - Start_datetime)
 
 
-
+    '''
     except Exception as e:
         return jsonify(
             {
@@ -148,7 +150,7 @@ def create_job(OwnerID):
             "message": "New job successfully created."
         }
     ), 201
-
+'''
 #Function 4: Update job details
 @app.route("/updatejob/<string:JobID>", methods=['PUT'])
 def update_job(job_id):

@@ -7,12 +7,16 @@ import pymongo
 
 from datetime import datetime
 
+from bson.objectid import ObjectId
+
 app = Flask(__name__)
+
 
 client = pymongo.MongoClient(
     "mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
 session_db = client.get_database("session_db")
 session_col = session_db['session']
+
 
 # Function 1a: get all created sessions for owner
 
@@ -21,7 +25,7 @@ session_col = session_db['session']
 def get_all_owner_sessions(ownerId):
     # sessionslist = Session.query.filter_by(ownerId=ownerId)
 
-    query = {"OwnerID": ownerId}
+    query = {"OwnerID": ObjectId(ownerId)}
     sessionslist = session_col.find(query)
 
     if len(sessionslist):
@@ -47,7 +51,7 @@ def get_all_owner_sessions(ownerId):
 def get_all_sitter_sessions(sitterId):
     # sessionslist = Session.query.filter_by(sitterId=sitterId)
 
-    query = {"SitterID": sitterId}
+    query = {"SitterID": ObjectId(sitterId)}
     sessionslist = session_col.find(query)
     if len(sessionslist):
         return jsonify(
@@ -72,7 +76,7 @@ def get_all_sitter_sessions(sitterId):
 def get_owner_sessions_by_status(ownerId, status):
     # sessionslist = Session.query.filter_by(ownerId=ownerId,status=status)
 
-    query = {"OwnerID": ownerId,
+    query = {"OwnerID": ObjectId(ownerId),
              "status": status}
     sessionslist = session_col.find(query)
 
@@ -97,7 +101,7 @@ def get_owner_sessions_by_status(ownerId, status):
 def get_sitter_sessions_by_status(sitterId, status):
     # sessionslist = Session.query.filter_by(sitterId=sitterId, status=status)
 
-    query = {"SitterID": sitterId,
+    query = {"SitterID": ObjectId(sitterId),
              "status": status}
     sessionslist = session_col.find(query)
 
@@ -144,8 +148,7 @@ def create_session(sessionId):
     #         book_id=item['book_id'], quantity=item['quantity']))
 
     try:
-        # db.session.add(session)
-        # db.session.commit()
+
         session_col.insert_one({'JobID':jobId,
                                 'OwnerID': ownerId,
                                 'sitterID': sitterId,
@@ -164,7 +167,7 @@ def create_session(sessionId):
             }
         ), 500
 
-    query = {"SessionID": sessionId}
+    query = {"SessionID": ObjectId(sessionId)}
     session = session_col.find_one(query)
 
     # convert a JSON object to a string and print
@@ -184,7 +187,7 @@ def create_session(sessionId):
 def return_session_time(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()
 
-    query = {"SessionID": sessionId}
+    query = {"SessionID": ObjectId(sessionId)}
     session = session_col.find_one(query)
 
     if session:
@@ -214,7 +217,7 @@ def return_session_time(sessionId):
 def close_session(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()
 
-    query = {"SessionID": sessionId}
+    query = {"SessionID": ObjectId(sessionId)}
     session = session_col.find_one(query)
 
     if session:

@@ -5,8 +5,9 @@ from os import environ
 
 app = Flask(__name__)
 
-
 import pymongo
+
+from bson.objectid import ObjectId
 
 client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
 owner_db = client.get_database("pet_owner_db")
@@ -16,7 +17,7 @@ owner_col = owner_db['pet_owner']
 #Function 1: Get all owners - to display on the interface
 @app.route("/owner")
 def get_all():
-    ownerList = Owner.query.all()
+    ownerList = owner_col.find()
 
     if len(ownerList):
         return jsonify(
@@ -34,7 +35,7 @@ def get_all():
     ), 404
 
 
-#Function 2: Get owner
+#Function 2: Get owner by id
 @app.route("/owner/<string:id>")
 def get_payment_details(id):
     #search if owner exists first with id
@@ -50,6 +51,8 @@ def get_payment_details(id):
             }
         )
 
+     #if not, return owner not found
+
     return jsonify(
             {
                 "code":404,
@@ -58,7 +61,7 @@ def get_payment_details(id):
         ),404
 
 
-    #if not, return owner not found
+
 
 
 

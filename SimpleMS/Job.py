@@ -18,6 +18,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app)
 
 
+
 #Function 1: Get all jobs - to display on the interface
 @app.route("/job")
 def get_all():
@@ -66,79 +67,62 @@ def getJob(jobID):
 
 
 #Function 3: Create a new job
-@app.route("/job/<integer:OwnerID>", methods=['POST'])
+@app.route("/job/<string:OwnerID>", methods=['POST'])
 # URL PATH 
 def create_job(owner_id):
-    ## order.py lab 5 ##
-    # job_id = request.json.get('job_id', None)
-    # order = Job(job_id=job_id, status='NEW')
-
-    # cart_item = request.json.get('cart_item')
-    # for item in cart_item:
-    #     order.order_item.append(Order_Item(
-    #         book_id=item['book_id'], quantity=item['quantity']))
-
-    #  try:
-    #     db.session.add(order)
-    #     db.session.commit()
-    # except Exception as e:
-    #     return jsonify(
-    #         {
-    #             "code": 500,
-    #             "message": "An error occurred while creating the order. " + str(e)
-    #         }
-    #     ), 500
-
-    # return jsonify(
-    #     {
-    #         "code": 201,
-    #         "data": order.json()
-    #     }
-    # ), 201
 
     # no validation for the same job by same ownerid? 
-
-
-    data = request.get_json() 
-
-    #Job details
-    # _id
-    # OwnerID 
-    # Created (Created datetime in UNIX format e.g. 1680421271) 
-    # PetID (Array of pet _id involved)
     # SitterID (When a Pet Sitter is hired)
-    # Title
-    # Description
+    
+    ownerId = owner_id
+    title = request.json.get('Title')
+    desc = request.json.get('Description')
+    start_datetime = request.json.get('Start_datetime')
+    end_datetime = request.json.get('End_datetime')
+    rate = request.json.get('Hourly_rate')
+    numHours = find_hours(start_datetime, end_datetime) #strings in seconds if correct
+    payout = format(numHours * rate, '.2f')
+    pets = request.json.get('PetID')
+
+    now = datetime.now()
+    creation_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
+
+    try:
+
+        job_col.insert_one({
+                            'OwnerID': ObjectId(ownerId),
+                            'Title': title,
+                            'Created': creation_time,
+                            'SitterID': "", #set to empty string first since there is no accepted sitter yet
+                            'PetID':pets ,
+                            'Description':desc,
+                            'Status': "Open",
+                            'Start_datetime': start_datetime,
+                            'End_datetime': end_datetime,
+                            'Hourly_rate':rate,
+                            'Payout':payout
+                                                    })
+        
     # Status (Open - No Pet Sitter hired, Matched - Pet Sitter hired, Closed - Job Closed, Completed - Session linked to this job is completed)
     # Start_datetime
     # End_datetime
     # Hourly_rate
     # Payout (Amount to be paid to Pet Sitter) (Hourly rate * End_datetime - Start_datetime)
-    
 
-    details = { "name": "John", "address": "Highway 37" }
 
-    x = mycol.insert_one(mydict)
 
-    data = request.get_json()
-
-    try:
-        db.session.add(new_job)
-        db.session.commit()
-
-    except:
+    except Exception as e:
         return jsonify(
             {
                 "code": 500,
-                 "data": new_job.json(),
-                "message": "An error occurred creating the job."
+                "message": "An error occurred while creating the job. " + str(e)
             }
         ), 500
     
     return jsonify(
         {
             "code": 201,
-            "data": new_job.json()
+            "message": "New job successfully created."
         }
     ), 201
 
@@ -179,6 +163,10 @@ def update_order(job_id):
                 "message": "An error occurred while updating the order. " + str(e)
             }
         ), 500
+
+def find_hours(startTime, endTime):
+    numSec = endTime - startTime
+    return numSec/3600
 
 
 

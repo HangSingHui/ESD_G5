@@ -20,3 +20,21 @@
 # pet_sitter_db=client.get_database('pet_sitter_db')
 # pet_sitter_col=pet_sitter_db['pet_sitter']
 # update_pet_sitter=pet_sitter_col.update_one({'Name':'Daryl'},{"$set":{'Blocked':True}})
+
+
+
+# Python Program to Convert seconds
+# into hours, minutes and seconds
+ 
+# def convert(seconds):
+#     seconds = seconds % (24 * 3600)
+#     hour = seconds // 3600
+#     seconds %= 3600
+#     minutes = seconds // 60
+#     seconds %= 60
+     
+#     return "%d:%02d:%02d" % (hour, minutes, seconds)
+     
+# # Driver program
+# # n = 12345
+# print(convert(n))

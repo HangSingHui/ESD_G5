@@ -2,13 +2,21 @@ const get_all_url = "http://localhost:5005/job";
 const application_get_url = "http://localhost:5008/application/job";
 const sitter_info_url = "http://localhost:5001/sitter"
 
+// Get all sitters
+
+const fetch_sitter = fetch(sitter_info_url)
+.then(response => response.json())
+.then(data => {
+    console.log(data);
+})
+
 
 const response = fetch(get_all_url).then(response => response.json())
 .then(data => {
     var jobs = data["data"]
     // console.log(jobs);
     for (let index = 0; index < jobs.length; index++) {
-        console.log(jobs[index]);
+        // console.log(jobs[index]);
         var curr_job = `job${index+1}`
 
         var job = jobs[index];
@@ -65,20 +73,11 @@ const response = fetch(get_all_url).then(response => response.json())
                 </li>
                 
                 `
-                model_li_str += temp_li;
-
-                sitter_ID = applications[app_index]["SitterID"]["$oid"];
-
-                const fetch_sitter = fetch(`${sitter_info_url}/${sitter_ID}`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                })
-
+                // model_li_str += temp_li;
                 
             }
 
-            modal_str += model_li_str;
+            // modal_str += model_li_str;
 
             
 

@@ -71,7 +71,7 @@ def find_by_id(id):
     ), 404
 
 # Function 3: retrieve card info by sitter ID
-@app.route('sitter/card-info/<string:id>')
+@app.route('/sitter/card-info/<string:id>')
 def get_card_info(sitter_id):
     query={"_id":ObjectId(sitter_id)}
     sitter_doc = pet_sitter_col.find_one(query)
@@ -89,7 +89,7 @@ def get_card_info(sitter_id):
         })
 
 # Function 4: change rating of sitter
-@app.route('sitter/rating/<string:id>', methods=['PUT'])
+@app.route('/sitter/rating/<string:id>', methods=['PUT'])
 def update_rating(sitter_id):
     # find sitter by id
     query={"_id":ObjectId(sitter_id)}

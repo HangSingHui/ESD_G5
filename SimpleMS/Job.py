@@ -3,9 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from os import environ
 from datetime import datetime
-
-from bson import ObjectId
-
+from bson.json_util import dumps
+from bson.objectid import ObjectId
+import json
 import pymongo
 
 client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
@@ -23,12 +23,15 @@ CORS(app)
 @app.route("/job")
 def get_all():
     jobList = job_col.find()
-
-    if len(jobList):
+    num_jobs = job_db.job.count_documents({})
+    if num_jobs > 0:
+        jobs = list(jobList)
+        json_data = dumps(jobs)
+        json_data = json.loads(json_data)
         return jsonify(
             {
                 "code":200, 
-                "data": [job.json() for job in jobList]
+                "data": json_data
             }
         )
     

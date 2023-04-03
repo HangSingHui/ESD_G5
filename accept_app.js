@@ -1,5 +1,6 @@
 const get_all_url = "http://localhost:5005/job";
 const application_get_url = "http://localhost:5008/application/job";
+const sitter_info_url = "http://localhost:5001/sitter"
 
 
 const response = fetch(get_all_url).then(response => response.json())
@@ -53,10 +54,36 @@ const response = fetch(get_all_url).then(response => response.json())
             console.log(data);
             applications = data.data;
 
-            for (let index = 0; index < applications.length; index++) {
+            for (let app_index = 0; app_index < applications.length; index++) {
+
+                app_ID = applications[app_index]["_id"]["$oid"];
+                temp_li = 
+                `
+                <li class="list-group-item d-flex justify-content-between align-items-center" id="${curr_job}app${app_index+1}" value="${app_ID}">
+                    Application ${app_index + 1}
+                    <button class="btn btn-primary" data-bs-target="#${curr_job}app${app_index +1}modal" data-bs-toggle="modal">View More</button>
+                </li>
                 
+                `
+                model_li_str += temp_li;
+
+                sitter_ID = applications[app_index]["SitterID"]["$oid"];
+
+                const fetch_sitter = fetch(`${sitter_info_url}/${sitter_ID}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                })
+
                 
             }
+
+            modal_str += model_li_str;
+
+            
+
+            
+
 
         })
 

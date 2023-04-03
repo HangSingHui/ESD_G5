@@ -10,6 +10,13 @@ import os, sys
 import requests
 from invokes import invoke_http
 
+from SimpleMS import amqp_setup
+from datetime import datetime, timedelta
+
+from SimpleMS import amqp_setup_notification
+import pika
+import json
+
 app = Flask(__name__)
 CORS(app)
 
@@ -87,32 +94,40 @@ def processJobCreation(new_job):
 # def processPublishJob(new_job):
 #     '''publish messages to the queues that the pet sitters are subscribed to'''
 
-#     message = json.dumps(new_job)
+#     # if this function is reached, it is assumed that the job has been successfully created
+#     # there is no need to check success of status
+#     # extract the pet type and publish to the queues 
 
-#     if code in range(200, 300):
-#         # if job creation is successful 
+#     job_id = new_job['_id'] # python string  
 
-#         # Inform the error microservice
-#         #print('\n\n-----Invoking error microservice as job fails-----')
-#         print('\n\n-----Publishing the (job error) message with routing_key=job.error-----')
+#     # json. dumps() method - convert a python object into an equivalent JSON object
+#     message = json.dumps(job_id)
 
-#         # invoke_http(error_URL, method="POST", json=job_result)
-#         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="job.error", 
-#             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-#         # make message persistent within the matching queues until it is received by some receiver 
-#         # (the matching queues have to exist and be durable and bound to the exchange)
+#     # filter by pet 
+#     # if dog -> routing key = dog.*
+#     # if cat -> routing key = cat.*
 
-#         # - reply from the invocation is not used;
-#         # continue even if this invocation fails        
-#         print("\njob status ({:d}) published to the RabbitMQ Exchange:".format(
-#             code), job_result)
 
-#         # 7. Return error
-#         return {
-#             "code": 500,
-#             "data": {"job_result": job_result},
-#             "message": "job creation failure sent for error handling."
-#         }
+    
+#     print('\n\n-----Publishing the (new job post id) message with routing_key=job.-----')
+
+#     # invoke_http(error_URL, method="POST", json=job_result)
+#     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="job.error", 
+#         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+#     # make message persistent within the matching queues until it is received by some receiver 
+#     # (the matching queues have to exist and be durable and bound to the exchange)
+
+#     # - reply from the invocation is not used;
+#     # continue even if this invocation fails        
+#     print("\njob status ({:d}) published to the RabbitMQ Exchange:".format(
+#         code), job_result)
+
+#     # 7. Return error
+#     return {
+#         "code": 500,
+#         "data": {"job_result": job_result},
+#         "message": "job creation failure sent for error handling."
+#     }
 
  
     

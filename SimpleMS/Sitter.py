@@ -7,7 +7,6 @@ from bson.objectid import ObjectId
 import json
 
 
-
 app = Flask(__name__)
 #"mysql+mysqlconnector://root:root@localhost:3306/sitter
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -71,6 +70,49 @@ def find_by_id(id):
         }
     ), 404
 
+# Function 3: retrieve card info by sitter ID
+@app.route('sitter/card-info/<string:id>')
+def get_card_info(sitter_id):
+    query={"_id":ObjectId(sitter_id)}
+    sitter_doc = pet_sitter_col.find_one(query)
+    if sitter_doc is None:
+        return{
+            "code": 404,
+            "message": "There is no pet sitter with the sitter id: " + sitter_id
+        },404
+
+    card_info = dumps(sitter_doc['CardInfo'])
+    card_info = json.loads(card_info)
+    return jsonify(
+        {"code":200,
+        "data": card_info
+        })
+
+# Function 4: change rating of sitter
+@app.route('sitter/rating/<string:id>', methods=['PUT'])
+def update_rating(sitter_id):
+    # find sitter by id
+    query={"_id":ObjectId(sitter_id)}
+    sitter_doc = pet_sitter_col.find_one(query)
+    # check if sitter exists
+    if sitter_doc is None:
+        return{
+            "code": 404,
+            "message": "There is no pet sitter with the sitter id: " + sitter_id
+        },404
+
+    newScore = {"$inc" : {'User_score' : -50}}
+
+    try:
+        pet_sitter_col.update_one(query,newScore)
+
+    except:
+        return jsonify(
+        {
+            "code":500, #internal error
+            "message": "Internal error. Sitter.py failed to deduct 50 points from pet sitter."
+        }
+     ),500   
 '''
 # Function 3: create new sitter
 @app.route("/sitter/<integer:id>", methods=['POST'])

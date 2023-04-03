@@ -73,11 +73,7 @@ def getJob(jobID):
 
 
 #Function 3: Create a new job
-<<<<<<< Updated upstream
-@app.route("/createjob/<string:OwnerID>", methods=['POST'])
-=======
 @app.route("/createjob/<string:OwnerID>", methods=["POST"])
->>>>>>> Stashed changes
 # URL PATH 
 def create_job(OwnerID):
 

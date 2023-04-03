@@ -7,15 +7,17 @@ app = Flask(__name__)
 
 import pymongo
 
+from bson.objectid import ObjectId
+
 client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
 app_db = client.get_database("job_application_db")
 app_col = app_db['job_application']
 
 #Function 1: To get all applications given a jobID HTTP GET - by sending in jobID
-@app.route("/application/<integer:jobID>")
+@app.route("/application/<string:jobID>")
 def getAll(id):
 
-    query = {"JobID": id}
+    query = {"JobID":ObjectId(id)}
     appList = app_col.find(query)
 
     if appList:
@@ -32,7 +34,7 @@ def getAll(id):
 @app.route("/application/<string:appID>") #1 unique ID for each app
 def getAppByID(appID):
 
-    query = {"ApplicationID": appID}
+    query = {"ApplicationID": ObjectId(appID)}
     app=app_col.find_one(query)
     
     if app:

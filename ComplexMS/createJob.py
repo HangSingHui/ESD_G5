@@ -26,7 +26,7 @@ def create_job():
 
             # do the actual work
             # 1. Send job info {}
-            # if request's format is JSON and data is valid JSON, this function invokes processPlaceOrder() to do the actual work. Result returned by processPlaceOrder() is sent back to the user as a JSON response. 
+            # if request's format is JSON and data is valid JSON, this function invokes processPlacejob() to do the actual work. Result returned by processPlacejob() is sent back to the user as a JSON response. 
             result = processJobCreation(new_job)
             return jsonify(result), result["code"]
 
@@ -54,18 +54,19 @@ def processJobCreation(new_job):
     # invoke job microservice which will create job in the DB 
     # result returned by job MS? 
 
+    data = request.get_json()
     print('\n-----Invoking job microservice-----')
-    job_result = invoke_http(job_URL, method='POST', json=order)
-    print('order_result:', job_result)
+    job_result = invoke_http(job_URL, method='POST', json=data)
+    print('job_result:', job_result)
 
-    # Check the order result; if a failure, return error status 
+    # Check the job result; if a failure, return error status 
     code = job_result["code"]
     if code not in range(200, 300):
 
     # 7. Return error
         return {
                 "code": 500,
-                "data": {"order_result": job_result},
+                "data": {"job_result": job_result},
                 "message": "Job creation failure sent for error handling."
             }
 
@@ -73,66 +74,66 @@ def processJobCreation(new_job):
 def processPlaceJob(new_job):
     '''publish messages to the queues that the pet sitters are subscribed to'''
     # retrieve the pet sitter data? look at sitter preferences & region preference 
-    # 2. Send the order info {cart items}
-    # Invoke the order microservice
-    print('\n-----Invoking order microservice-----')
+    # 2. Send the job info {cart items}
+    # Invoke the job microservice
+    print('\n-----Invoking job microservice-----')
     new_job_result = invoke_http(job_URL, method='POST', json=new_job)
-    print('order_result:', new_job_result)
+    print('job_result:', new_job_result)
   
 
-    # Check the order result; if a failure, send it to the error microservice.
+    # Check the job result; if a failure, send it to the error microservice.
     code = new_job_result["code"]
     message = json.dumps(new_job_result)
 
     if code not in range(200, 300):
         # Inform the error microservice
-        #print('\n\n-----Invoking error microservice as order fails-----')
-        print('\n\n-----Publishing the (order error) message with routing_key=order.error-----')
+        #print('\n\n-----Invoking error microservice as job fails-----')
+        print('\n\n-----Publishing the (job error) message with routing_key=job.error-----')
 
-        # invoke_http(error_URL, method="POST", json=order_result)
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
+        # invoke_http(error_URL, method="POST", json=job_result)
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="job.error", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
         # make message persistent within the matching queues until it is received by some receiver 
         # (the matching queues have to exist and be durable and bound to the exchange)
 
         # - reply from the invocation is not used;
         # continue even if this invocation fails        
-        print("\nOrder status ({:d}) published to the RabbitMQ Exchange:".format(
-            code), order_result)
+        print("\njob status ({:d}) published to the RabbitMQ Exchange:".format(
+            code), job_result)
 
         # 7. Return error
         return {
             "code": 500,
-            "data": {"order_result": order_result},
-            "message": "Order creation failure sent for error handling."
+            "data": {"job_result": job_result},
+            "message": "job creation failure sent for error handling."
         }
 
-    # Notice that we are publishing to "Activity Log" only when there is no error in order creation.
+    # Notice that we are publishing to "Activity Log" only when there is no error in job creation.
     # In http version, we first invoked "Activity Log" and then checked for error.
     # Since the "Activity Log" binds to the queue using '#' => any routing_key would be matched 
     # and a message sent to “Error” queue can be received by “Activity Log” too.
 
     else:
-        # 4. Record new order
+        # 4. Record new job
         # record the activity log anyway
         #print('\n\n-----Invoking activity_log microservice-----')
-        print('\n\n-----Publishing the (order info) message with routing_key=order.info-----')        
+        print('\n\n-----Publishing the (job info) message with routing_key=job.info-----')        
 
-        # invoke_http(activity_log_URL, method="POST", json=order_result)            
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", 
+        # invoke_http(activity_log_URL, method="POST", json=job_result)            
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="job.info", 
             body=message)
-        # If there is no error, it publishes the message with routing_key=order.info. Only Activity Log  will receive the message.
+        # If there is no error, it publishes the message with routing_key=job.info. Only Activity Log  will receive the message.
     
-    print("\nOrder published to RabbitMQ Exchange.\n")
+    print("\njob published to RabbitMQ Exchange.\n")
     # - reply from the invocation is not used;
     # continue even if this invocation fails
     
-    # 5. Send new order to shipping
+    # 5. Send new job to shipping
     # Invoke the shipping record microservice
     print('\n\n-----Invoking shipping_record microservice-----')    
     
     shipping_result = invoke_http(
-        shipping_record_URL, method="POST", json=order_result['data'])
+        shipping_record_URL, method="POST", json=job_result['data'])
     print("shipping_result:", shipping_result, '\n')
 
     # Check the shipping result;
@@ -155,17 +156,17 @@ def processPlaceJob(new_job):
         return {
             "code": 400,
             "data": {
-                "order_result": order_result,
+                "job_result": job_result,
                 "shipping_result": shipping_result
             },
             "message": "Simulated shipping record error sent for error handling."
         }
 
-    # 7. Return created order, shipping record
+    # 7. Return created job, shipping record
     return {
         "code": 201,
         "data": {
-            "order_result": order_result,
+            "job_result": job_result,
             "shipping_result": shipping_result
         }
     }
@@ -174,7 +175,7 @@ def processPlaceJob(new_job):
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) +
-          " for placing an order...")
+          " for placing an job...")
     app.run(host="0.0.0.0", port=5100, debug=True)
     # Notes for the parameters:
     # - debug=True will reload the program automatically if a change is detected;

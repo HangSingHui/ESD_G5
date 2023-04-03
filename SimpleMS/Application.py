@@ -1,6 +1,7 @@
 from os import environ
 import json
-from flask_pymongo import PyMongo
+# from flask_pymongo import pymongo
+import pymongo
 import flask
 from flask import Flask, jsonify, request
 from flask_cors import CORS

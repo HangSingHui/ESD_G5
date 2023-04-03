@@ -71,8 +71,8 @@ def find_by_id(id):
     ), 404
 
 # Function 3: retrieve card info by sitter ID
-@app.route('/sitter/card-info/<string:id>')
-def get_card_info(sitter_id):
+@app.route('sitter/payment-info/<string:id>')
+def get_payment_info(sitter_id):
     query={"_id":ObjectId(sitter_id)}
     sitter_doc = pet_sitter_col.find_one(query)
     if sitter_doc is None:
@@ -81,11 +81,11 @@ def get_card_info(sitter_id):
             "message": "There is no pet sitter with the sitter id: " + sitter_id
         },404
 
-    card_info = dumps(sitter_doc['CardInfo'])
-    card_info = json.loads(card_info)
+    payment_info = dumps(sitter_doc['Stripe_Id'])
+    payment_info = json.loads(payment_info)
     return jsonify(
         {"code":200,
-        "data": card_info
+        "data": payment_info
         })
 
 # Function 4: change rating of sitter
@@ -216,6 +216,11 @@ def delete_owner(id):
 # @app.route("/replacement_sitter/<integer:jobId>", methods=['GET'])
 # def find_replacements(jobId):
 #     replacementlist = Sitter.query.filter_by(id = id).first()
+
+# Function 7: retrieve sitter pet preference 
+@app.route("/sitter/<string:species>/<string:rate>", methods=['GET'])
+def retrieve_sitters():
+    pass
 
 
 

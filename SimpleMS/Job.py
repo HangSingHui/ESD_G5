@@ -2,87 +2,26 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from os import environ
+from datetime import datetime
 
-from typing import List
-from sqlalchemy import ForeignKey
-from sqlalchemy import Integer
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import relationship
+from bson.objectid import ObjectId
 
-from SimpleMS.Application import Application
+import pymongo
 
-
-class Base(DeclarativeBase):
-    pass
-
-from SimpleMS.Owner import Owner
-from SimpleMS.Pet import Pet
-from SimpleMS.Sitter import Sitter
+client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
+job_db = client.get_database("job_db")
+job_col = job_db['job']
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-#"mysql+mysqlconnector://root:root@localhost:3306/job"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
 CORS(app)
 
-class Job(db.Model):
-    __tablename__ = 'job'
-
-    id = db.Column(db.Integer, primary_key =True)
-    title = db.Column(db.String(25), nullable=False)
-    desc=db.Column(db.Text, nullable =False)
-    status = db.Column(db.String(8), nullable = False)
-    startDT = db.Column(db.DateTime(), nullable=False)
-    endDT = db.Column(db.DateTime(), nullable=False)
-    payout= db.Column(db.Float(2), nullable=False)
-
-    #Foreign key - OWNER is PARENT to JOB (a job can only have 1 owner, 1 to many)
-    owner_id=db.Column(db.Integer, db.ForeignKey('owner.id'))
-
-    #Foreign key - PET is PARENT to JOB (a job can only have 1 pet, 1 to many)
-    pet_id=db.Column(db.Integer, db.ForeignKey('pet.id'))
-
-    #Foreign key - SITTER is PARENT to JOB (a job can only have 1 HIRED sitter, 1 to many, can be null, update once sitter confirmed)
-    sitter_id=db.Column(db.Integer, db.ForeignKey('sitter.id'))
-
-    #Foreign key - Job is PARENT to Application (One to Many)
-    applications=db.relationship('Application',backref='job')
-
-
-
-    def __init__(self, id, title, desc, status, startDT, endDT, payout, owner_id, pet_id, sitter_id):
-       self.id = id
-       self.title=title
-       self.desc=desc
-       self.status=status
-       self.startDT=startDT
-       self.endDT=endDT
-       self.payout=payout
-       self.owner_id=owner_id
-       self.pet_id=pet_id
-       self.sitter_id=sitter_id
-
-    def json(self):
-        return {
-            "id": self.id,
-            'title': self.title,
-            "desc": self.desc,
-            "startDT": self.startDT,
-            "endDT": self.endDT,
-            "payout":self.payout,
-            "owner_id":self.owner_id,
-            "pet_id":self.pet_id,
-            "sitter_id":self.sitter_id
-        }
 
 #Function 1: Get all jobs - to display on the interface
 @app.route("/job")
 def get_all():
-    jobList = Job.query.all()
+    jobList = job_col.find()
 
     if len(jobList):
         return jsonify(
@@ -100,30 +39,30 @@ def get_all():
     ), 404
 
 
-#Function 2: Get job title by jobID
-@app.route("/job/<integer:jobID>")
-def getTitle(jobID):
+#Function 2: Get job by jobid
+@app.route("/job/<string:jobID>")
+def getJob(jobID):
     #search if job exists first with jobID
-    job=job.query.filter_by(jobID=id).first()
+    query={"JobID":ObjectId(jobID)}
+    job=job_col.find_one(query)
 
     if job:
         return jsonify(
             {
                 "code":200,
-                "data": job.title
+                "data": job.json()
             
             }
         )
-
+    
+    #if not, return job not found
     return jsonify(
             {
                 "code":404,
-                "data":"Job not found."
+                "message":"Job not found."
             }
         ),404
 
-
-    #if not, return job not found
 
 
 #Function 3: Create a new job
@@ -159,8 +98,29 @@ def create_job(owner_id):
 
     # no validation for the same job by same ownerid? 
 
+
+    data = request.get_json() 
+
+    #Job details
+    # _id
+    # OwnerID 
+    # Created (Created datetime in UNIX format e.g. 1680421271) 
+    # PetID (Array of pet _id involved)
+    # SitterID (When a Pet Sitter is hired)
+    # Title
+    # Description
+    # Status (Open - No Pet Sitter hired, Matched - Pet Sitter hired, Closed - Job Closed, Completed - Session linked to this job is completed)
+    # Start_datetime
+    # End_datetime
+    # Hourly_rate
+    # Payout (Amount to be paid to Pet Sitter) (Hourly rate * End_datetime - Start_datetime)
+    
+
+    details = { "name": "John", "address": "Highway 37" }
+
+    x = mycol.insert_one(mydict)
+
     data = request.get_json()
-    new_job = Job(owner_id, **data)
 
     try:
         db.session.add(new_job)
@@ -220,123 +180,6 @@ def update_order(job_id):
             }
         ), 500
 
-
-
-# @app.route("/job/<string:jobID>")
-# def find_by_jobID(jobID):
-#     job = job.query.filter_by(isbn13=isbn13).first()
-#     if (job):
-#         return jsonify(
-#             {
-#                 "code": 200,
-#                 "data": job.json()
-#             }
-#         )
-    
-#     return jsonify(
-#         {
-#             "code":404,
-#             "message": "job not found"
-#         }
-#     ),404
-
-
-# @app.route("/job/<string:isbn13>", methods=['POST'])
-# def create_job(isbn13):
-#     if (job.query.filter_by(isbn13=isbn13).first()):
-#         return jsonify(
-#             {
-#                 "code": 400,
-#                 "data": {
-#                     "isbn13": "1234567890123"
-#                 },
-#                 "message": "job already exists"
-#             }
-#         ),400
-    
-#     #get user input, where user input is request in JSON format
-#     #get_json() converts user input to PYTHON DATA
-#     data = request.get_json()
-#     #Create instance of the job
-#     job = job(isbn13, **data)
-   
-#     try:
-#         #add the job 
-#         db.session.add(job)
-#         #commit the changes
-#         db.session.commit
-
-
-#     except:
-#         return jsonify(
-#             {
-#                 "code": 500,
-#                 "data": {
-#                     "isbn13": "1234567890123"
-#                 },
-#                 "message": "An error occured creating the job."
-#             }
-#         ),500
-    
-#     return jsonify(
-#         {
-#             "code":201,
-#             "data": job.json()
-#         }
-#     ),201
-
-# @app.route("/job/<string:isbn13>", methods=['PUT'])
-# def update_job(isbn13):
-#     #delete old job
-#     old_job = job.query.filter_by(isbn13=isbn13).first()
-#     db.session.delete(old_job)
-#     db.session.commit()
-
-#     #Get new data
-#     data = request.get_json()
-#     new_job = job(isbn13, **data)
-
-#     try:
-#         db.session.add(new_job)
-#         db.session.commit()
-    
-#     except:
-#         return jsonify(
-#         {
-#             "code":500,
-#             "message": "job failed to update"
-#         }
-#      ),500   
-
-#     return jsonify(
-#         {
-#             "code":201,
-#             "data": new_job.json()
-#         }
-#     ),201
-
-# @app.route("/job/<string:isbn13>", methods=['DELETE'])
-# def delete_job(isbn13):
-#     job = job.query.filter_by(isbn13 = isbn13).first()
-#     if (job):
-#         db.session.delete(job)
-#         db.session.commit()
-#         return(
-#             {
-#                 "code":201,
-#                 "isbn13": isbn13
-#             }
-#         ),201
-    
-#     return(
-#         {
-#             "code":404, 
-#             "data":{
-#                 "isbn13": isbn13
-#             },
-#             "message": "job not found"
-#         }
-#     ),404
 
 
 if __name__ == "__main__":

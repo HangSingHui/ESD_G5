@@ -26,8 +26,6 @@ channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, dura
     # 'durable' makes the exchange survive broker restarts
 
 
-
-
 # Here can be a place to set up all queues needed by the microservices,
 # - instead of setting up the queues using RabbitMQ UI.
 
@@ -42,6 +40,9 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='#.notif
     # bind the queue to the exchange via the key
     # 'routing_key=#' => any routing_key would be matched
 
+queue_name = "payment"
+channel.queue_declare(queue=queue_name, durable=True)
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.payment') 
 
 
 

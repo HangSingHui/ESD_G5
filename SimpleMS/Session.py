@@ -5,66 +5,9 @@ from os import environ
 import json
 import pymongo
 
-from typing import List
-from sqlalchemy import ForeignKey
-from sqlalchemy import Integer
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import relationship
-
 from datetime import datetime
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# "mysql+mysqlconnector://root:root@localhost:3306/pet
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# db = SQLAlchemy(app)
-# CORS(app)
-
-# class Session(db.Model):
-  # __tablename__ = 'session'
-
-  # id = db.Column(db.Integer, primary_key=True)
-  # ownerDeposit = db.Column(db.Boolean, nullable=False)
-  # sessionTimeCreated = db.Column(db.Datetime, nullable=False)
-  # sessionTimeClosed = db.Column(db.Datetime)
-  # sitterPaid = db.Column(db.Boolean, nullable=False)
-  # status = db.Column(db.String(11), nullable=False)
-  # sitterCompleted = db.Column(db.Boolean, nullable=False)
-  # ownerCompleted = db.Column(db.Boolean, nullable=False)
-
-  # # foreign key is jobId referring to the job table
-  # jobId = db.Column(db.Integer, db.ForeignKey('job.id'))
-  # ownerId = db.Column(db.Integer, db.ForeignKey('owner.id'))
-  # sitterId = db.Column(db.Integer, db.ForeignKey('sitter.id'))
-
-  # def __init__(self, id, ownerDeposit, sessionTimeCreated, sessionTimeClosed, sitterPaid, status, sitterCompleted, ownerCompleted, jobId, ownerId, sitterId):
-  #     self.id = id
-  #     self.ownerDeposit = ownerDeposit
-  #     self.sessionTimeCreated = sessionTimeCreated
-  #     self.sessionTimeClosed = sessionTimeClosed
-  #     self.sitterPaid = sitterPaid
-  #     self.status = status
-  #     self.sitterCompleted = sitterCompleted
-  #     self.ownerCompleted = ownerCompleted
-  #     self.jobId = jobId
-  #     self.ownerId = ownerId
-  #     self.sitterId = sitterId
-
-  # def json(self):
-  #     return {
-  #         "id" : self.id,
-  #         'ownerDeposit' : self.ownerDeposit,
-  #         "sessionTimeCreated" : self.sessionTimeCreated,
-  #         "sessionTimeClosed" : self.sessionTimeClosed,
-  #         "sitterPaid" : self.sitterPaid,
-  #         "status": self.status, # cancelled, closed, in-progress
-  #         "sitterCompleted" : self.sitterCompleted,
-  #         "ownerCompleted" : self.ownerCompleted,
-  #         "jobId" : self.jobId
-  #     }
 
 client = pymongo.MongoClient(
     "mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")

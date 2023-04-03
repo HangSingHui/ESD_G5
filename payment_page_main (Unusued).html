@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Checkout Session (javascript)</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <button id="checkout">Checkout</button>
+
+    <script>
+
+        var stripe = Stripe("pk_test_51Ms4GgFrjIdoqzyMIKQv8tYAqcPtO2cm09hNoEoxxnNZC2MlDmmbMYGpmFOHOMXZdJS3u8FI3j8mOjxLdvMHCFeg00I2EsXps1");
+
+        document.getElementById("checkout").addEventListener("click", function() {
+            stripe.redirectToCheckout({
+                lineItems:[
+                    {
+                        price : 'price_1Ms66XFrjIdoqzyMAsZT14GZ',
+                        quantity: 1
+                    },
+                ],
+                mode: 'subscription',
+                successUrl : "https://www.google.com/",
+                cancelUrl : "https://www.twitter.com/"
+            })
+            .then(function () {
+                
+            });
+        })
+
+    </script>
+</body>
+</html>

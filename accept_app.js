@@ -1,8 +1,19 @@
-const get_all_url = "http://localhost:5005/job"
-fetch(get_all_url)
-.then(response => response.json())
+const get_all_url = "http://localhost:5005/job";
+const application_get_url = "http://localhost:5008/application";
+
+
+const response = fetch(get_all_url).then(response => response.json())
 .then(data => {
-    console.log(response);
+    var jobs = data["data"]
+    console.log(jobs);
+    for (let index = 0; index < jobs.length; index++) {
+        console.log(jobs[index]);
+        
+        const app_response = 
+
+    }
+
+
     if (data.code === 404) {
         console.log("Jobs not found");
     }
@@ -16,23 +27,23 @@ fetch(get_all_url)
 
 // const get_all_job_applications = 
 
-var test_application_id = '64293aea06864f6b8cac1f3a';
-const accept_application_route = "http://localhost:5100/accept_app";
+// var test_application_id = '64293aea06864f6b8cac1f3a';
+// const accept_application_route = "http://localhost:5100/accept_app";
 
-fetch(`${accept_application_route}/${test_application_id}`)
-.then(response => response.json())
-.then(data => {
-    console.log(response);
-    if (data.code === 404) {
-        console.log("Application not found");
-    }
-    else{
-        console.log(data);
-    }
-})
-.catch(error => {
-    console.log(error);
-})
+// fetch(`${accept_application_route}/${test_application_id}`)
+// .then(response => response.json())
+// .then(data => {
+//     console.log(response);
+//     if (data.code === 404) {
+//         console.log("Application not found");
+//     }
+//     else{
+//         console.log(data);
+//     }
+// })
+// .catch(error => {
+//     console.log(error);
+// })
 
 
 

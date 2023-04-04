@@ -82,7 +82,9 @@ def get_payment_info(sitter_id):
             "message": "There is no pet sitter with the sitter id: " + sitter_id
         },404
 
-    payment_info = dumps(sitter_doc['Stripe_Id'])
+    payment_info = dumps({'customer': sitter_doc['Stripe_Id'],
+                          'card_id': sitter_doc['CardInfo']
+                        })
     payment_info = json.loads(payment_info)
     return jsonify(
         {"code":200,

@@ -69,18 +69,12 @@ const response = fetch(get_all_url).then(response => response.json())
             temp_card_str += 
             `
             <!-- Cancel Sitter -->
-            <button class="btn btn-danger btn-sm" onclick="cancel_sitter(this)" id="${curr_job}cancel">Cancel Sitter</button>
-
-            <!-- View Job Application Modals -->
-            <button class="btn btn-primary btn-sm d-none" id="${curr_job}all" onclick="fetch_applications(${job_id})">View Applications</button>
+            <button class="btn btn-danger btn-sm" onclick="cancel_sitter('${job_id}')" id="${curr_job}cancel">Cancel Sitter</button>
             `
         }
         else{
             temp_card_str += 
-            `
-            <!-- Cancel Sitter -->
-            <button class="btn btn-danger btn-sm d-none" onclick="cancel_sitter(this)" id="${curr_job}cancel">Cancel Sitter</button>
-            
+            `            
             <!-- View Job Application Modals -->
             <button class="btn btn-primary btn-sm" id="${curr_job}all" onclick="fetch_applications('${job_id}')">View Applications</button>
             `
@@ -203,6 +197,5 @@ function cancel_sitter(job) {
     if (cancel_confirm == true) {
         sessionStorage.clear()
         location.reload()
-    }
-    
+    } 
 }

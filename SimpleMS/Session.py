@@ -14,6 +14,7 @@ from datetime import datetime
 import datetime
 import time
 from bson.objectid import ObjectId
+import calendar
 app = Flask(__name__)
 CORS(app)
 
@@ -21,6 +22,38 @@ client = pymongo.MongoClient(
     "mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
 session_db = client.get_database("session_db")
 session_col = session_db['session']
+
+
+#Function: Get session by sessionID
+@app.route("/session/<string:sessionID>")
+def getsession(sessionID):
+    #search if session exists first with sessionID
+    query={"_id":ObjectId(sessionID)}
+    #job=job_col.find(query)
+   
+    num_sessions = session_db.session.count_documents(query)
+    print(num_sessions)
+    session = session_col.find(query)
+    if num_sessions> 0:
+        session = list(session)
+        json_data = dumps(session)
+        json_data = json.loads(json_data)
+    
+        return jsonify(
+            {
+                "code":200,
+                "data": json_data
+            }
+        )
+    #if not, return job not found
+    return jsonify(
+            {
+                "code":404,
+                "message":"Session not found."
+            }
+        ),404
+
+
 
 
 # Function 1a: get all created sessions for owner
@@ -112,7 +145,6 @@ def get_sitter_sessions_by_status(sitter_id, status):
 # Function 3: create session once sitter's confirmation of taking the job is received
 @app.route("/session/create_session/<string:job_id>", methods=['POST'])
 def create_session(job_id):
-
     #Only these 3 are sent as a request
     owner_id = request.json.get('OwnerID')
     sitter_id = request.json.get('SitterID')
@@ -136,7 +168,7 @@ def create_session(job_id):
         session_col.insert_one({'JobID':ObjectId(job_id),
                                 'OwnerID': ObjectId(owner_id),
                                 'sitterID': ObjectId(sitter_id),
-                                'status': 'In-Progress',
+                                'status': 'In Progress',
                                 'sessionTimeCreated': utc_time,
                                 'sessionTimeClosed':None,
                                 'ownerDeposit':0,
@@ -231,26 +263,47 @@ def create_session(job_id):
 #     # if not, return session not found
 '''
 
-@app.route("/session/<string:sessionId>")
-def get_session_by_id(sessionId):
-    query = {"_id": ObjectId(sessionId)}
+#Function: Cancel session -> Update session to "Closed" and add column "sessionTimeClosed"
+@app.route("/cancel-session/<string:sessionId>", methods=['PUT'])
+def cancel_session(sessionId):
+    query= {'_id': ObjectId(sessionId)}
     session = session_col.find(query)
-    if session:
-        json_data = json.loads(dumps(session))
+    num_sessions = session_db.session.count_documents(query)
+    print(num_sessions)
+    #IF SESSION FOUND
+    if num_sessions > 0:
+        date = datetime.datetime.utcnow()
+        utc_time = calendar.timegm(date.utctimetuple())
+        closestatus = {"$set":{"status": "Cancelled","sessionTimeCancelled": utc_time}}
 
-        return jsonify(
+        try:
+            session_col.update_one(query, closestatus)
+
+            return jsonify(
             {
-                "code":200,
-                "data": json_data
+                "code": 200,
+                "data": {
+                    "JobID": sessionId,
+                    "sessionTimeCancelled" : utc_time
+                },
+                "message": "Job status changed to cancelled and sessionTimeCancelled added"
             }
-        )
+        ), 200
 
-    return{
-        "code": 404,
-        "message": "No session found."
-    },404
+        except Exception as e:
+            return jsonify(
+                {
+                    "code": 500,
+                    "data": {
+                        "JobID": sessionId
+                    },
+                    "message": "An error occurred while cancelling the session" 
+                }
+            ), 500
 
-@app.route("/close-session/<string:sessionId>", methods=['PUT'])
+
+'''
+@app.route("/close-session/<string:sessionId>", methods=['PUT']")
 def close_session(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()
     query = {"_id": ObjectId(sessionId)}
@@ -259,7 +312,7 @@ def close_session(sessionId):
         closing_time = time.time()
         # closing_time = now.strftime("%Y/%m/%d %H:%M:%S")
         # closing_time = datetime.strptime(closing_time,"%Y/%m/%d %H:%M:%S")
-        update_query = {"status": "In-Progress", "sessionTimeClosed": None}
+        update_query = {"status": "In Progress", "sessionTimeClosed": None}
         new_values = { '$set' : {"status" : "Closed",
                                  "sessionTimeClosed" : closing_time}}
         session_col.update_one(query,new_values)
@@ -283,7 +336,7 @@ def close_session(sessionId):
         }
     ), 404
     # if not, return session not found
-
+'''
 
 if __name__ == "__main__":
     app.run(port=5004, debug=True)

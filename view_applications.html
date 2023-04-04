@@ -37,6 +37,7 @@
         const accept_application_route = "http://localhost:5100/accept_app";
         const application_get_url = "http://localhost:5008/application/job";
         const sitter_info_url = "http://localhost:5001/sitter"
+        const reject_sitter = "http://localhost:5008/application/reject_one"
         // window.sessionStorage
         var job_id = localStorage.getItem("job_id")
 
@@ -68,7 +69,7 @@
                     <div class="col-6 my-3">
                         <div class="card" id='${application_id}'>
                             <div class="card-body">
-                                <h5 class="card-title" id='${app_num}name'>Application ${index + 1}</h5>
+                                <h5 class="card-title" id='${app_num}name'>Application ${index+1}</h5>
                                 <h6 class="card-subtitle mb-2 text-body-secondary" id='${app_num}subtitle'>Card subtitle</h6>
                                 <p class="card-text" id='${app_num}info'></p>
                                 <button class="btn btn-success" id="${app_num}accept" onclick="accept_application('${application_id}')">Accept</button>
@@ -110,6 +111,9 @@
                     var sitter_spec_preg = sitter_data["Species_preference"]
                     var sitter_user_score = sitter_data["User_score"]
 
+                    console.log(document.getElementById(`app${index+1}name`));
+                    console.log(document.getElementById(`app${index+1}subtitle`));
+
                     document.getElementById(`app${index+1}name`).innerText = sitter_name;
                     document.getElementById(`app${index+1}subtitle`).innerText = sitter_desc;
 
@@ -142,8 +146,17 @@
         }
 
         function reject_application(item) {
-            reject_sitter = confirm("Reject sitter?")
-            console.log(item);
+            // reject_sitter = confirm("Reject sitter?")
+            // console.log(reject_sitter);
+            // if (reject_sitter == true) {
+                const reject_app = fetch(`${reject_sitter}/${item}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                })
+
+                location.reload(true)
+            // }
         }
 
         

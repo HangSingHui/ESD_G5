@@ -13,5 +13,5 @@
 # Incident Handling --> 5200
 # Penalty Handling --> 5300
 # createJob --> 5400
-# place_pmt --> 5500
+# notify_payment_sucess --> 5500
 

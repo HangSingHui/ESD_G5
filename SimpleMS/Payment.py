@@ -85,29 +85,32 @@ def penalty_charge():
 @app.route('/check_payment')
 def check_if_paid():
     #Get latest payment intent
-    product_id = "prod_NdMqTOurWTf43d"
-    payment_id = retrieve_latest(product_id)
-    payment = stripe.PaymentIntent.retrieve(payment_id)
-    while payment.status != 'succeeded':
-         payment = stripe.PaymentIntent.retrieve(payment_id)
+    latest = stripe.PaymentIntent.list(limit=1)
+    payment_status = latest["data"][0]["status"]
+    if payment_status == "succeeded":
+         return jsonify({
+            "code":200,
+            "message": "Successfully received payment from owner."
+         })
+    
+    #Just invoke, no need AMQP
+    
     
     return jsonify({
-        "code":200,
-        "message": "Successfully received payment from owner."
+        "code":400,
+        "message": "Owner failed to make payment."
+        
     })
 
+    # product_id = "prod_NdMqTOurWTf43d"
+    # payment_id = retrieve_latest(product_id)
+    # payment = stripe.PaymentIntent.retrieve(payment_id)
+    # if payment.status != 'succeeded':
+    #      payment = stripe.PaymentIntent.retrieve(payment_id)
+    
 
-def retrieve_latest(product_id):
-    payment_intents = stripe.PaymentIntent.list(
-        product=product_id,
-        limit=1,
-        expand=["data.charges"],
-        sort=[{"created": "desc"}]
-    )
 
-    latest_payment_ids = [payment_intent.charges.data[0].payment for payment_intent in payment_intents.data]
 
-    return latest_payment_ids[0] #latest payment is first
 
 
 

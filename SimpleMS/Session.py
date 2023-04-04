@@ -8,6 +8,7 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 import json
 from datetime import datetime
+import time
 from bson.objectid import ObjectId
 app = Flask(__name__)
 CORS(app)
@@ -189,20 +190,22 @@ def return_session_time(sessionId):
     # if not, return session not found
 # Function 5: close session by updating close session time and the session status
 
-@app.route("close-session/<string:sessionId>", method=['PUT'])
+@app.route("/close-session/<string:sessionId>", methods=['PUT'])
 def close_session(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()
-    query = {"SessionID": ObjectId(sessionId)}
+    query = {"_id": ObjectId(sessionId)}
     session = session_col.find_one(query)
     if session:
-        data = request.get_json()
-        now = datetime.now()
-        closing_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
-        update_query = {"status": "In-Progress", "sessionTimeClosed": None}
+        closing_time = time.time()
+        # closing_time = now.strftime("%Y/%m/%d %H:%M:%S")
+        # closing_time = datetime.strptime(closing_time,"%Y/%m/%d %H:%M:%S")
+        update_query = {"status": "In Progress", "sessionTimeClosed": None}
         new_values = { '$set' : {"status" : "Closed",
                                  "sessionTimeClosed" : closing_time}}
-        session.update_one(update_query,new_values)
-        session_duration = closing_time - data['sessionTimeCreated']
+        session_col.update_one(query,new_values)
+
+        # calculate session duration (in hours)
+        session_duration = (closing_time - session['sessionTimeCreated'])/60/60
         return jsonify(
             {
                 "code": 200,

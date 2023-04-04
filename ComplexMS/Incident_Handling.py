@@ -80,22 +80,28 @@ def processIncident(session):
 
     # 4. check if job was cancelled after 1 day
     # if yes, invoke penalty handling (complex MS)
-    if closing_session_result > timedelta(days = 1) : 
-        invoke_http(penalty_URL, method='POST', json = session)
-        print('Penalty Handling Result: ',closing_session_result)
+    if closing_session_result['data']['sessionDuration'] > 24 : 
+        # 5. Send pet sitter details to AMQP for penalty handling
+        print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
+
+        message = json.dumps({'sitterId': sitterId, 'jobId': jobId})
+
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="sitter.penalty", 
+        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+        
     else:
     # if no, ignore
         pass
 
 
-    # 5. Retrieve recommended petsitters as replacement
+    # 6. Retrieve recommended petsitters as replacement
     # Invoke sitter microservice
     print('\n-----Retrieve waitlist from job microservice-----')
     sitter_replacements_result = invoke_http(job_waitlist_URL + jobId, method='GET')
     print('Sitter Replacements Suggestion: ',sitter_replacements_result)
 
 
-    # 6. Send list of recommended pet sitter replacements
+    # 7. Send list of recommended pet sitter replacements
     print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')
 
     message = json.dumps(sitter_replacements_result)
@@ -105,15 +111,6 @@ def processIncident(session):
     # make message persistent within the matching queues until it is received by some receiver 
     # (the matching queues have to exist and be durable and bound to the exchange)
 
-    # 7. Send pet sitter details to AMQP for penalty handling
-    print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
-
-    message = json.dumps({'sitterId': sitterId, 'jobId': jobId})
-
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="sitter.penalty", 
-        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-    # make message persistent within the matching queues until it is received by some receiver 
-    # (the matching queues have to exist and be durable and bound to the exchange)
 
     # - reply from the invocation is not used;
     # continue even if this invocation fails        

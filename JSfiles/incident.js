@@ -24,7 +24,7 @@ for (let index = 0; index < curr_sessions.length; index++) {
     console.log(session_id);
     var job_id = curr_session["JobID"]["$oid"];
     var status = curr_session["status"];
-    // console.log(job_id, status);
+    console.log(job_id, status);
     // temp_jobs_status[`${get_job_url}/${job_id}`] = status;
     const fetch_jobs = fetch(`${get_job_url}/${job_id}`)
     .then(response => response.json())
@@ -52,15 +52,15 @@ updateArr(status_arr, jobs_id_arr, session_id_arr);
 })
 
 function viewJobs(curr_filter) {
-// console.log(jobs_arr, status_arr, jobs_id_arr);
+console.log(jobs_arr, status_arr, jobs_id_arr);
 var curr_count = 0 
 document.getElementById("job_list").innerHTML = ""
 for (let index = 0; index < jobs_arr.length; index++) {
     curr_status = status_arr[index]
     curr_job = jobs_arr[index][0]
     curr_session = session_id_arr[index]
-    // console.log(curr_job);
-
+    console.log(curr_job);
+    console.log(curr_filter);
     curr_id = jobs_id_arr[index]
 
     if (curr_status == curr_filter) {
@@ -115,7 +115,7 @@ for (let index = 0; index < jobs_arr.length; index++) {
                 </div>
             </div>`
 
-    if (curr_status == "In Progress") {
+    if (curr_status == "In-Progress") {
         temp_str += 
         `
         <!-- Cancel Job -->
@@ -182,12 +182,12 @@ jobs_arr = temp_job_arr;
 
 
 function removeJob(session_id) {
-const cancel_session = fetch(`${sitter_rejection_url}/${session_id}`)
-.then(response => response.json())
-.then(data => {
-    console.log(data);
-})
-.catch(error => {
-    console.log(error);
-})
+    const cancel_session = fetch(`${sitter_rejection_url}/${session_id}`)
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.log(error);
+    })
 }

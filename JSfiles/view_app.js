@@ -2,6 +2,8 @@ const accept_application_route = "http://localhost:5100/accept_app";
 const application_get_url = "http://localhost:5008/application/job";
 const sitter_info_url = "http://localhost:5001/sitter"
 const reject_sitter = "http://localhost:5008/application/reject_one"
+
+
 // window.sessionStorage
 var job_id = localStorage.getItem("job_id")
 
@@ -94,6 +96,7 @@ function populate_data(sitters_arr) {
             var sitter_spec_preg = sitter_data["Species_preference"]
             var sitter_user_score = sitter_data["User_score"]
             var sitter_image = sitter_data["Image_Path"];
+            var sitter_email = sitter_data["Email"]
 
 
             // console.log(document.getElementById(`app${index+1}name`));
@@ -107,6 +110,7 @@ function populate_data(sitters_arr) {
             var temp_str = 
             `
             <p>Phone Number: ${sitter_ph}</p>
+            <p>Email: ${sitter_email}</p>
             <p>Postal Code: ${sitter_postal}</p>
             <p>User Score: ${sitter_user_score}</p>
             <p>Hourly Rate: ${sitter_rate}</p>
@@ -123,9 +127,12 @@ function populate_data(sitters_arr) {
     
 }
 
+
+
 function accept_application(item) {
     var confirmation = confirm(`Confirm sitter's application? We will notify the sitter about your application and update the current job listing`)
-    const accept_response = fetch(`${accept_application_route}/${item}`,
+    if (confirmation == true) {
+        const accept_response = fetch(`${accept_application_route}/${item}`,
     {
         method:"PUT",
         headers: {
@@ -138,12 +145,26 @@ function accept_application(item) {
     })
 
     alert("You have successfully accepted this sitter! We hope your pet has a paw-some time!")
-    setTimeout(function(){
-        window.location.href = "owner_accept_applications.html";
-    }, 2500);
+
+
+    stripe.redirectToCheckout({
+        lineItems:[
+            {
+                price : 'price_1Mt8RtFrjIdoqzyM6KhY7Ifn',
+                quantity: 1
+            },
+        ],
+        mode: 'payment',
+        successUrl : "http://127.0.0.1:5500/owner_accept_applications.html",
+        cancelUrl : "http://127.0.0.1:5500/owner_accept_applications.html"
+    })
+    .then(function (){});
 
     document.getElementById("application_list").innerHTML = 
-    "<h1 class='text-center fw-bold my-5'>Updating our database...</h1>";
+    
+    "<h1 class='text-center fw-bold mt-5'>Redirecting you to payment...</h1><h4 class='text-center fw-bold mn-5'>Updating our database...</h4>";
+    }
+    
 
 }
 
@@ -158,10 +179,10 @@ function reject_application(item) {
         const reject_app = fetch(`${reject_sitter}/${item}`)
         .then(response => response.json())
         .then(data => {
-            console.log(data);
+            if (data.code === 201) {
+                alert('You have successfully rejected the sitter.')
+                location.reload(true)
+            }
         })
-
-        alert('You have successfully rejected the sitter.')
-        location.reload(true)
     }
 }

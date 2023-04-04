@@ -55,7 +55,7 @@ def processNotif(notif,routing_key):
         body= "Dear " + notif.sitterName + ",\n We are pleased to inform you that your application for the job titled: "  + notif.jobTitle + "(" + str(notif.jobID) + ") has been accepted by the owner. Should you wish to turn down the offer, kindly indicate in the Pet's R Us mobile application within the next 12 hours." 
         recipient = notif.sitterEmail
     
-     #structure of AMQP message (JSON - routing key = hold.payment.notification)
+    #structure of AMQP message (JSON - routing key = hold.payment.notification)
     # {
     #    "ownerEmail": "lebubbub@gmail.com",
     #    "jobTitle": "Dog Walking",

@@ -227,25 +227,35 @@ def delete_owner(id):
 #     replacementlist = Sitter.query.filter_by(id = id).first()
 
 # Function 7: retrieve sitter pet preference 
-@app.route("/sitter/<string:species>/<string:rate>", methods=['GET'])
-def retrieve_sitters():
+@app.route("/sitter/<string:species>/<string:rate_cat>", methods=['GET'])
+def retrieve_sitters(species, rate_cat):
     # once new job is created, pass in the species and hourly rate of that job
     # find sitter by species and rate 
     # output should contain a json object of all the emails of the sitters 
 
     # cannot query rate directly -> must check range :(())
-    # 30-39 
-    # 40-49 
-    # 50-59
+    # 31-40
+    # 41-50 
+    # 51-60
 
-    query={"species":ObjectId(species), 
-           "rate": ObjectId(rate)}
-    sitter=pet_sitter_col.find(query)
+    if rate_cat=="cat1": 
+        # query range 31-40 
+        sitter = pet_sitter_col.find({ "species":ObjectId(species), Hourly_rate : { $gt :  30, $lt : 41}})
+    if rate_cat=="cat2": 
+        # query range 41-50 
+        sitter = pet_sitter_col.find({ "species":ObjectId(species), Hourly_rate : { $gt :  40, $lt : 51}})
+    if rate_cat == "cat3" : 
+        # query range 51-60
+        sitter = pet_sitter_col.find({ "species":ObjectId(species), Hourly_rate : { $gt :  50, $lt : 61}})
+
+    # query={"species":ObjectId(species)}
+    # retrieve the rate from the db -> then must go through the rate and then categorise each one 
+    # sitter=pet_sitter_col.find(query)
     num_sitter = pet_sitter_db.pet_sitter.count_documents({})
     
     # check if there are at least one sitter
     if num_sitter > 0:
-        sitter = list(sitter)
+        sitter = list(sitter["Email"]) #extract email from here or above??? 
         json_data = dumps(sitter)
         json_data = json.loads(json_data)
         # return json object of sitters with specified species and rate

@@ -32,7 +32,9 @@ def calculate_order_amount(charge):
 def change_price():
     details = request.get_json()
     product_id = details["product_id"]
-    charge = int(details["charge"])
+    charge_before_gst = details["charge"]
+    charge_after_gst = calculate_order_amount(charge_before_gst)
+    charge = int(charge_after_gst)
     #JSON object
     # {
     #     "charge": 5000,

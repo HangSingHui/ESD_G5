@@ -2,15 +2,14 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 import os, sys
-sys.path.append('../SimpleMS')
-import amqp_setup
-import amqp_setup_notification
+
+
 import requests
 from invokes import invoke_http
-#from SimpleMS import amqp_setup
+from SimpleMS import amqp_setup
 from datetime import datetime, timedelta
 
-#from SimpleMS import amqp_setup_notification
+from SimpleMS import amqp_setup_notification
 import pika
 import json
 

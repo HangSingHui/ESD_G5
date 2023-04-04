@@ -12,7 +12,7 @@ from invokes import invoke_http
 import pika
 
 app = Flask(__name__)
-# CORS(app)
+CORS(app)
 
 owner_URL = "http://localhost:5000/owner"
 sitter_URL = "http://localhost:5001/sitter"

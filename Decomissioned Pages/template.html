@@ -1,0 +1,60 @@
+<div class="col-4 my-2" id="${curr_id}">
+    <div class="card h-100">
+    <img src="${image}" class="card-img-top">
+    <div class="card-body">
+        <h5 class="card-title">${job_title}</h5>
+        <p class="card-text">${job_desc}</p>
+        <!-- View More Jobs Modal -->
+        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#${job_num}Modal">
+            View More Info
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="${job_num}Modal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="jobModalLabel">${job_title}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Job Description: ${job_desc}</p>
+                        <p>Starting Date & Time: ${start_format_date} ${start_format_time}</p>
+                        <p>Ending Date & Time: ${end_format_date} ${end_format_time}</p>
+                        <p>Hourly Rate: $${hourly_rate}/hr</p>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id='${job_num}status'> 
+        </div>
+        </div>
+    </div>
+</div
+
+            <!-- Cancel Job -->
+              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancel${job_num}Modal">
+                  Cancel Job
+              </button>
+              <!-- Modal -->
+              <div class="modal fade" id="cancel${job_num}Modal" tabindex="-1">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="cancelJobModalLabel">Cancel Job?</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      Are you sure you want to cancel this Job? Note that cancellation of this job at this current period will result in a $20 penalty credited from your bank account. Failure to pay the penalty amount will result in your account being locked out.
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" onclick="removeJob(${curr_id})" id="job_cancel1">Cancel</button>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Don't Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+

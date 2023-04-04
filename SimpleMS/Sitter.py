@@ -71,7 +71,7 @@ def find_by_id(id):
     ), 404
 
 # Function 3: retrieve card info by sitter ID
-@app.route('sitter/payment-info/<string:id>')
+@app.route('/sitter/payment-info/<string:id>')
 def get_payment_info(sitter_id):
     query={"_id":ObjectId(sitter_id)}
     sitter_doc = pet_sitter_col.find_one(query)
@@ -216,6 +216,11 @@ def delete_owner(id):
 # @app.route("/replacement_sitter/<integer:jobId>", methods=['GET'])
 # def find_replacements(jobId):
 #     replacementlist = Sitter.query.filter_by(id = id).first()
+
+# Function 7: retrieve sitter pet preference 
+@app.route("/sitter/<string:species>/<string:rate>", methods=['GET'])
+def retrieve_sitters():
+    pass
 
 
 

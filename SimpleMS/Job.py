@@ -101,25 +101,25 @@ def create_job(OwnerID):
     creation_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
     '''
     
-    Start_datetime = data_json['Start_datetime']
-    End_datetime = data_json['End_datetime']
-    duration_seconds = int(End_datetime) - int(Start_datetime)
+    # Start_datetime = data_json['Start_datetime']
+    # End_datetime = data_json['End_datetime']
+    # duration_seconds = int(End_datetime) - int(Start_datetime)
  
-    duration_hours = duration_seconds // 3600
-    payout = float(data_json['Hourly_rate']) * duration_hours
-    print(payout)
+    # duration_hours = duration_seconds // 3600
+    # payout = float(data_json['Hourly_rate']) * duration_hours
+    # print(payout)
     
-     new_job = { "OwnerID" : data_json['OwnerID'],
-                 "Title": data_json['Title'], 
-                "Desc" : data_json['Description'],
-                "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
-               "Start_datetime" : data_json['Start_datetime'],
-                "End_datetime" : data_json['End_datetime'],
-                "Hourly_rate" : data_json['Hourly_rate'],
-                "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
-                "Payout" : format( data_json * rate, '.2f'),
+    #  new_job = { "OwnerID" : data_json['OwnerID'],
+    #              "Title": data_json['Title'], 
+    #             "Desc" : data_json['Description'],
+    #             "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
+    #            "Start_datetime" : data_json['Start_datetime'],
+    #             "End_datetime" : data_json['End_datetime'],
+    #             "Hourly_rate" : data_json['Hourly_rate'],
+    #             "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
+    #             "Payout" : format( data_json * rate, '.2f'),
 
-                }
+    #             }
 
     
     try:

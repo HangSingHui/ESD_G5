@@ -1,6 +1,5 @@
 from os import environ
 import json
-# from flask_pymongo import pymongo
 import pymongo
 import flask
 from flask import Flask, jsonify, request
@@ -89,7 +88,7 @@ def reject_one(app_id):
 #Change status from Pending to Accepted for application with applicationid = id
 #Change status of the remaining applications from Pending to rejected 
 
-@app.route("/application/accept/<string:app_id>", methods=['PUT'])
+@app.route("/application/accept/<string:app_id>", methods=['GET', 'PUT'])
 def acceptUpdate(app_id):
 
     #Get job_id from app_id

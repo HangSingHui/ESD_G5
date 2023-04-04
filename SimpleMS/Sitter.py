@@ -72,7 +72,7 @@ def find_by_id(id):
     ), 404
 
 # Function 3: retrieve card info by sitter ID
-@app.route('/sitter/payment-info/<string:id>')
+@app.route('/sitter/payment-info/<string:sitter_id>')
 def get_payment_info(sitter_id):
     query={"_id":ObjectId(sitter_id)}
     sitter_doc = pet_sitter_col.find_one(query)
@@ -89,8 +89,8 @@ def get_payment_info(sitter_id):
         "data": payment_info
         })
 
-# Function 4: change rating of sitter
-@app.route('/sitter/rating/<string:id>', methods=['PUT'])
+# Function 4: change (Reduce) rating of sitter
+@app.route('/sitter/rating/<string:sitter_id>', methods=['GET', 'PUT'])
 def update_rating(sitter_id):
     # find sitter by id
     query={"_id":ObjectId(sitter_id)}
@@ -106,6 +106,12 @@ def update_rating(sitter_id):
 
     try:
         pet_sitter_col.update_one(query,newScore)
+        return jsonify(
+            {
+                "code":200, 
+                "data": "50 points deducted from Pet Sitter User_score"
+            }
+        )
 
     except:
         return jsonify(
@@ -218,10 +224,12 @@ def delete_owner(id):
 # def find_replacements(jobId):
 #     replacementlist = Sitter.query.filter_by(id = id).first()
 
+'''
 # Function 7: retrieve sitter pet preference 
 @app.route("/sitter/<string:species>/<string:rate>", methods=['GET'])
 def retrieve_sitters():
     pass
+'''
 
 
 

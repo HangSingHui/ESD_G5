@@ -25,7 +25,7 @@ def calculate_order_amount(charge):
     # Replace this constant with a calculation of the order's amount
     # Calculate the order total on the server to prevent
     # people from directly manipulating the amount on the client
-    total = charge*1.18  # GST
+    total = charge* 1.18  # GST
     return total
 
 @app.route('/charge', methods=['POST'])
@@ -45,15 +45,22 @@ def change_price():
     # unit_amount=5000
     # )
 
-    create_price = stripe.Price.create(
+    try:
+        create_price = stripe.Price.create(
         unit_amount=charge,
         currency="sgd",
         product=product_id
     )
+        
+    except Exception as e:
+        return jsonify(error=str(e)), 403
 
     price_id = create_price["id"]
 
-    return price_id
+    return jsonify({
+        "code":200,
+        "price_id":price_id
+    })
 
 # @app.route('/create_payment_intent', methods=['POST'])
 # def create_payment():
@@ -112,31 +119,41 @@ def penalty_charge():
     #        "card_id":"card_1Msny8FrjIdoqzyMXqxi0Hyu"
     #    }
 
+@app.route('/check_payment/<string:payment_id>')
+def check_if_paid(payment_id):
+    payment = stripe.PaymentIntent.retrieve(payment_id)
+    while payment.status != 'succeeded':
+         payment = stripe.PaymentIntent.retrieve(payment_id)
+    return jsonify({
+        "code":200,
+        "message": "Payment successf"
+    })
 
 
-@app.route('/send_payout', methods=['POST'])
-def send_payout(card_info):
-    try:
-        payout = stripe.Payout.create(
-            amount=1000,
-            currency='sgd',
-            method='instant',
-            destination=card_info,
-        )
-        return jsonify({
-                'clientSecret': payout['client_secret']
-            })
-    except Exception as e:
-        return jsonify(error=str(e)), 403
+
+# @app.route('/send_payout', methods=['POST'])
+# def send_payout(card_info):
+#     try:
+#         payout = stripe.Payout.create(
+#             amount=1000,
+#             currency='sgd',
+#             method='instant',
+#             destination=card_info,
+#         )
+#         return jsonify({
+#                 'clientSecret': payout['client_secret']
+#             })
+#     except Exception as e:
+#         return jsonify(error=str(e)), 403
 
 # Prices in Stripe model the pricing scheme of your business.
 # Create Prices in the Dashboard or with the API before accepting payments
 # and store the IDs in your database.
-PRICES = {"penalty": "price_1Msn1gFrjIdoqzyMMYL3kADE"}
+# PRICES = {"penalty": "price_1Msn1gFrjIdoqzyMMYL3kADE"}
 
-@app.route("/charge-penalty/<string:Stripe_Id>", methods=['POST'])
-def charge_penalty():
-    customer_id = request.json.get('data')
+# @app.route("/charge-penalty/<string:Stripe_Id>", methods=['POST'])
+# def charge_penalty():
+#     customer_id = request.json.get('data')
     # # Look up a customer in your database
     # customers = [c for c in CUSTOMERS if c["email"] == email]
     # if customers:
@@ -153,30 +170,30 @@ def charge_penalty():
     #     customer_id = customer.id
 
     # Create an Invoice
-    invoice = stripe.Invoice.create(
-        customer=customer_id,
-        collection_method='charge_automatically',
-        days_until_due=1,
-    )
+    # invoice = stripe.Invoice.create(
+    #     customer=customer_id,
+    #     collection_method='charge_automatically',
+    #     days_until_due=1,
+    # )
 
-    # Create an Invoice Item with the Price and Customer you want to charge
-    stripe.InvoiceItem.create(
-        customer=customer_id,
-        price=PRICES["penalty"],
-        invoice=invoice.id
-    )
+    # # Create an Invoice Item with the Price and Customer you want to charge
+    # stripe.InvoiceItem.create(
+    #     customer=customer_id,
+    #     price=PRICES["penalty"],
+    #     invoice=invoice.id
+    # )
 
-    try:
-        # Send the Invoice
-        stripe.Invoice.send_invoice(invoice.id)
+    # try:
+    #     # Send the Invoice
+    #     stripe.Invoice.send_invoice(invoice.id)
 
-    except:
-        return jsonify(
-        {
-            "code":500, #internal error
-            "message": "Internal error. Penalty cannot be charged to sitter's account."
-        }
-     ),500   
+    # except:
+    #     return jsonify(
+    #     {
+    #         "code":500, #internal error
+    #         "message": "Internal error. Penalty cannot be charged to sitter's account."
+    #     }
+    #  ),500   
 
 if __name__ == "__main__":
     app.run(port=5006, debug=True)

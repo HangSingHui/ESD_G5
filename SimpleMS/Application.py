@@ -28,7 +28,7 @@ def getAll(job_id):
     query={"JobID":ObjectId(job_id)}
 
     app_doc = app_col.find(query)
-    len_app = app_db.job_application.count_documents({})
+    len_app = app_db.job_application.count_documents(query)
 
     if len_app > 0:
         list_app = list(app_doc)

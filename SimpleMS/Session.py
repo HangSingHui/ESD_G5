@@ -89,11 +89,11 @@ def get_owner_sessions_by_status(owner_id, status):
     },404
 
 # Function 2b: get created sitter's sessions based on session status (closed/in-progress/cancelled)
-@app.route("/sessions/sitter/<string:sitterId>/<string:status>")
+@app.route("/sessions/sitter/<string:sitter_id>/<string:status>")
 def get_sitter_sessions_by_status(sitter_id, status):
 
 
-    query = {"SitterID": ObjectId(sitter_id),"Status": status}
+    query = {"$and":[{"SitterID": ObjectId(sitter_id)},{"status": status}]}
     session_doc = session_col.find(query)
     len_session = session_db.session.count_documents(query)
 
@@ -107,7 +107,7 @@ def get_sitter_sessions_by_status(sitter_id, status):
 
     return{
         "code": 404,
-        "message": "No sessions with the status" + status +" is available for the sitter with sitter id: " + sitter_id
+        "message": "No sessions with the status " + status +" is available for the sitter with sitter id: " + sitter_id
     },404
 
 
@@ -121,6 +121,10 @@ def create_session():
     sitter_id = request.json.get('sitter_id')
 
     #Check if the session with the job_id above has already been created
+    query = {"JobID": ObjectId(job_id)}
+    session_doc = session_col.find(query)
+    len_session = session_db.session.count_documents(query)
+
 
 
     #Get current date time to log when session is created

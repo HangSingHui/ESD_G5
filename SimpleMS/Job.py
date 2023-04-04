@@ -86,20 +86,20 @@ def create_job(OwnerID):
     
     # no validation for the same job by same ownerid? 
     # SitterID (When a Pet Sitter is hired)
-    '''
-    ownerId = owner_id
-    title = request.json.get('Title')
-    desc = request.json.get('Description')
-    start_datetime = request.json.get('Start_datetime')
-    end_datetime = request.json.get('End_datetime')
-    rate = request.json.get('Hourly_rate')  
-    numHours = find_hours(start_datetime, end_datetime) #strings in seconds if correct
-    payout = format(numHours * rate, '.2f')
-    pets = request.json.get('PetID')
 
-    now = datetime.now()
-    creation_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
-    '''
+    # ownerId = owner_id
+    # title = request.json.get('Title')
+    # desc = request.json.get('Description')
+    # start_datetime = request.json.get('Start_datetime')
+    # end_datetime = request.json.get('End_datetime')
+    # rate = request.json.get('Hourly_rate')  
+    # numHours = find_hours(start_datetime, end_datetime) #strings in seconds if correct
+    # payout = format(numHours * rate, '.2f')
+    # pets = request.json.get('PetID')
+
+    # now = datetime.now()
+    # creation_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
+
     
     # Start_datetime = data_json['Start_datetime']
     # End_datetime = data_json['End_datetime']
@@ -109,7 +109,7 @@ def create_job(OwnerID):
     # payout = float(data_json['Hourly_rate']) * duration_hours
     # print(payout)
     
-    #  new_job = { "OwnerID" : data_json['OwnerID'],
+    # new_job = { "OwnerID" : data_json['OwnerID'],
     #              "Title": data_json['Title'], 
     #             "Desc" : data_json['Description'],
     #             "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
@@ -118,8 +118,7 @@ def create_job(OwnerID):
     #             "Hourly_rate" : data_json['Hourly_rate'],
     #             "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
     #             "Payout" : format( data_json * rate, '.2f'),
-
-    # #             }
+    # }
 
     
     try:

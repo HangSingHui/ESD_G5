@@ -28,7 +28,7 @@ def getAll(job_id):
     query={"JobID":ObjectId(job_id)}
 
     app_doc = app_col.find(query)
-    len_app = app_db.job_application.count_documents({})
+    len_app = app_db.job_application.count_documents(query)
 
     if len_app > 0:
         list_app = list(app_doc)
@@ -95,6 +95,7 @@ def acceptUpdate(app_id):
     #Get job_id from app_id
     queryApp = {"_id": ObjectId(app_id)}  
     job_id = app_col.find_one(queryApp)["JobID"] #This returns an ObjectId
+    sitter_id = app_col.find_one(queryApp)["SitterID"]
     # print(job_id)
     # print(type(job_id))
 
@@ -122,7 +123,7 @@ def acceptUpdate(app_id):
     waitList = []
     all_applications = getAll(job_id).json
     for data in all_applications["data"]:
-        if data["Status"] == "Rejected":
+        if data["Status"] == "Rejected" and data["Waitlist_if_rejected"] == "Yes":
             waitList.append(data["_id"]["$oid"])
 
 
@@ -130,7 +131,12 @@ def acceptUpdate(app_id):
         {
             "code":201,
             "message": "Application successfully updated from Pending to Accepted.",
-            "waitList":waitList
+            "data":{
+                "wait_list":waitList,
+                "job_id":str(job_id),
+                "sitter_id":str(sitter_id)
+            }
+           
         }
     ),201
 

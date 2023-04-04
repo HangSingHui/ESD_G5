@@ -109,15 +109,15 @@ def create_job(OwnerID):
     # payout = float(data_json['Hourly_rate']) * duration_hours
     # print(payout)
     
-    #  new_job = { "OwnerID" : data_json['OwnerID'],
-    #              "Title": data_json['Title'], 
-    #             "Desc" : data_json['Description'],
-    #             "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
-    #            "Start_datetime" : data_json['Start_datetime'],
-    #             "End_datetime" : data_json['End_datetime'],
-    #             "Hourly_rate" : data_json['Hourly_rate'],
-    #             "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
-    #             "Payout" : format( data_json * rate, '.2f'),
+     new_job = { "OwnerID" : data_json['OwnerID'],
+                 "Title": data_json['Title'], 
+                "Desc" : data_json['Description'],
+                "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
+               "Start_datetime" : data_json['Start_datetime'],
+                "End_datetime" : data_json['End_datetime'],
+                "Hourly_rate" : data_json['Hourly_rate'],
+                "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
+                "Payout" : format( data_json * rate, '.2f'),
 
     #             }
 
@@ -146,57 +146,29 @@ def create_job(OwnerID):
         }
     ), 201
 
-#Function 4: Update job details
-@app.route("/updatejob/<string:JobID>", methods=['PUT'])
-def update_job(job_id):
+#Function 4: Update job status
+@app.route("/job/update_job/<string:job_id>/<string:status>", methods=['PUT'])
+def update_job(job_id,status):
 
-    #Get new data
-    data = request.get_json() #get Info JSON 
-    newStatus = data["Status"]
-    ownerID = data['OwnerID']
-    sitterID = data['sitterID']
-    hourly_rate = data['Hourly_rate']
-    desc = data['Description']
-    title = data['Title']
-
+    info = request.get_json()
+    sitter_id = info["sitter_id"]
+    print(sitter_id)
     #Change job's status with the id=jobID from matched to open
-    queryJob = {"_id":ObjectId(str(job_id))}
-    openStatus = {"$set":{"Status":newStatus}}
+    queryJob = {"_id":ObjectId(job_id)}
+    changeStatus = {"$set":{"status":status,"SitterID":sitter_id}}
 
     try:
-        job_col.update_one(queryJob, openStatus)
+        job_col.update_one(queryJob, changeStatus)
         return jsonify(
             {
                 "code": 200,
                 "data": {
                     "JobID": job_id
                 },
-                "message": "Job status updated to Open. " + str(e)
+                "message": "Job status updated to " + status +" and accepted sitter is added."
             }
         ), 200
 
-        # if not job:
-        #     return jsonify(
-        #         {
-        #             "code": 404,
-        #             "data": {
-        #                 "JobID": job_id
-        #             },
-        #             "message": "Job not found."
-        #         }
-        #     ), 404
-
-        # update status
-        # data = request.get_json()
-        # if data['status']:
-        #     job.status = data['status']
-        #     db.session.commit()
-        #     return jsonify(
-        #         {
-        #             "code": 200,
-        #             "data": job.json()
-        #         }
-        #     ), 200
     except Exception as e:
         return jsonify(
             {
@@ -207,6 +179,40 @@ def update_job(job_id):
                 "message": "An error occurred while updating the job. " + str(e)
             }
         ), 500
+    
+@app.route("/job/update_job/wait_list/<string:job_id>", methods=['PUT'])
+def add_wait_list(job_id):
+    wait_list = request.json.get("wait_list")
+    print("here again")
+    print(wait_list)
+    queryJob = {"_id":ObjectId(job_id)}
+    update = {"$set":{"Waitlist":wait_list}}
+    
+    try:
+        job_col.update_one(queryJob, update)
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "JobID": job_id,
+                    "Wait_List": wait_list
+                },
+                "message": "Waitlist updated for job with jobID: "+ job_id 
+            }
+        ), 200
+
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {
+                    "JobID": job_id
+                },
+                "message": "An error occurred while updating waitlist. "
+            }
+        ), 500
+    
+
 
 def find_hours(startTime, endTime):
     numSec = endTime - startTime

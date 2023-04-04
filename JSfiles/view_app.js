@@ -119,12 +119,20 @@ function populate_data(sitters_arr) {
 }
 
 function accept_application(item) {
-    var confirmation = confirm(`Confirm ${sitter_name}'s application? We will notify the sitter about your application and update the current job listing`)
-    const accept_response = fetch(`${accept_application_route}/${item}`)
+    var confirmation = confirm(`Confirm sitter's application? We will notify the sitter about your application and update the current job listing`)
+    const accept_response = fetch(`${accept_application_route}/${item}`,
+    {
+        method:"PUT",
+        headers: {
+            "Content-type":"application/json"
+        }
+    })
     .then(response => response)
     .then(data => {
         console.log(data);
     })
+
+    location.reload()
 }
 
 function reject_application(item) {

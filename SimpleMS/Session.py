@@ -46,14 +46,6 @@ def get_all_owner_sessions(owner_id):
     },404
 
 
-
-@app.route("/all_sessions/sitter/<string:sitter_id>")
-def get_all_sitter_sessions(sitter_id):
-
-    query = {"SitterID": ObjectId(sitter_id)}
-    session_doc = session_col.find(query)
-    len_session = session_db.session.count_documents(query)
-
 @app.route("/sitter_all_sessions/<string:sitterId>")
 def get_all_sitter_sessions(sitterId):
     # sessionslist = Session.query.filter_by(sitterId=sitterId)
@@ -70,7 +62,7 @@ def get_all_sitter_sessions(sitterId):
 
     return{
         "code": 404,
-        "message": "No sessions are available for sitter with sitter ID: " + sitter_id
+        "message": "No sessions are available for sitter with sitter ID: " + sitterId
     },404
 
 # Function 2a: get created owner's sessions based on session status (closed/in-progress/cancelled)

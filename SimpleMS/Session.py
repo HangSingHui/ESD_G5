@@ -8,11 +8,10 @@ from flask_cors import CORS
 import bson.json_util as json_util
 from bson.json_util import dumps
 import calendar
-import datetime
-
 from bson.objectid import ObjectId
 import json
 from datetime import datetime
+import datetime
 import time
 from bson.objectid import ObjectId
 app = Flask(__name__)
@@ -66,13 +65,11 @@ def get_all_sitter_sessions(sitterId):
     },404
 
 # Function 2a: get created owner's sessions based on session status (closed/in-progress/cancelled)
-
-
 @app.route("/sessions/owner/<string:owner_id>/<string:status>")
 def get_owner_sessions_by_status(owner_id, status):
     # sessionslist = Session.query.filter_by(ownerId=ownerId,status=status)
 
-    query = {"OwnerID": ObjectId(owner_id),"Status": status}
+    query = {"OwnerID": ObjectId(owner_id),"status": status}
     session_doc = session_col.find(query)
     len_session = session_db.session.count_documents(query)
 
@@ -139,7 +136,7 @@ def create_session(job_id):
         session_col.insert_one({'JobID':ObjectId(job_id),
                                 'OwnerID': ObjectId(owner_id),
                                 'sitterID': ObjectId(sitter_id),
-                                'Status': 'In Progress',
+                                'status': 'In Progress',
                                 'sessionTimeCreated': utc_time,
                                 'sessionTimeClosed':None,
                                 'ownerDeposit':0,
@@ -200,6 +197,39 @@ def create_session(job_id):
     # if not, return session not found
 
 # Function 5: close session by updating close session time and the session status
+'''
+# @app.route("on/<int/close-sessieger:sessionId>", method=['PUT'])
+# def close_session(sessionId):
+#     # session = Session.query.filter_by(id=sessionId).first()
+#     query = {"SessionID": ObjectId(sessionId)}
+#     session = session_col.find_one(query)
+#     if session:
+#         data = request.get_json()
+#         now = datetime.now()
+#         closing_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
+#         update_query = {"status": "In-Progress", "sessionTimeClosed": None}
+#         new_values = { '$set' : {"status" : "Closed",
+#                                  "sessionTimeClosed" : closing_time}}
+#         session.update_one(update_query,new_values)
+#         session_duration = closing_time - data['sessionTimeCreated']
+#         return jsonify(
+#             {
+#                 "code": 200,
+#                 "data":
+#                 {
+#                     "sessionId": sessionId,
+#                     "sessionDuration": session_duration
+#                 }
+#             }
+#         )
+#     return jsonify(
+#         {
+#             "code": 404,
+#                 "data": "Session not found."
+#         }
+#     ), 404
+#     # if not, return session not found
+'''
 
 @app.route("/close-session/<string:sessionId>", methods=['PUT'])
 def close_session(sessionId):

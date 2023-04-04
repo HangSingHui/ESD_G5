@@ -10,6 +10,11 @@ let sitters;
 const app_response = fetch(`${application_get_url}/${job_id}`)
 .then(response => response.json())
 .then(data => {
+
+    if (data.code === 404) {
+        document.getElementById("application_list").innerHTML = "<h1 class='my-5 text-center'>There are no applications for this job!</h1>"
+    }
+
     var temp_sitters = [];
     console.log(data);
     // return data
@@ -132,7 +137,18 @@ function accept_application(item) {
         console.log(data);
     })
 
-    location.reload()
+    alert("You have successfully accepted this sitter! We hope your pet has a paw-some time!")
+    setTimeout(function(){
+        window.location.href = "owner_accept_applications.html";
+    }, 2500);
+
+    document.getElementById("application_list").innerHTML = 
+    "<h1 class='text-center fw-bold my-5'>Updating our database...</h1>";
+
+}
+
+function refreshPage() {
+    location.reload(true)
 }
 
 function reject_application(item) {

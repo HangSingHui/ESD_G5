@@ -21,7 +21,7 @@ notification_URL = "http://localhost:5002/notification/"
 penalty_URL = "http://localhost:5300/Penalty_Handling/"
 session_time_URL = "http://localhost:5004/session-time/"
 close_session_URL = "http://localhost:5004/close-session/"
-job_waitlist_URL = ""
+job_waitlist_URL = "http://localhost:5005/job/wait_list/"
 open_job_URL = "http://localhost:5005/job/"
 
 
@@ -84,18 +84,18 @@ def processIncident(session):
         # 5. Send pet sitter details to AMQP for penalty handling
         print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
 
-        message = json.dumps({'sitterId': sitterId, 'jobId': jobId})
+        message = json.loads({'sitterId': sitterId, 'jobId': jobId})
 
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="sitter.penalty", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-        
+
     else:
     # if no, ignore
         pass
 
 
-    # 6. Retrieve recommended petsitters as replacement
-    # Invoke sitter microservice
+    # 6. Retrieve recommended petsitters as replacement (waitlist)
+    # Invoke job microservice
     print('\n-----Retrieve waitlist from job microservice-----')
     sitter_replacements_result = invoke_http(job_waitlist_URL + jobId, method='GET')
     print('Sitter Replacements Suggestion: ',sitter_replacements_result)

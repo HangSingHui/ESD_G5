@@ -8,6 +8,9 @@ from bson.objectid import ObjectId
 import json
 import pymongo
 import time
+from datetime import datetime
+import calendar
+import datetime
 
 
 client = pymongo.MongoClient("mongodb+srv://jxyong2021:Rypc9koQlPRa0KgC@esdg5.juoh9qe.mongodb.net/?retryWrites=true&w=majority")
@@ -101,25 +104,34 @@ def create_job(OwnerID):
     # creation_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
 
     
-    # Start_datetime = data_json['Start_datetime']
-    # End_datetime = data_json['End_datetime']
-    # duration_seconds = int(End_datetime) - int(Start_datetime)
+    Start_datetime = data_json['Start_datetime']
+    End_datetime = data_json['End_datetime']
+    duration_seconds = int(End_datetime) - int(Start_datetime)
  
-    # duration_hours = duration_seconds // 3600
-    # payout = float(data_json['Hourly_rate']) * duration_hours
-    # print(payout)
-    
-    # new_job = { "OwnerID" : data_json['OwnerID'],
-    #              "Title": data_json['Title'], 
-    #             "Desc" : data_json['Description'],
-    #             "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
-    #            "Start_datetime" : data_json['Start_datetime'],
-    #             "End_datetime" : data_json['End_datetime'],
-    #             "Hourly_rate" : data_json['Hourly_rate'],
-    #             "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
-    #             "Payout" : format( data_json * rate, '.2f'),
-    # }
+    duration_hours = duration_seconds // 3600
+    payout = float(data_json['Hourly_rate']) * duration_hours
 
+    
+    date = datetime.datetime.utcnow()
+    utc_time = calendar.timegm(date.utctimetuple())
+    print(utc_time)
+    print(payout)
+    
+    new_job = { "OwnerID" : data_json['OwnerID'],
+                "Created": int(utc_time),
+                "SitterID": "",
+                "Title": data_json['Title'], 
+                "PetID": data_json['PetID'],
+                "Description" : data_json['Description'],
+                "Status" : "Open",
+                "Start_datetime" : data_json['Start_datetime'],
+                "End_datetime" : data_json['End_datetime'],
+                "Hourly_rate" : data_json['Hourly_rate'],
+                "Duration" : duration_hours,
+                "Payout" : float(payout),
+                "Image_Path" : data_json['Image_Path'],
+                "Waitlist" : ""
+            }
     
     try:
         job_col.insert_one( new_job )
@@ -146,7 +158,7 @@ def create_job(OwnerID):
     ), 201
 
 #Function 4: Update job status
-@app.route("/job/update_job/<string:job_id>/<string:status>", methods=['PUT'])
+@app.route("/job/update_job/<string:job_id>/<string:status>", methods=['GET', 'PUT'])
 def update_job(job_id,status):
 
     info = request.get_json()
@@ -178,14 +190,15 @@ def update_job(job_id,status):
                 "message": "An error occurred while updating the job. " + str(e)
             }
         ), 500
-    
+
+# Function 5: Add wait list
 @app.route("/job/update_job/wait_list/<string:job_id>", methods=['PUT'])
 def add_wait_list(job_id):
     wait_list = request.json.get("wait_list")
     print("here again")
     print(wait_list)
     queryJob = {"_id":ObjectId(job_id)}
-    update = {"$set":{"Waitlist":wait_list}}
+    update = {"$set":{"Waitlist": wait_list}}
     
     try:
         job_col.update_one(queryJob, update)
@@ -211,6 +224,31 @@ def add_wait_list(job_id):
             }
         ), 500
     
+# Function 6: Retrieve waitlist from a certain jobId
+@app.route("/job/wait-list/<string:jobId>", methods=['GET'])
+def get_waitlist(jobId):
+    query={"_id":ObjectId(jobId)}
+    # num_jobs = job_db.job.count_documents(query)
+    job = job_col.find(query)
+
+    if job:
+        json_data = json.loads(dumps(job))
+        waitlist = list(json_data[0]['Waitlist'])
+    
+        return jsonify(
+            {
+                "code":200,
+                "data": waitlist
+            }
+        )
+    #if not, return job not found
+    return jsonify(
+            {
+                "code":404,
+                "message":"Job not found."
+            }
+        ),404
+
 
 
 def find_hours(startTime, endTime):

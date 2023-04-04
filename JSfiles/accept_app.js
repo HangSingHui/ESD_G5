@@ -91,12 +91,8 @@ const response = fetch(get_all_url).then(response => response.json())
     }
 
     // fetch_applications(job_id);
-
-    
-
-
     if (data.code === 404) {
-        console.log("Jobs not found");
+        document.getElementById("job_list").innerHTML = "<h1 class='my-5 text-center'>You have no current job listings! Please create a job listing for your paw-some pets!</h1>"
     }
     else{
         // console.log(data);

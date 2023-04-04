@@ -74,6 +74,10 @@ def processNotif(notif,routing_key):
         subject = "[Penalty Charged] for job " + str(notif.jobID)
         body= "Dear " + notif.sitterName + ",\n You have been charged a penalty fee of $20 due to the last-minute pull out from job "+ str(notif.jobID) + ". We have also deduct your user score by 50 points. Your current user score is "+ notif.sitterUserScore +". Please avoid pulling out from a job more than a day after the job has been confirmed. Thank you."   
         recipient = notif.sitterEmail
+
+    elif routing_key=='replacement.notification':
+        subject = "[Petsitter Replacements Suggestion] for job " + str(notif.jobID)
+        
     
     body += mail_signature
     with app.app_context():

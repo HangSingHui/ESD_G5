@@ -22,6 +22,7 @@ CORS(app)
 
 # thr URLs are just the SMS that the CMS will be sending requests to? 
 job_URL = "http://localhost:5100/job"
+pet_URL = "http://localhost:5007/pet"
 
 @app.route("/createjob", methods=['POST'])
 def create_job():
@@ -91,57 +92,66 @@ def processJobCreation(new_job):
     }
 
 
-# def processPublishJob(new_job):
-#     '''publish messages to the queues that the pet sitters are subscribed to'''
+def processPublishJob(new_job):
+    '''publish messages to the queues that the pet sitters are subscribed to'''
 
-#     # if this function is reached, it is assumed that the job has been successfully created
-#     # there is no need to check success of status
-#     # extract the pet type and publish to the queues 
+    # if this function is reached, it is assumed that the job has been successfully created
+    # there is no need to check success of status
+    # extract the pet type and publish to the queues 
 
-#     job_id = new_job['_id'] # python string  
+    # job_id = new_job['_id']   
+    # owner_id = new_job['OwnerID']
+    pet_species = find_by_petID(new_job)
+    # print(pet_species)   
+    hourly_rate_result = new_job['Hourly_rate']
 
-#     # json. dumps() method - convert a python object into an equivalent JSON object
-#     message = json.dumps(job_id)
+    # json. dumps() method - convert a python object into an equivalent JSON object
+    message = json.dumps({'data': {
+        'job_id': new_job['_id'], 
+        'owner_id': new_job['OwnerID'], 
+        'pet_species': pet_species, 
+        'hourly_rate': new_job['Hourly_rate']
+    }})
 
-#     # filter by pet 
-#     # if dog -> routing key = dog.*
-#     # if cat -> routing key = cat.*
+    # filter by pet 
+    # if dog -> routing key = dog.*
+    # if cat -> routing key = cat.*
 
+    ########### Send to different queues based on pet species type ###########
 
+    if pet_species == 'dog': 
+        # send to dog queue 
+        print('\n\n-----Publishing the (dog) message with routing_key=dog.*-----')
+
+        # invoke_http(error_URL, method="POST", json=order_result)
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="dog.*", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+        # make message persistent within the matching queues until it is received by some receiver 
+        # (the matching queues have to exist and be durable and bound to the exchange)
+
+    if pet_species == 'cat': 
+        # send to cat queue 
+        print('\n\n-----Publishing the (dog) message with routing_key=cat.*-----')
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="cat.*", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
     
-#     print('\n\n-----Publishing the (new job post id) message with routing_key=job.-----')
-
-#     # invoke_http(error_URL, method="POST", json=job_result)
-#     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="job.error", 
-#         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-#     # make message persistent within the matching queues until it is received by some receiver 
-#     # (the matching queues have to exist and be durable and bound to the exchange)
-
-#     # - reply from the invocation is not used;
-#     # continue even if this invocation fails        
-#     print("\njob status ({:d}) published to the RabbitMQ Exchange:".format(
-#         code), job_result)
-
-#     # 7. Return error
-#     return {
-#         "code": 500,
-#         "data": {"job_result": job_result},
-#         "message": "job creation failure sent for error handling."
-#     }
-
- 
     
-#     print("\njob published to RabbitMQ Exchange.\n")
+def find_by_petID(newjob): 
+    # must do validation to check if petid exists? 
+    print('\n-----Invoking pet microservice-----')
+    # owner_id = request.json.get("OwnerID") #ASSUME THIS IS STRING
+    pet_id = newjob['petID'] 
+    pet_result = invoke_http(pet_URL+"/"+pet_id, method='GET')
+    print('pet_result:', pet_result) 
+    return pet_result # pet_result - json pet species 
 
-#     print('\n\n-----Invoking shipping_record microservice-----')    
-    
 
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) +
           " for placing an job...")
-    app.run(host="0.0.0.0", port=5100, debug=True)
+    app.run(host="0.0.0.0", port=5400, debug=True)
     # Notes for the parameters:
     # - debug=True will reload the program automatically if a change is detected;
     #   -- it in fact starts two instances of the same flask program,

@@ -41,12 +41,12 @@ def get_all():
 
 #Function 2: Get owner by id
 @app.route("/owner/<string:id>")
-def get_payment_details(id):
+def get_owner_by_id(id):
     #search if owner exists first with id
         #search if job exists first with jobID
     query={"_id":ObjectId(id)}
     #job=job_col.find(query)
-    num_owner = owner_db.pet_owner.count_documents({})
+    num_owner = owner_db.pet_owner.count_documents(query)
     owner = owner_col.find(query)
     if num_owner > 0:
         owner = list(owner)

@@ -11,7 +11,10 @@ import calendar
 import datetime
 
 from bson.objectid import ObjectId
-
+import json
+from datetime import datetime
+import time
+from bson.objectid import ObjectId
 app = Flask(__name__)
 
 
@@ -206,6 +209,7 @@ def create_session(job_id):
 
 # Function 5: close session by updating close session time and the session status
 
+<<<<<<< HEAD
 # @app.route("on/<int/close-sessieger:sessionId>", method=['PUT'])
 # def close_session(sessionId):
 #     # session = Session.query.filter_by(id=sessionId).first()
@@ -237,6 +241,41 @@ def create_session(job_id):
 #         }
 #     ), 404
 #     # if not, return session not found
+=======
+@app.route("/close-session/<string:sessionId>", methods=['PUT'])
+def close_session(sessionId):
+    # session = Session.query.filter_by(id=sessionId).first()
+    query = {"_id": ObjectId(sessionId)}
+    session = session_col.find_one(query)
+    if session:
+        closing_time = time.time()
+        # closing_time = now.strftime("%Y/%m/%d %H:%M:%S")
+        # closing_time = datetime.strptime(closing_time,"%Y/%m/%d %H:%M:%S")
+        update_query = {"status": "In Progress", "sessionTimeClosed": None}
+        new_values = { '$set' : {"status" : "Closed",
+                                 "sessionTimeClosed" : closing_time}}
+        session_col.update_one(query,new_values)
+
+        # calculate session duration (in hours)
+        session_duration = (closing_time - session['sessionTimeCreated'])/60/60
+        return jsonify(
+            {
+                "code": 200,
+                "data":
+                {
+                    "sessionId": sessionId,
+                    "sessionDuration": session_duration
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+                "data": "Session not found."
+        }
+    ), 404
+    # if not, return session not found
+>>>>>>> 8a94c480bb6622053b01afa3e16e4ddbc8fe20dd
 
 
 if __name__ == "__main__":

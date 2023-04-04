@@ -2,7 +2,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 import os, sys
-
+sys.path.append('../SimpleMS')
+import amqp_setup
+import amqp_setup_notification
 import requests
 from invokes import invoke_http
 #from SimpleMS import amqp_setup
@@ -22,7 +24,7 @@ penalty_URL = "http://localhost:5300/Penalty_Handling/"
 session_time_URL = "http://localhost:5004/session-time/"
 close_session_URL = "http://localhost:5004/close-session/"
 cancel_session_URL = "http://127.0.0.1:5004/cancel-session/"
-job_waitlist_URL = "http://localhost:5005/job/wait_list/"
+job_waitlist_URL = "http://localhost:5005/job/wait-list/"
 open_job_URL = "http://localhost:5005/job/"
 update_job_URL = "http://localhost:5005/job/update_job/"
 get_owner_by_id_URL = "http://localhost:5000/owner/"
@@ -96,20 +98,18 @@ def processIncident(session):
     job_start_datetime = get_job_result["data"][0]["Start_datetime"]
     print(job_start_datetime)
     
-    #PART NEEDS FIXING
-    '''
     # 3. Change job status to 'Open' from Job Microservice
     print('\n-----Update job status from "Matched" to "Open" (job microservice)-----')
-    newStatus = jsonify( {"Status": "Open", "SitterID": ""})
+    newStatus = {"Status": "Open", "SitterID": ""}
     open_job_result = invoke_http(update_job_URL + jobId + '/Open' , method='PUT', json=newStatus)
     print('open_job_result: ', open_job_result)
-    '''
     
     #CHECK IF JOB WAS CANCELLED WITHIN A DAY BEFORE JOB STARTDATETIME
     cancellation_notice = int(job_start_datetime) - (sessionTimeCancelled)
     print(cancellation_notice)
     cancellation_notice_hours = cancellation_notice // 3600
-    print(cancellation_notice_hours)
+    print('Cancellation_notice_hours' + str(cancellation_notice_hours))
+    '''
     if(cancellation_notice_hours < 24):
         # 5. Send pet sitter details to AMQP for penalty handling
         print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
@@ -122,6 +122,8 @@ def processIncident(session):
     else:
     # if no, ignore
         pass
+        '''
+
 
     '''
     # 4. check if job was cancelled after 1 day
@@ -140,14 +142,17 @@ def processIncident(session):
     # if no, ignore
         pass
         '''
+    
 
-'''
+
+
     # 6. Retrieve recommended petsitters as replacement (waitlist)
     # Invoke job microservice
     print('\n-----Retrieve waitlist from job microservice-----')
     sitter_replacements_result = invoke_http(job_waitlist_URL + jobId, method='GET')
     print('Sitter Replacements Suggestion: ',sitter_replacements_result)
 
+    
 
     # Get owner's email and name
     # Invoke owner microservice
@@ -160,7 +165,10 @@ def processIncident(session):
     for sitter in sitter_replacements_result:
         details = invoke_http(get_sitter_details_URL + sitter, method='GET')
         sitters.append(details)
+    
+    print(sitters)
 
+'''
     # 7. Send list of recommended pet sitter replacements
     print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')
 

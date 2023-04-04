@@ -21,7 +21,7 @@ session_col = session_db['session']
 # Function 1a: get all created sessions for owner
 
 
-@app.route("/all_sessions/<integer:ownerId>")
+@app.route("/all_sessions/<string:ownerId>")
 def get_all_owner_sessions(ownerId):
     # sessionslist = Session.query.filter_by(ownerId=ownerId)
 
@@ -47,7 +47,7 @@ def get_all_owner_sessions(ownerId):
 # Function 1b: get all created sessions for sitter
 
 
-@app.route("/all_sessions/<integer:sitterId>")
+@app.route("/all_sessions/<string:sitterId>")
 def get_all_sitter_sessions(sitterId):
     # sessionslist = Session.query.filter_by(sitterId=sitterId)
 
@@ -72,7 +72,7 @@ def get_all_sitter_sessions(sitterId):
 # Function 2a: get created owner's sessions based on session status (closed/in-progress/cancelled)
 
 
-@app.route("/sessions/<integer:ownerId>/<string:status>")
+@app.route("/sessions/<string:ownerId>/<string:status>")
 def get_owner_sessions_by_status(ownerId, status):
     # sessionslist = Session.query.filter_by(ownerId=ownerId,status=status)
 
@@ -97,7 +97,7 @@ def get_owner_sessions_by_status(ownerId, status):
     ), 404
 
 # Function 2b: get created sitter's sessions based on session status (closed/in-progress/cancelled)
-@app.route("/sessions/<integer:sitterId>/<string:status>")
+@app.route("/sessions/<string:sitterId>/<string:status>")
 def get_sitter_sessions_by_status(sitterId, status):
     # sessionslist = Session.query.filter_by(sitterId=sitterId, status=status)
 
@@ -123,7 +123,7 @@ def get_sitter_sessions_by_status(sitterId, status):
 
 
 # Function 3: create session once sitter's confirmation of taking the job is received
-@app.route("/create_session/<integer:id>", methods=['POST'])
+@app.route("/create_session/<string:id>", methods=['POST'])
 def create_session(sessionId):
     jobId = request.json.get('jobId')
     ownerId = request.json.get('ownerId')
@@ -183,7 +183,7 @@ def create_session(sessionId):
 
 
 # Function 4: return session time when called
-@app.route("/session-time/<integer:sessionId>")
+@app.route("/session-time/<string:sessionId>")
 def return_session_time(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()
 
@@ -213,7 +213,7 @@ def return_session_time(sessionId):
 
 # Function 5: close session by updating close session time and the session status
 
-@app.route("on/<int/close-sessieger:sessionId>", method=['PUT'])
+@app.route("close-session/<string:sessionId>", method=['PUT'])
 def close_session(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()
 

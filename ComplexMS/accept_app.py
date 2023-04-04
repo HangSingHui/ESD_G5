@@ -4,7 +4,7 @@ from flask_cors import CORS
 import os, sys
 
 sys.path.append('../SimpleMS')
-import amqp_setup
+# import amqp_setup
 
 import requests
 from invokes import invoke_http
@@ -25,6 +25,9 @@ application_URL = "http://localhost:5008/application"
 def acceptApp(app_id):
     # Simple check of input format and data of the request are JSON
 
+    print(app_id)
+    print(type(app_id))
+
     if request.is_json:
         try:
             # info = request.get_json(
@@ -32,7 +35,7 @@ def acceptApp(app_id):
             # # eg. {
             # #     "app_id": 1234
             # # }
-            print("\nOwner accepted a job app with app id:", + app_id )
+            print("\nOwner accepted a job app with app id:" + app_id )
 
             # do the actual work
             # 1. Send order info {cart items}
@@ -94,7 +97,7 @@ def processAcceptApp(app_id):
     data= update_app_status["data"]
     print(data) #
     #2. Update job to matched and accepted sitterid
-    update_matched = invoke_http(job_URL+"/update_job/"+job_id+"/matched", method='PUT',json=data)
+    update_matched = invoke_http(job_URL+"/update_job/"+job_id+"/Matched", method='PUT',json=data)
     code = update_matched["code"]
     if code not in range(200,300):
     #Error

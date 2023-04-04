@@ -109,17 +109,17 @@ def create_job(OwnerID):
     # payout = float(data_json['Hourly_rate']) * duration_hours
     # print(payout)
     
-     new_job = { "OwnerID" : data_json['OwnerID'],
-                 "Title": data_json['Title'], 
-                "Desc" : data_json['Description'],
-                "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
-               "Start_datetime" : data_json['Start_datetime'],
-                "End_datetime" : data_json['End_datetime'],
-                "Hourly_rate" : data_json['Hourly_rate'],
-                "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
-                "Payout" : format( data_json * rate, '.2f'),
+    #  new_job = { "OwnerID" : data_json['OwnerID'],
+    #              "Title": data_json['Title'], 
+    #             "Desc" : data_json['Description'],
+    #             "Created": now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S"),
+    #            "Start_datetime" : data_json['Start_datetime'],
+    #             "End_datetime" : data_json['End_datetime'],
+    #             "Hourly_rate" : data_json['Hourly_rate'],
+    #             "Duration" : find_hours( data_json['Start_datetime'], data_json['End_datetime']), #strings in seconds if correct,
+    #             "Payout" : format( data_json * rate, '.2f'),
 
-    #             }
+    # #             }
 
     
     try:
@@ -155,7 +155,7 @@ def update_job(job_id,status):
     print(sitter_id)
     #Change job's status with the id=jobID from matched to open
     queryJob = {"_id":ObjectId(job_id)}
-    changeStatus = {"$set":{"status":status,"SitterID":sitter_id}}
+    changeStatus = {"$set":{"Status":status,"SitterID":sitter_id}}
 
     try:
         job_col.update_one(queryJob, changeStatus)

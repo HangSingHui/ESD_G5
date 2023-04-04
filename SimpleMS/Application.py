@@ -88,7 +88,7 @@ def reject_one(app_id):
 #Change status from Pending to Accepted for application with applicationid = id
 #Change status of the remaining applications from Pending to rejected 
 
-@app.route("/application/accept/<string:app_id>", methods=['PUT'])
+@app.route("/application/accept/<string:app_id>", methods=['GET', 'PUT'])
 def acceptUpdate(app_id):
 
     #Get job_id from app_id

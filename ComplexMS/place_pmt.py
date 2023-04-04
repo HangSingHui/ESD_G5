@@ -17,7 +17,7 @@ app = Flask(__name__)
 CORS(app)
 
 owner_URL = "http://localhost:5000/owner"
-payment_URL = "http://localhost:5006/payment"
+payment_URL = "http://localhost:5006"
 
 monitorBindingKey='*.payment'
 
@@ -26,7 +26,7 @@ monitorBindingKey='*.payment'
 ##########################################
 # _id
 # OwnerID 
-# Created (date??)
+# Created
 # PetID 
 # SitterID (When a Pet Sitter is hired)
 # Title
@@ -35,6 +35,7 @@ monitorBindingKey='*.payment'
 # Start_datetime
 # End_datetime
 # Payout (Amount to be paid to Pet Sitter)
+#Wait_list
 ##########################################
 
 def paymentNotif():
@@ -52,20 +53,24 @@ def callback(channel, method, properties, body):
 #Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
 def managePayment(jobDetails, routing_key):
     #get owner account number 
-    getOwner = invoke_http(owner_URL+"/"+str(jobDetails["OwnerID"]),method=["GET"])
+    ownerID = jobDetails["OwnerID"]
+    getOwner = invoke_http(owner_URL+"/"+ownerID,method=["GET"])
     code = getOwner["code"]
     if code not in range(200,300):
         # error handling
-        pass
+        return jsonify({
+            "code":code,
+            "message": "Error in retrieving owner record with owner id: " + ownerID + "."
+        })
     if routing_key == "hold_payment":
         data = jsonify({
-            "charge": jobDetails["payout"],
-            "accNumber":getOwner["data"]["cardInfo"] #This part not sure what's required on the payment side
+            "Charge": jobDetails["payout"],
+            "accNumber":getOwner["data"][0]["cardInfo"] #This part not sure what's required on the payment side
         })
         holdPayment(data)
 
 def holdPayment(data):
-    status = invoke_http(payment_URL,method=["POST"],json=data)
+    status = invoke_http(payment_URL+"/create-payment/",method=["POST"],json=data)
     code = status["code"]
     if code not in range(200,300):
         #Error handling
@@ -75,7 +80,7 @@ def holdPayment(data):
         })
     #To invoke notification to send a notif to inform owner of the charge placed on his card
     data = jsonify({
-        ""
+        "job":jobDetails
     })
     notifyOwner(data)
 

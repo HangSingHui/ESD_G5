@@ -3,9 +3,8 @@ from flask_cors import CORS
 
 import os, sys
 
-sys.path.insert(0, 'SimpleMS')
-
-import amqp_setup
+sys.path.append('../SimpleMS')
+# import amqp_setup
 
 import requests
 from invokes import invoke_http
@@ -26,14 +25,21 @@ application_URL = "http://localhost:5008/application"
 def acceptApp(app_id):
     # Simple check of input format and data of the request are JSON
 
+    print(app_id)
+    print(type(app_id))
+
     if request.is_json:
         try:
-            info = request.get_json()
-            print("\nOwner accepted a job app in JSON:", info)
+            # info = request.get_json(
+            # #info only contains the app_id
+            # # eg. {
+            # #     "app_id": 1234
+            # # }
+            print("\nOwner accepted a job app with app id:" + app_id )
 
             # do the actual work
             # 1. Send order info {cart items}
-            result = processAcceptApp(info)
+            result = processAcceptApp(app_id)
             return jsonify(result), result["code"]
 
         except Exception as e:
@@ -63,32 +69,71 @@ def acceptApp(app_id):
 #     "jobStatus":"Accepted"
 # }
 
-def processAcceptApp(info):
+def processAcceptApp(app_id):
 
     #1. Change status of all application ID linked to the same jobID
-    update_status = invoke_http(application_URL,method="PUT", json=info)
-    code = update_status["code"]
+    # app_id = info["app_id"]
+    update_app_status = invoke_http(application_URL+"/accept/"+app_id,method="PUT")
+    code = update_app_status["code"]
+
     if code not in range(200,300):
         #Error
         return{
             "code": code,
-            "message": update_status["message"]
+            "message": update_app_status["message"]
         }
+    
+    
+    #Return is list of waitListed sitters
+    # {
+    #     "code":201,
+    #     "message":"Application...",
+    #     "wait_list":waitList,
+    #     "job_id": 1234
 
+    # }
+    job_id = update_app_status["data"]["job_id"]  
+    print(job_id)  
+    data= update_app_status["data"]
+    print(data) #
+    #2. Update job to matched and accepted sitterid
+    update_matched = invoke_http(job_URL+"/update_job/"+job_id+"/Matched", method='PUT',json=data)
+    code = update_matched["code"]
+    if code not in range(200,300):
+    #Error
+        return{
+            "code": code,
+            "message": update_matched["message"]
+     } 
 
-    #2.  Invoke Job to fetch job
-    getJob = invoke_http(job_URL,method="GET", json=info["jobID"])
-    code = update_status["code"]
+    
+    #3. Update job waitlist 
+    update_waitlist = invoke_http(job_URL+"/update_job/wait_list/"+job_id, method='PUT',json=data)
+    code = update_waitlist["code"]
+    if code not in range(200,300):
+    #Error
+        return{
+            "code": code,
+            "message": update_waitlist["message"]
+     } 
+    #3.  Invoke Job to fetch job
+    getJob = invoke_http(job_URL+"/"+job_id,method="GET")
+    code = getJob["code"]
     if code not in range(200,300):
     #Error
         return{
             "code": code,
             "message": getJob["message"]
-     }   
+        }   
     
+    # print(getJob["data"])
+    job = getJob["data"][0]
+    sitter_id = job["SitterID"]
 
+    
     #3.  Invoke Session to update status
-    createSession = invoke_http(session_URL,method="POST", json=info)
+    createSession = invoke_http(session_URL+"/create_session/"+job_id,method="POST", json=job)
+    #info contains owner_id and sitter_id
     code = createSession["code"]
     if code not in range(200,300):
     #Error
@@ -98,22 +143,22 @@ def processAcceptApp(info):
      }   
 
     #4.  Get sitter email
-    getSitter = invoke_http(sitter_URL+"/"+str(info["sitterID"]), method="GET")
+    getSitter = invoke_http(sitter_URL+"/"+sitter_id, method="GET")
     code = getSitter["code"]
     if code not in range(200,300):
         return{
             "code": code,
             "message":  getSitter["message"]
         } 
-
-    sitterEmail = getSitter["data"]["sitterEmail"]
+    
+    sitterEmail = getSitter["data"][0]["Email"]
 
     #5.  Invoke Notif to send confirmation acceptance to sitter
     
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
 
     # #6. Invoke place_pmt complex to charge owner - don't know if we're still doing this???
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="hold.payment", body=getJob["data"] , properties=pika.BasicProperties(delivery_mode = 2))
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="hold.payment", body=job , properties=pika.BasicProperties(delivery_mode = 2))
 
 
 

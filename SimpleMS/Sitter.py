@@ -57,6 +57,7 @@ def find_by_id(id):
         sitter = list(sitter)
         json_data = dumps(sitter)
         json_data = json.loads(json_data)
+        print(json_data)
         return jsonify(
             {
                 "code": 200,

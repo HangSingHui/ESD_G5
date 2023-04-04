@@ -21,22 +21,22 @@ job_URL = "http://localhost:5005/job"
 payment_URL = "http://localhost:5006/payment"
 application_URL = "http://localhost:5008/application"
 
-@app.route("/accept_app", methods=['PUT'])
-def acceptApp():
+@app.route("/accept_app/<string:app_id>", methods=['PUT'])
+def acceptApp(app_id):
     # Simple check of input format and data of the request are JSON
 
     if request.is_json:
         try:
-            info = request.get_json()
-            #info only contains the app_id
-            # eg. {
-            #     "app_id": 1234
-            # }
-            print("\nOwner accepted a job app in JSON:", info)
+            # info = request.get_json(
+            # #info only contains the app_id
+            # # eg. {
+            # #     "app_id": 1234
+            # # }
+            print("\nOwner accepted a job app with app id:", + app_id )
 
             # do the actual work
             # 1. Send order info {cart items}
-            result = processAcceptApp(info)
+            result = processAcceptApp(app_id)
             return jsonify(result), result["code"]
 
         except Exception as e:
@@ -66,10 +66,10 @@ def acceptApp():
 #     "jobStatus":"Accepted"
 # }
 
-def processAcceptApp(info):
+def processAcceptApp(app_id):
 
     #1. Change status of all application ID linked to the same jobID
-    app_id = info["app_id"]
+    # app_id = info["app_id"]
     update_app_status = invoke_http(application_URL+"/accept/"+app_id,method="PUT")
     code = update_app_status["code"]
 
@@ -126,20 +126,18 @@ def processAcceptApp(info):
     # print(getJob["data"])
     job = getJob["data"][0]
     sitter_id = job["SitterID"]
-    print(sitter_id)
-    print(type(sitter_id))
 
     
     #3.  Invoke Session to update status
-    # createSession = invoke_http(session_URL+"/create_session/"+job_id,method="POST", json=job)
-    # #info contains owner_id and sitter_id
-    # code = createSession["code"]
-    # if code not in range(200,300):
-    # #Error
-    #     return{
-    #         "code": code,
-    #         "message":  createSession["message"]
-    #  }   
+    createSession = invoke_http(session_URL+"/create_session/"+job_id,method="POST", json=job)
+    #info contains owner_id and sitter_id
+    code = createSession["code"]
+    if code not in range(200,300):
+    #Error
+        return{
+            "code": code,
+            "message":  createSession["message"]
+     }   
 
     #4.  Get sitter email
     getSitter = invoke_http(sitter_URL+"/"+sitter_id, method="GET")
@@ -157,7 +155,7 @@ def processAcceptApp(info):
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
 
     # #6. Invoke place_pmt complex to charge owner - don't know if we're still doing this???
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="hold.payment", body=getJob["data"] , properties=pika.BasicProperties(delivery_mode = 2))
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="hold.payment", body=job , properties=pika.BasicProperties(delivery_mode = 2))
 
 
 

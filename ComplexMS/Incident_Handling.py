@@ -5,10 +5,10 @@ import os, sys
 
 import requests
 from invokes import invoke_http
-from SimpleMS import amqp_setup
+#from SimpleMS import amqp_setup
 from datetime import datetime, timedelta
 
-from SimpleMS import amqp_setup_notification
+#from SimpleMS import amqp_setup_notification
 import pika
 import json
 
@@ -21,17 +21,21 @@ notification_URL = "http://localhost:5002/notification/"
 penalty_URL = "http://localhost:5300/Penalty_Handling/"
 session_time_URL = "http://localhost:5004/session-time/"
 close_session_URL = "http://localhost:5004/close-session/"
+cancel_session_URL = "http://127.0.0.1:5004/cancel-session/"
 job_waitlist_URL = "http://localhost:5005/job/wait_list/"
 open_job_URL = "http://localhost:5005/job/"
+update_job_URL = "http://localhost:5005/job/update_job/"
 get_owner_by_id_URL = "http://localhost:5000/owner/"
 get_sitter_details_URL = "http://localhost:5001/sitter/"
 get_session_by_id_URL = "http://localhost:5004/session/"
+get_job_by_id_URL = "http://localhost:5005/job/"
 
 
 @app.route("/incident_handling/<string:sessionId>", methods=['PUT'])
 def incident_handling(sessionId):
     # Simple check of input format and data of the request are JSON
     session = invoke_http(get_session_by_id_URL + sessionId)
+    print(session)
     if session:
         try:
             print("\nSession in JSON:", session)
@@ -61,26 +65,65 @@ def incident_handling(sessionId):
 
 
 def processIncident(session):
-    sessionId = session['_id']
-    jobId = session['JobID']
-    sitterId = session['SitterID']
-    ownerId = session['OwnerID']
+    print('invoked')
+    sessionId = session['data'][0]['_id']['$oid']
+    jobId = session['data'][0]['JobID']['$oid']
+    sitterId = session['data'][0]['SitterID']['$oid']
+    ownerId = session['data'][0]['OwnerID']['$oid']
+    print(sessionId)
+    print(jobId)
+    print(sitterId)
+    print(ownerId)
 
     # 2. Update session closing time and change session status to closed
     # Invoke session microservice
-    print('\n-----Close session (session microservice)-----')
+    print('\n-----Cancel session (session microservice)-----')
+    '''
     closing_session_result = invoke_http(close_session_URL + sessionId, method='PUT', json=session)
     print('closing_session_result: ',closing_session_result)
+    '''
 
-    # 3. Change job status to 'Open'
+    #CANCELLING SESSION FROM SESSION MICROSERVICE
+    cancel_session_result = invoke_http(cancel_session_URL + sessionId, method='PUT')
+    print('cancel_session_result: ', cancel_session_result)
+    sessionTimeCancelled = cancel_session_result["data"]["sessionTimeCancelled"]
+    print(sessionTimeCancelled)
+
+    #GETTING JOB START DATETIME FROM JOB MICROSERVICE
+    print('\n-----Get job by ID (job microservice)-----')
+    get_job_result = invoke_http(get_job_by_id_URL + jobId, method= 'GET')
+    print('Get Job By Id Result: ', get_job_result)
+    job_start_datetime = get_job_result["data"][0]["Start_datetime"]
+    print(job_start_datetime)
+    
+    #PART NEEDS FIXING
+    '''
+    # 3. Change job status to 'Open' from Job Microservice
     print('\n-----Update job status from "Matched" to "Open" (job microservice)-----')
-    newStatus = jsonify({'data': {
-        'Status': 'Open'
-    }})
-    open_job_result = invoke_http(open_job_URL + jobId, method='PUT', json=newStatus)
-    print('open_job_result: ',open_job_result)
+    newStatus = jsonify( {"Status": "Open", "SitterID": ""})
+    open_job_result = invoke_http(update_job_URL + jobId + '/Open' , method='PUT', json=newStatus)
+    print('open_job_result: ', open_job_result)
+    '''
+    
+    #CHECK IF JOB WAS CANCELLED WITHIN A DAY BEFORE JOB STARTDATETIME
+    cancellation_notice = int(job_start_datetime) - (sessionTimeCancelled)
+    print(cancellation_notice)
+    cancellation_notice_hours = cancellation_notice // 3600
+    print(cancellation_notice_hours)
+    if(cancellation_notice_hours < 24):
+        # 5. Send pet sitter details to AMQP for penalty handling
+        print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
 
+        message = json.loads({'sitterId': sitterId, 
+                              'jobId': jobId})
 
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="sitter.penalty", 
+        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    else:
+    # if no, ignore
+        pass
+
+    '''
     # 4. check if job was cancelled after 1 day
     # if yes, invoke penalty handling (complex MS)
     if closing_session_result['data']['sessionDuration'] > 24 : 
@@ -96,8 +139,9 @@ def processIncident(session):
     else:
     # if no, ignore
         pass
+        '''
 
-
+'''
     # 6. Retrieve recommended petsitters as replacement (waitlist)
     # Invoke job microservice
     print('\n-----Retrieve waitlist from job microservice-----')
@@ -146,7 +190,7 @@ def processIncident(session):
         }
     },201
 
-
+'''
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":

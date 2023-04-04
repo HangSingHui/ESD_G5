@@ -40,6 +40,7 @@ def create_job():
             if code in range(200, 300):     
                 # if the job creation is successful, send the message to the fanout exchange 
                 published_result = processPublishJob(new_job) # new_job contains entire job info 
+                # what is published_result? 
 
             return jsonify(result), result["code"]
         
@@ -106,12 +107,12 @@ def processPublishJob(new_job):
     hourly_rate_result = new_job['Hourly_rate']
 
     # json. dumps() method - convert a python object into an equivalent JSON object
-    message = json.dumps({'data': {
+    message = json.dumps( {
         'job_id': new_job['_id'], 
         'owner_id': new_job['OwnerID'], 
         'pet_species': pet_species, 
         'hourly_rate': new_job['Hourly_rate']
-    }})
+    })
 
     # filter by pet 
     # if dog -> routing key = dog.*
@@ -137,7 +138,6 @@ def processPublishJob(new_job):
     
     
 def find_by_petID(newjob): 
-    # must do validation to check if petid exists? 
     print('\n-----Invoking pet microservice-----')
     # owner_id = request.json.get("OwnerID") #ASSUME THIS IS STRING
     pet_id = newjob['petID'] 

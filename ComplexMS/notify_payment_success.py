@@ -17,8 +17,10 @@ CORS(app)
 
 owner_URL = "http://localhost:5000/owner"
 payment_URL = "http://localhost:5006"
+session_URL = "http://localhost:5004/session"
+owner_URL = "http://localhost:5000/owner"
 
-monitorBindingKey='#.payment'
+# monitorBindingKey='#.payment'
 
 #Consume from AMQP first to get the payment details
 #Data sent from accept_app.py
@@ -37,58 +39,63 @@ monitorBindingKey='#.payment'
 #Wait_list
 ##########################################
 
-def paymentNotif():
-    amqp_setup.check_setup() 
-    queue_name = "payment_success"
-    amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
-    amqp_setup.channel.start_consuming() 
+# def paymentNotif():
+#     amqp_setup.check_setup() 
+#     queue_name = "payment_success"
+#     amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+#     amqp_setup.channel.start_consuming() 
 
-#Actions on the message - send to the Payment MS
-def callback(channel, method, properties, body): 
-    print("\nReceived notification by " + __file__)
-    checkSuccess(json.loads(body),method.routing_key) 
-    print() # print a new line feed
+# #Actions on the message - send to the Payment MS
+# def callback(channel, method, properties, body): 
+#     print("\nReceived notification by " + __file__)
+#     checkSuccess(json.loads(body),method.routing_key) 
+#     print() # print a new line feed
 
 #Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
-@app.route("/checkSuccess", method=["POST"])
-def checkSuccess():
 
-    data=request.get_json()
-
-    pmt_details = jsonify({
-            "Charge": data["Payout"],
-        })
-
-    charge_owner = holdPayment(pmt_details)
-    code = charge_owner["code"]
-
+@app.route("/process_payment_success/<string:price_id>",method="GET")
+def process_payment_success(price_id):
+    #1. Check whether payment is successful - invoke payment microservice
+    payment_status = invoke_http(payment_URL+"/check_payment", method="GET")
+    code = payment_status['code']
     if code not in range(200,300):
         return jsonify({
-            "code":code,
-            "message": "Error in charging the owner " + jobDetails["OwnerID"] + " the payout for the accepted job application."
-        })
-
-
-
-def holdPayment(data):
-    status = invoke_http(payment_URL+"/charge",method=["POST"],json=data)
-    code = status["code"]
-    if code not in range(200,300):
-        #Error handling
-        return jsonify({
-            "code": code,
-            "message": "Error in Stripe API. Unable to place a hold on owner's card."
-        })
-    #To invoke notification to send a notif to inform owner of the charge placed on his card
-
-
-
-
-#     notifyOwner(data)
-
-# def notifyOwner():
-#     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pmt.hold.success.notification", body=data, properties=pika.BasicProperties(delivery_mode = 2))
+            "code": 400,
+            "message": "Owner failed to make payment."
+        }),400
     
+    #2. Retrieve session object using price_id
+    get_session = invoke_http(session_URL+"/<string:price_id>",method="GET")
+    code = get_session['code']
+    if code not in range(200,300):
+        return jsonify({
+            "code": 404,
+            "message": "No session with price id " + price_id + " available."        
+            }),404
+    
+    #Returns a session object
+    owner_id = get_session["OwnerID"]
+
+    #3. Retrieve ownerEmail using Ownerid in session object
+    get_owner = invoke_http(owner_URL+"/"+owner_id, method="GET")
+    code = get_owner['code']
+    if code not in range(200,300):
+        return jsonify({
+            "code": 404,
+            "message": "No owner with owner id " + owner_id + " found."        
+            }),404
+
+    ownerEmail = get_owner["data"][0]["Email"]
+    #4. Send ownerEmail via AMQP to broker
+    
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pmt.hold.success.notification", body=ownerEmail, properties=pika.BasicProperties(delivery_mode = 2))
+
+
+    
+if __name__ == "__main__":
+    print("This is flask " + os.path.basename(__file__) +
+          " for placing an order...")
+    app.run(host="0.0.0.0", port=5500, debug=True)
 
 
 

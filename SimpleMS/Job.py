@@ -114,6 +114,7 @@ def create_job(OwnerID):
     
     date = datetime.datetime.utcnow()
     utc_time = calendar.timegm(date.utctimetuple())
+    
     print(utc_time)
     print(payout)
     
@@ -162,7 +163,7 @@ def create_job(OwnerID):
 def update_job(job_id,status):
 
     info = request.get_json()
-    sitter_id = info["sitter_id"]
+    sitter_id = info["SitterID"]
     print(sitter_id)
     #Change job's status with the id=jobID from matched to open
     queryJob = {"_id":ObjectId(job_id)}
@@ -187,7 +188,7 @@ def update_job(job_id,status):
                 "data": {
                     "JobID": job_id
                 },
-                "message": "An error occurred while updating the job. " + str(e)
+                "message": "An error occurred while updating the job. " 
             }
         ), 500
 

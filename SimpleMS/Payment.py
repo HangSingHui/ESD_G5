@@ -13,13 +13,6 @@ import stripe
 stripe.api_key="sk_test_51Ms4GgFrjIdoqzyMioZGnC28QwZsUW48fFwvURhXwbCiJGlw2F85IDkADg02Cq5GBHna0di1jJ5Pjho1A3dw59iC00uxo9ykaY"
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# # "mysql+mysqlconnector://root:root@localhost:3306/pet
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# db = SQLAlchemy(app)
-# CORS(app)
-
 
 def calculate_order_amount(charge):
     # Replace this constant with a calculation of the order's amount
@@ -85,95 +78,23 @@ def penalty_charge():
 @app.route('/check_payment')
 def check_if_paid():
     #Get latest payment intent
-    product_id = "prod_NdMqTOurWTf43d"
-    payment_id = retrieve_latest(product_id)
-    payment = stripe.PaymentIntent.retrieve(payment_id)
-    while payment.status != 'succeeded':
-         payment = stripe.PaymentIntent.retrieve(payment_id)
+    latest = stripe.PaymentIntent.list(limit=1)
+    payment_status = latest["data"][0]["status"]
+    if payment_status == "succeeded":
+         return jsonify({
+            "code":200,
+            "message": "Successfully received payment from owner."
+         })
+    
+    #Just invoke, no need AMQP
+
     
     return jsonify({
-        "code":200,
-        "message": "Successfully received payment from owner."
+        "code":400,
+        "message": "Owner failed to make payment."
+        
     })
 
-
-def retrieve_latest(product_id):
-    payment_intents = stripe.PaymentIntent.list(
-        product=product_id,
-        limit=1,
-        expand=["data.charges"],
-        sort=[{"created": "desc"}]
-    )
-
-    latest_payment_ids = [payment_intent.charges.data[0].payment for payment_intent in payment_intents.data]
-
-    return latest_payment_ids[0] #latest payment is first
-
-
-
-# @app.route('/send_payout', methods=['POST'])
-# def send_payout(card_info):
-#     try:
-#         payout = stripe.Payout.create(
-#             amount=1000,
-#             currency='sgd',
-#             method='instant',
-#             destination=card_info,
-#         )
-#         return jsonify({
-#                 'clientSecret': payout['client_secret']
-#             })
-#     except Exception as e:
-#         return jsonify(error=str(e)), 403
-
-# Prices in Stripe model the pricing scheme of your business.
-# Create Prices in the Dashboard or with the API before accepting payments
-# and store the IDs in your database.
-# PRICES = {"penalty": "price_1Msn1gFrjIdoqzyMMYL3kADE"}
-
-# @app.route("/charge-penalty/<string:Stripe_Id>", methods=['POST'])
-# def charge_penalty():
-#     customer_id = request.json.get('data')
-    # # Look up a customer in your database
-    # customers = [c for c in CUSTOMERS if c["email"] == email]
-    # if customers:
-    #     customer_id=customers[0]["Stripe_Id"]
-    # else:
-    #     # Create a new Customer
-    #     customer = stripe.Customer.create(
-    #         email=email, # Use your email address for testing purposes
-    #         description="Customer to invoice",
-    #     )
-    #     # Store the customer ID in your database for future purchases
-    #     CUSTOMERS.append({"Stripe_Id": customer.id, "email": email})
-    #     # Read the Customer ID from your database
-    #     customer_id = customer.id
-
-    # Create an Invoice
-    # invoice = stripe.Invoice.create(
-    #     customer=customer_id,
-    #     collection_method='charge_automatically',
-    #     days_until_due=1,
-    # )
-
-    # # Create an Invoice Item with the Price and Customer you want to charge
-    # stripe.InvoiceItem.create(
-    #     customer=customer_id,
-    #     price=PRICES["penalty"],
-    #     invoice=invoice.id
-    # )
-
-    # try:
-    #     # Send the Invoice
-    #     stripe.Invoice.send_invoice(invoice.id)
-
-    # except:
-    #     return jsonify(
-    #     {
-    #         "code":500, #internal error
-    #         "message": "Internal error. Penalty cannot be charged to sitter's account."
-    #     }
-    #  ),500   
 
 if __name__ == "__main__":
     app.run(port=5006, debug=True)

@@ -49,38 +49,29 @@ monitorBindingKey='*.payment'
 #     managePayment(json.loads(body),method.routing_key)
 #     print() # print a new line feed
 
-# #Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
-# def managePayment(jobDetails, routing_key):
-#     #get owner account number 
-#     ownerID = jobDetails["OwnerID"]
-#     getOwner = invoke_http(owner_URL+"/"+ownerID,method=["GET"])
-#     code = getOwner["code"]
-#     if code not in range(200,300):
-#         # error handling
-#         return jsonify({
-#             "code":code,
-#             "message": "Error in retrieving owner record with owner id: " + ownerID + "."
-#         })
-#     if routing_key == "hold_payment":
-#         data = jsonify({
-#             "Charge": jobDetails["payout"],
-#             "accNumber":getOwner["data"][0]["cardInfo"] #This part not sure what's required on the payment side
-#         })
-        
+#Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
+@app.route("/place_payment", method=["POST"])
+def placePayment():
 
-data = jsonify({
-    "Charge": jobDetails["payout"],
-    "accNumber":getOwner["data"][0]["cardInfo"] #This part not sure what's required on the payment side
-})
+    data=request.get_json()
 
-data = jsonify({
-    "Charge": 50, #This part not sure what's required on the payment side
-})
+    pmt_details = jsonify({
+            "Charge": data["Payout"],
+        })
 
-status = holdPayment(data)
+    charge_owner = holdPayment(pmt_details)
+    code = charge_owner["code"]
+
+    if code not in range(200,300):
+        return jsonify({
+            "code":code,
+            "message": "Error in charging the owner " + jobDetails["OwnerID"] + " the payout for the accepted job application."
+        })
+
+
 
 def holdPayment(data):
-    status = invoke_http(payment_URL+"/create-payment/",method=["POST"],json=data)
+    status = invoke_http(payment_URL+"/charge",method=["POST"],json=data)
     code = status["code"]
     if code not in range(200,300):
         #Error handling
@@ -89,13 +80,14 @@ def holdPayment(data):
             "message": "Error in Stripe API. Unable to place a hold on owner's card."
         })
     #To invoke notification to send a notif to inform owner of the charge placed on his card
-    data = jsonify({
-        "job":jobDetails
-    })
-    notifyOwner(data)
 
-def notifyOwner():
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pmt.hold.success.notification", body=data, properties=pika.BasicProperties(delivery_mode = 2))
+
+
+
+#     notifyOwner(data)
+
+# def notifyOwner():
+#     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pmt.hold.success.notification", body=data, properties=pika.BasicProperties(delivery_mode = 2))
     
 
 

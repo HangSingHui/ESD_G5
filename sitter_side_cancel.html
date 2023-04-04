@@ -27,25 +27,6 @@
         <p class="text-center fs-3">View and manage upcoming jobs that you have currently accepted, and view all previous sessions that were completed or cancelled.</p>
 
         <div id="filter">
-          <!-- <div class="form-check">
-            <input class="form-check-input" type="radio" value="In Progress" id="upcoming">
-            <label class="form-check-label">
-              Upcoming
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" value="Completed" id="completed">
-            <label class="form-check-label">
-              Completed
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" value="Cancelled" id="cancelled">
-            <label class="form-check-label">
-              Cancelled
-            </label>
-          </div> -->
-            
           <button class="btn btn-info" onclick="viewJobs('In Progress')">Upcoming Jobs</button>
           <button class="btn btn-success" onclick="viewJobs('Completed')">Completed Jobs</button>
           <button class="btn btn-danger" onclick="viewJobs('Cancelled')">Cancelled Jobs</button>
@@ -131,7 +112,7 @@
 
       function viewJobs(curr_filter) {
         // console.log(jobs_arr, status_arr, jobs_id_arr);
-
+        var curr_count = 0 
         document.getElementById("job_list").innerHTML = ""
         for (let index = 0; index < jobs_arr.length; index++) {
           curr_status = status_arr[index]
@@ -140,6 +121,7 @@
           curr_id = jobs_id_arr[index]
 
           if (curr_status == curr_filter) {
+            curr_count += 1;
             console.log(curr_job);
             var job_num = `job${index+1}`
             
@@ -236,8 +218,9 @@
             document.getElementById("job_list").innerHTML += temp_str
           }
           
-
-
+          }
+          if (curr_count == 0) {
+            document.getElementById("job_list").innerHTML = `<h1 class="text-center my-5">No Jobs to View!</h1>`
           }
         }
       

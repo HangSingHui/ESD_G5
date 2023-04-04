@@ -136,7 +136,7 @@ def create_session(job_id):
         session_col.insert_one({'JobID':ObjectId(job_id),
                                 'OwnerID': ObjectId(owner_id),
                                 'sitterID': ObjectId(sitter_id),
-                                'status': 'In Progress',
+                                'status': 'In-Progress',
                                 'sessionTimeCreated': utc_time,
                                 'sessionTimeClosed':None,
                                 'ownerDeposit':0,
@@ -240,7 +240,7 @@ def close_session(sessionId):
         closing_time = time.time()
         # closing_time = now.strftime("%Y/%m/%d %H:%M:%S")
         # closing_time = datetime.strptime(closing_time,"%Y/%m/%d %H:%M:%S")
-        update_query = {"status": "In Progress", "sessionTimeClosed": None}
+        update_query = {"status": "In-Progress", "sessionTimeClosed": None}
         new_values = { '$set' : {"status" : "Closed",
                                  "sessionTimeClosed" : closing_time}}
         session_col.update_one(query,new_values)

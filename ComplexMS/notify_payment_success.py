@@ -95,7 +95,7 @@ def process_payment_success(price_id):
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) +
           " for placing an order...")
-    app.run(host="0.0.0.0", port=5500, debug=True)
+    app.run(host="0.0.0.0", port=5555, debug=True)
 
 
 

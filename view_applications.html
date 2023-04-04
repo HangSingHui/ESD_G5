@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Applications</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+    <!-- Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
+    <!-- MDB
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"rel="stylesheet"/>  -->
+
+    <link rel="stylesheet" href="job_create.css">
+</head>
+<body id="page_body">
+    
+    <div class="container bg-light my-5">
+        <h1 class="display-1 text-center fw-bold">View Applications for Job</h1>
+        <p class="text-center fs-3">Manage the applications for your job and pick the right pet sitter for your beloved pet!</p>
+        <div class="row my-3 p-5" id="application_list">
+
+            
+        </div>
+    </div>
+
+    <script>
+
+        const accept_application_route = "http://localhost:5100/accept_app";
+        const application_get_url = "http://localhost:5008/application/job";
+        const sitter_info_url = "http://localhost:5001/sitter"
+        // window.sessionStorage
+        var job_id = localStorage.getItem("job_id")
+
+        let sitters;
+
+        const app_response = fetch(`${application_get_url}/${job_id}`)
+        .then(response => response.json())
+        .then(data => {
+            var temp_sitters = [];
+            console.log(data);
+            // return data
+            applications = data.data;
+            // window.sessionStorage
+            // console.log(applications);
+            
+            for (let index = 0; index < applications.length; index++) {
+                var app_num = `app${index+1}`
+                var curr_app = applications[index];
+                var sitter_id = curr_app["SitterID"]
+                var application_id = curr_app["_id"]["$oid"];
+                // console.log(application_id);
+                var app_status = curr_app["Status"]
+                
+                if (app_status == "Pending") {
+                    temp_sitters.push(sitter_id);
+
+                    temp_str = 
+                    `
+                    <div class="col-6 my-3">
+                        <div class="card" id='${application_id}'>
+                            <div class="card-body">
+                                <h5 class="card-title" id='${app_num}name'>Application ${index + 1}</h5>
+                                <h6 class="card-subtitle mb-2 text-body-secondary" id='${app_num}subtitle'>Card subtitle</h6>
+                                <p class="card-text" id='${app_num}info'></p>
+                                <button class="btn btn-success" id="${app_num}accept" onclick="accept_application('${application_id}')">Accept</button>
+                                <button class="btn btn-danger" id="${app_num}reject" onclick="reject_application('${application_id}')">Reject</button>
+                            </div>
+                        </div>
+                    </div>
+                    `
+
+                    document.getElementById("application_list").innerHTML += temp_str
+                    console.log(temp_sitters);
+                }
+                
+            }
+
+            sitters = temp_sitters;
+            populate_data(sitters)
+            
+        })
+
+        function populate_data(sitters_arr) {
+            for (let index = 0; index < sitters_arr.length; index++) {
+                // console.log(item);
+                curr_sitter = sitters_arr[index]["$oid"]
+                console.log(curr_sitter);
+
+                const get_sitters = fetch(`${sitter_info_url}/${curr_sitter}`)
+                .then(response => response.json())
+                .then(data => {
+                    var sitter_data = data.data[0];
+                    console.log(sitter_data);
+
+                    var sitter_name = sitter_data["Name"]
+                    var sitter_desc = sitter_data["Description"]
+                    var sitter_rate = sitter_data["Hourly_rate"]
+                    var sitter_ph = sitter_data["Phone"]
+                    var sitter_postal = sitter_data["Postal"]
+                    var sitter_reg_pref = sitter_data["Region_preference"]
+                    var sitter_spec_preg = sitter_data["Species_preference"]
+                    var sitter_user_score = sitter_data["User_score"]
+
+                    document.getElementById(`app${index+1}name`).innerText = sitter_name;
+                    document.getElementById(`app${index+1}subtitle`).innerText = sitter_desc;
+
+                    var temp_str = 
+                    `
+                    <p>Phone Number: ${sitter_ph}</p>
+                    <p>Postal Code: ${sitter_postal}</p>
+                    <p>User Score: ${sitter_user_score}</p>
+                    <p>Hourly Rate: ${sitter_rate}</p>
+                    <p>Species Preference: ${sitter_spec_preg}</p>
+                    <p>Region Preferenece: ${sitter_reg_pref}</p>
+                    `
+                    
+                    document.getElementById(`app${index+1}info`).innerHTML = temp_str
+
+                })
+                
+            }
+
+           
+        }
+
+        function accept_application(item) {
+            var confirmation = confirm(`Confirm ${sitter_name}'s application?`)
+            const accept_response = fetch(`${accept_application_route}/${item}`)
+            .then(response => response)
+            .then(data => {
+                console.log(data);
+            })
+        }
+
+        function reject_application(item) {
+            reject_sitter = confirm("Reject sitter?")
+            console.log(item);
+        }
+
+        
+
+
+
+        
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+</body>
+</html>

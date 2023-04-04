@@ -63,6 +63,26 @@ def getAppByID(app_id):
         "data": json_data
         })
 
+    
+#TO CHANGE SELECTED APPLICATION TO REJECTED
+@app.route("/application/reject_one/<string:app_id>", methods=["GET", "PUT"])
+def reject_one(app_id):
+    queryApp = {"_id": ObjectId(app_id)}  
+    rejectStatus = {"$set":{"Status":"Rejected"}}
+    try:
+        app_col.update_one(queryApp,rejectStatus)
+        return jsonify({
+            "code": 201,
+            "message": "Application status successfully changed to rejected"
+        }),201
+    except:
+        return jsonify(
+        {
+            "code":500, #internal error
+            "message": "Internal error. Application failed to update status from Pending to Accepted."
+        }
+     ),500   
+
 
 #Function 2: Scenario - When an owner accepts a sitter for a job - To update job with accepted sitter (sitterID) and status to Matched)
 

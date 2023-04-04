@@ -1,0 +1,38 @@
+<div class="col-4 my-2" id="job1">
+    <div class="card h-100">
+        <img src="Pets/puppy.jpg" class="card-img-top">
+        <div class="card-body">
+            <h5 class="card-title">[Job Owner 1]</h5>
+            <p class="card-text">Brief Details of Jobs (Pets, Location, Time)</p>
+            <!-- View More Jobs Modal -->
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#jobModal">
+                View More Info
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="jobModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="jobModalLabel">Modal title</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                        More Detailed Job Information Here
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Cancel Job -->
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelJobModal">
+                Cancel Job
+            </button>
+            <!-- Modal -->
+
+            <button class="btn btn-danger disabled">Cancelled</button>
+            
+        </div>
+    </div>
+</div>

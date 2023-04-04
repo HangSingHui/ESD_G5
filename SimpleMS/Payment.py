@@ -71,5 +71,54 @@ def send_payout(card_info):
     except Exception as e:
         return jsonify(error=str(e)), 403
 
+# Prices in Stripe model the pricing scheme of your business.
+# Create Prices in the Dashboard or with the API before accepting payments
+# and store the IDs in your database.
+PRICES = {"penalty": "price_1Msn1gFrjIdoqzyMMYL3kADE"}
+
+@app.route("charge-penalty/<string:Stripe_Id>", methods=['POST'])
+def charge_penalty():
+    customer_id = request.json.get('data')
+    # # Look up a customer in your database
+    # customers = [c for c in CUSTOMERS if c["email"] == email]
+    # if customers:
+    #     customer_id=customers[0]["Stripe_Id"]
+    # else:
+    #     # Create a new Customer
+    #     customer = stripe.Customer.create(
+    #         email=email, # Use your email address for testing purposes
+    #         description="Customer to invoice",
+    #     )
+    #     # Store the customer ID in your database for future purchases
+    #     CUSTOMERS.append({"Stripe_Id": customer.id, "email": email})
+    #     # Read the Customer ID from your database
+    #     customer_id = customer.id
+
+    # Create an Invoice
+    invoice = stripe.Invoice.create(
+        customer=customer_id,
+        collection_method='charge_automatically',
+        days_until_due=1,
+    )
+
+    # Create an Invoice Item with the Price and Customer you want to charge
+    stripe.InvoiceItem.create(
+        customer=customer_id,
+        price=PRICES["penalty"],
+        invoice=invoice.id
+    )
+
+    try:
+        # Send the Invoice
+        stripe.Invoice.send_invoice(invoice.id)
+
+    except:
+        return jsonify(
+        {
+            "code":500, #internal error
+            "message": "Internal error. Penalty cannot be charged to sitter's account."
+        }
+     ),500   
+
 if __name__ == "__main__":
     app.run(port=5006, debug=True)

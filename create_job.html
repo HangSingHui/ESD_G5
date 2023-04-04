@@ -306,20 +306,20 @@
             var image = "Pets/puppy.jpg"
 
             let jsonData = JSON.stringify({
-                OwnerID : ownerID,
-                Created: "",
-                PetID : pets_arr,
-                SitterID: "",
-                Title : job_title,
-                Description : job_desc,
-                Status : "Open",
-                Start_datetime : start_time_unix,
-                End_datetime : end_time_unix,
-                Hourly_rate : payrate,
-                Payout: payout,
-                Waitlist: "",
-                spec_list : spec_arr,
-                Image_Path : image,
+                "OwnerID" : ownerID,
+                "Created": "",
+                "PetID" : pets_arr,
+                "SitterID": "",
+                "Title" : job_title,
+                "Description" : job_desc,
+                "Status" : "Open",
+                "Start_datetime" : start_time_unix,
+                "End_datetime" : end_time_unix,
+                "Hourly_rate" : payrate,
+                "Payout": payout,
+                "Waitlist": "",
+                "spec_list" : spec_arr,
+                "Image_Path" : image,
             })
 
             fetch(`${create_route}/${ownerID}`,  {

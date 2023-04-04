@@ -59,9 +59,9 @@ def incident_handling():
 
 
 def processIncident(session):
-    sessionId = session['id']
-    jobId = session['jobId']
-
+    sessionId = session['_id']
+    jobId = session['JobID']
+    sitterId = session['SitterID']
 
     # 2. Update session closing time and change session status to closed
     # Invoke session microservice
@@ -101,6 +101,16 @@ def processIncident(session):
     message = json.dumps(sitter_replacements_result)
 
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="replacement.notification", 
+        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    # make message persistent within the matching queues until it is received by some receiver 
+    # (the matching queues have to exist and be durable and bound to the exchange)
+
+    # 7. Send pet sitter details to AMQP for penalty handling
+    print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
+
+    message = json.dumps({'sitterId': sitterId, 'jobId': jobId})
+
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="sitter.penalty", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
     # make message persistent within the matching queues until it is received by some receiver 
     # (the matching queues have to exist and be durable and bound to the exchange)

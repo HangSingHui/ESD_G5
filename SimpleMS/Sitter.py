@@ -239,7 +239,8 @@ def retrieve_sitters(species, rate_cat):
     # 51-60
 
     if rate_cat=="cat1": 
-        # query range 31-40 
+        # query range 31-40
+        # sitter = pet_sitter_col.find({ "species":ObjectId(species), Hourly_rate : { $gt :  30, $lt : 41}})
         query = {
             "$and": [
                 {"species": ObjectId(species)},
@@ -247,14 +248,24 @@ def retrieve_sitters(species, rate_cat):
             ]
             }
         sitter = pet_sitter_col.find(query)
-        # sitter = pet_sitter_col.find({ "species":ObjectId(species), Hourly_rate : { "$gt" :  30, "$lt" : 41}})
     if rate_cat=="cat2": 
         # query range 41-50 
-        sitter = pet_sitter_col.find({ "species":ObjectId(species), Hourly_rate : { $gt :  40, $lt : 51}})
+        query = {
+            "$and": [
+                {"species": ObjectId(species)},
+                {"Hourly_rate": {"$gt": 30, "$lt": 41}}
+            ]
+            }
+        sitter = pet_sitter_col.find(query)
     if rate_cat == "cat3" : 
         # query range 51-60
-        sitter = pet_sitter_col.find({ "species":ObjectId(species), Hourly_rate : { $gt :  50, $lt : 61}})
-
+        query = {
+            "$and": [
+                {"species": ObjectId(species)},
+                {"Hourly_rate": {"$gt": 30, "$lt": 41}}
+            ]
+            }
+        sitter = pet_sitter_col.find(query)
     # query={"species":ObjectId(species)}
     # retrieve the rate from the db -> then must go through the rate and then categorise each one 
     # sitter=pet_sitter_col.find(query)

@@ -1,13 +1,5 @@
 from datetime import datetime
 
-# from sqlalchemy.orm import relationship
-# from sqlalchemy.orm import DeclarativeBase
-# from sqlalchemy.orm import mapped_column
-# from sqlalchemy.orm import Mapped
-# from sqlalchemy import Integer
-# from sqlalchemy import ForeignKey
-# from typing import List
-
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -20,12 +12,12 @@ stripe.api_key = 'pk_test_51Ms4GgFrjIdoqzyMIKQv8tYAqcPtO2cm09hNoEoxxnNZC2MlDmmbM
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# "mysql+mysqlconnector://root:root@localhost:3306/pet
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# # "mysql+mysqlconnector://root:root@localhost:3306/pet
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-CORS(app)
+# db = SQLAlchemy(app)
+# CORS(app)
 
 
 def calculate_order_amount(charge):
@@ -36,7 +28,7 @@ def calculate_order_amount(charge):
     return total
 
 
-@app.route('/create-payment/<integer:id>', methods=['POST'])
+@app.route('/create-payment', methods=['POST'])
 def create_payment():
     try:
         data = json.loads(request.data)
@@ -76,7 +68,7 @@ def send_payout(card_info):
 # and store the IDs in your database.
 PRICES = {"penalty": "price_1Msn1gFrjIdoqzyMMYL3kADE"}
 
-@app.route("charge-penalty/<string:Stripe_Id>", methods=['POST'])
+@app.route("/charge-penalty/<string:Stripe_Id>", methods=['POST'])
 def charge_penalty():
     customer_id = request.json.get('data')
     # # Look up a customer in your database

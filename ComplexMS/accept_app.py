@@ -3,8 +3,8 @@ from flask_cors import CORS
 
 import os, sys
 
-sys.path.append('../SimpleMS')
-import amqp_setup
+# sys.path.append('../SimpleMS')
+# import amqp_setup
 
 import requests
 from invokes import invoke_http
@@ -32,7 +32,7 @@ def acceptApp(app_id):
             # # eg. {
             # #     "app_id": 1234
             # # }
-            print("\nOwner accepted a job app with app id:", + app_id )
+            print("\nOwner accepted a job app with app id:" + app_id )
 
             # do the actual work
             # 1. Send order info {cart items}

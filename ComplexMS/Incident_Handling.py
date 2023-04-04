@@ -25,15 +25,15 @@ job_waitlist_URL = "http://localhost:5005/job/wait_list/"
 open_job_URL = "http://localhost:5005/job/"
 get_owner_by_id_URL = "http://localhost:5000/owner/"
 get_sitter_details_URL = "http://localhost:5001/sitter/"
+get_session_by_id_URL = "http://localhost:5004/session/"
 
 
-
-@app.route("/incident_handling/<string:SessionID>", methods=['POST'])
-def incident_handling():
+@app.route("/incident_handling/<string:sessionId>", methods=['PUT'])
+def incident_handling(sessionId):
     # Simple check of input format and data of the request are JSON
-    if request.is_json:
+    session = invoke_http(get_session_by_id_URL + sessionId)
+    if session:
         try:
-            session = request.get_json()
             print("\nSession in JSON:", session)
             # 1. Send incident info
             result = processIncident(session)
@@ -144,7 +144,7 @@ def processIncident(session):
             "cancellation": closing_session_result,
             "cancelation_status": "confirmed"
         }
-    }
+    },201
 
 
 

@@ -231,6 +231,25 @@ def create_session(job_id):
 #     # if not, return session not found
 '''
 
+@app.route("/session/<string:sessionId>")
+def get_session_by_id(sessionId):
+    query = {"_id": ObjectId(sessionId)}
+    session = session_col.find(query)
+    if session:
+        json_data = json.loads(dumps(session))
+
+        return jsonify(
+            {
+                "code":200,
+                "data": json_data
+            }
+        )
+
+    return{
+        "code": 404,
+        "message": "No session found."
+    },404
+
 @app.route("/close-session/<string:sessionId>", methods=['PUT'])
 def close_session(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()

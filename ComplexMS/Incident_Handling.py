@@ -24,6 +24,7 @@ close_session_URL = "http://localhost:5004/close-session/"
 job_waitlist_URL = "http://localhost:5005/job/wait_list/"
 open_job_URL = "http://localhost:5005/job/"
 get_owner_id_email = "http://localhost:5000/owner/email/"
+get_sitter_details = "http://localhost:5001/sitter/"
 
 
 
@@ -109,10 +110,15 @@ def processIncident(session):
     owner_email_result = invoke_http(get_owner_id_email + ownerId, method='GET')
     print('Owner email: ',owner_email_result)
 
+    sitters = []
+    for sitter in sitter_replacements_result:
+        details = invoke_http(get_sitter_details + sitter, method='GET')
+        sitters.append(details)
+
     # 7. Send list of recommended pet sitter replacements
     print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')
 
-    message = json.dumps(sitter_replacements_result)
+    message = json.dumps({'jobID': jobId, 'replacements':sitters, 'ownerID': ownerId, 'ownerEmail': owner_email_result})
 
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="replacement.notification", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
@@ -125,7 +131,7 @@ def processIncident(session):
     print("\nSitter replacement status ({:d}) published to the RabbitMQ Exchange:", sitter_replacements_result)
 
 
-    # 7. Return confirmation of cancellation
+    # 8. Return confirmation of cancellation
     return {
         "code": 201,
         "data": {

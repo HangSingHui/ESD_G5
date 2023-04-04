@@ -123,7 +123,7 @@ def create_job(OwnerID):
 
     
     try:
-        job_col.insert_one( new_job )
+        job_col.insert_one( data_json )
         
         
     # Status (Open - No Pet Sitter hired, Matched - Pet Sitter hired, Closed - Job Closed, Completed - Session linked to this job is completed)
@@ -179,7 +179,8 @@ def update_job(job_id,status):
                 "message": "An error occurred while updating the job. " + str(e)
             }
         ), 500
-    
+
+# Function 5: Add wait list
 @app.route("/job/update_job/wait_list/<string:job_id>", methods=['PUT'])
 def add_wait_list(job_id):
     wait_list = request.json.get("wait_list")
@@ -212,6 +213,31 @@ def add_wait_list(job_id):
             }
         ), 500
     
+# Function 6: Retrieve waitlist from a certain jobId
+@app.route("/job/wait-list/<string:jobId>", methods=['GET'])
+def get_waitlist(jobId):
+    query={"_id":ObjectId(jobId)}
+    # num_jobs = job_db.job.count_documents(query)
+    job = job_col.find(query)
+
+    if job:
+        json_data = json.loads(dumps(job))
+        waitlist = list(json_data[0]['Wait_List'])
+    
+        return jsonify(
+            {
+                "code":200,
+                "data": waitlist
+            }
+        )
+    #if not, return job not found
+    return jsonify(
+            {
+                "code":404,
+                "message":"Job not found."
+            }
+        ),404
+
 
 
 def find_hours(startTime, endTime):

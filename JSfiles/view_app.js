@@ -146,11 +146,14 @@ function accept_application(item) {
 
     alert("You have successfully accepted this sitter! We hope your pet has a paw-some time!")
 
+    var product_price_id = 'price_1Mt8RtFrjIdoqzyM6KhY7Ifn'
+
+    localStorage.setItem("price_id", product_price_id);
 
     stripe.redirectToCheckout({
         lineItems:[
             {
-                price : 'price_1Mt8RtFrjIdoqzyM6KhY7Ifn',
+                price : product_price_id,
                 quantity: 1
             },
         ],

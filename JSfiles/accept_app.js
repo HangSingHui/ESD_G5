@@ -1,12 +1,16 @@
-localStorage.clear()
-const get_all_url = "http://localhost:5005/job";
-const check_payment_url = "http://localhost:5006/check_payment"
+var price_id = localStorage.getItem("price_id")
 
 const check_payment = fetch(check_payment_url)
 .then(response => response.json())
 .then(data => {
     console.log(data);
 })
+
+localStorage.clear()
+const get_all_url = "http://localhost:5005/job";
+const check_payment_url = "http://localhost:5006/check_payment"
+
+
 
 const response = fetch(get_all_url).then(response => response.json())
 .then(data => {

@@ -134,7 +134,7 @@ for (let index = 0; index < jobs_arr.length; index++) {
                 Are you sure you want to cancel this Job? Note that cancellation of this job at this current period will result in a $20 penalty credited from your bank account. Failure to pay the penalty amount will result in your account being locked out.
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" onclick="removeJob(${curr_session})" id="job_cancel1">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="removeJob('${curr_session}')" id="job_cancel1">Cancel</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Don't Cancel</button>
             </div>
             </div>

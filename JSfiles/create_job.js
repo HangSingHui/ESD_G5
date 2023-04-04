@@ -211,8 +211,16 @@ function submit_job() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data);
-        result = data.data;
-        console.log(result);
+        // console.log(data);
+        // result = data.data;
+        // console.log(result);
+        if (data.code === 201) {
+            alert("Job has been successfully created!")
+            window.location.reload()
+        }
+        else if (data.code === 500){
+            alert("Job creation failed, please check that your fields are properly filled up and try again!")
+        }
+
     })
 }

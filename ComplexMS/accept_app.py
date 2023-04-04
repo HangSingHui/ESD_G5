@@ -20,7 +20,6 @@ session_URL = "http://localhost:5004/session"
 job_URL = "http://localhost:5005/job"
 payment_URL = "http://localhost:5006/payment"
 application_URL = "http://localhost:5008/application"
-place_payment_URL="http://localhost:5008/application"
 
 @app.route("/accept_app/<string:app_id>", methods=['PUT'])
 def acceptApp(app_id):
@@ -158,18 +157,33 @@ def processAcceptApp(app_id):
     
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
 
+    #Get price_id first
+   
+    if code not in range(200,300):
+        
+        return jsonify({
+            "code": 500,
+            "message":"Error on Stripe Server. Unable to create new price to charge owner."
+        }),500
+
     # #6. Invoke place payment to do the payment side
-    make_payment =  invoke_http(place_payment_URL+"/"+sitter_id, method="POST")
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="notify.success.payment", body=job, properties=pika.BasicProperties(delivery_mode = 2)) 
 
-    #sends over the entire job object
+    payout = job["Payout"]
+    create_price = invoke_http(payment_URL+"/charge", method="POST",json=payout)
+    code=create_price["code"]
 
+    
+    #7. Invoke payment to return the price_id to the UI
+    price_id = create_price["price_id"]
 
-
-    #7. Return status to UI
-    return{
+    return jsonify({
         "code":200,
-        "message": "You have successfully accepted your desired sitter."
-    }
+        "message": "You have successfully accepted your desired sitter. Awaiting for owner to make a payment.",
+        "data":{
+             "price_id":price_id   
+            }
+        }),200
 
 
 

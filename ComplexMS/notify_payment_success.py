@@ -18,7 +18,7 @@ CORS(app)
 owner_URL = "http://localhost:5000/owner"
 payment_URL = "http://localhost:5006"
 
-monitorBindingKey='*.payment'
+monitorBindingKey='#.payment'
 
 #Consume from AMQP first to get the payment details
 #Data sent from accept_app.py
@@ -37,21 +37,21 @@ monitorBindingKey='*.payment'
 #Wait_list
 ##########################################
 
-# def paymentNotif():
-#     amqp_setup.check_setup() 
-#     queue_name = "payment"
-#     amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
-#     amqp_setup.channel.start_consuming() 
+def paymentNotif():
+    amqp_setup.check_setup() 
+    queue_name = "payment_success"
+    amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+    amqp_setup.channel.start_consuming() 
 
-# #Actions on the message - send to the Payment MS
-# def callback(channel, method, properties, body): 
-#     print("\nReceived notification by " + __file__)
-#     managePayment(json.loads(body),method.routing_key)
-#     print() # print a new line feed
+#Actions on the message - send to the Payment MS
+def callback(channel, method, properties, body): 
+    print("\nReceived notification by " + __file__)
+    checkSuccess(json.loads(body),method.routing_key) 
+    print() # print a new line feed
 
 #Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
-@app.route("/place_payment", method=["POST"])
-def placePayment():
+@app.route("/checkSuccess", method=["POST"])
+def checkSuccess():
 
     data=request.get_json()
 

@@ -53,7 +53,7 @@ def callback(channel, method, properties, body): # required signature for the ca
     print("\nReceived a dog log by " + __file__)
     result= processSpecies(json.loads(body)) 
     print() # print a new line feed
-
+    
     emails = result["data"]["sitterlist"]
 
     ######## from notfication.py ########

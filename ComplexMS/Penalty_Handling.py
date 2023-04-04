@@ -5,12 +5,14 @@ import os, sys
 
 import requests
 from invokes import invoke_http
-from SimpleMS import amqp_setup
+
 from datetime import datetime, timedelta
 
-from SimpleMS import amqp_setup_notification
 import pika
 import json
+
+sys.path.append('../')
+import amqp_setup
 
 app = Flask(__name__)
 
@@ -33,32 +35,32 @@ def listenToAMQP():
     amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
     amqp_setup.channel.start_consuming() 
 
+
 def processPenalty(message,routing_key):
     # 1. Check the routing key of the message
     if routing_key == "sitter.penalty":
         sitter_id = message.sitterId
         job_id = message.jobId
 
-    # 2. Get pet sitter's stripe id
-    print('\n-----Get stripe id (sitter microservice)-----')
-    get_payment_info_result = invoke_http(get_sitter_payment_info_URL + sitter_id, method='GET')
-    print('get_payment_info_result: ',get_payment_info_result)
-
-    # 3. Deduct payment
-    # Invoke payment microservice
-    print('\n-----Charge penalty fee (payment microservice)-----')
-    deduct_penalty_result = invoke_http(deduct_penalty_URL, method='POST', json=get_payment_info_result)
-    print('deduct_penalty_result: ',deduct_penalty_result)
-
-    # 4. Lower sitter rating score by 50 points
+    # 2. Lower sitter rating score by 50 points
     # Invoke sitter microservice
     print('\n-----Deduct sitter score (sitter microservice)-----')
     deduct_score_result = invoke_http(deduct_score_URL + sitter_id, method='PUT')
     print('deduct_score_result: ',deduct_score_result)
 
+    # 3. Get pet sitter's details
+    print('\n-----Get stripe id (sitter microservice)-----')
+    sitter_info = invoke_http(get_sitter_URL+sitter_id, method='GET')
+    print('sitter_info: ',sitter_info)
+
+    # 4. Deduct payment
+    # Invoke payment microservice
+    print('\n-----Charge penalty fee (payment microservice)-----')
+    deduct_penalty_result = invoke_http(deduct_penalty_URL, method='POST', json=sitter_info)
+    print('deduct_penalty_result: ',deduct_penalty_result)
+
     # 5. Send message to sitter that penalty has been charged and rating has been lowered due to last-minute pulling out
     print('\n-----Publish message to AMQP with routing_key=penalty.notification (AMQP)-----')
-    sitter_info = invoke_http(get_sitter_URL+sitter_id, method='GET')
     message = json.dumps({'data':{'sitterName': sitter_info['Name'],
                                   'sitterEmail': sitter_info['Email'], 
                                   'sitterUserScore': sitter_info['User_score'],

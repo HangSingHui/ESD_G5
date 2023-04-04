@@ -67,8 +67,30 @@ def get_owner_by_id(id):
             }
         ),404
 
-
-
+# Function 3: Get email from owner
+@app.route("/owner/email/<string:id>")
+def get_email_by_id(id):
+    #search if owner exists first with id
+        #search if job exists first with jobID
+    query={"_id":ObjectId(id)}
+    owner = owner_col.find(query)
+    if owner:
+        json_data = json.loads(dumps(owner))
+        email = json_data[0]['Email']
+    
+        return jsonify(
+            {
+                "code":200,
+                "data": email
+            }
+        )
+    #if not, return owner not found
+    return jsonify(
+            {
+                "code":404,
+                "message":"Owner not found."
+            }
+        ),404
 
 
 

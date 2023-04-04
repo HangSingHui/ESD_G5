@@ -201,39 +201,6 @@ def create_session(job_id):
 
 # Function 5: close session by updating close session time and the session status
 
-<<<<<<< HEAD
-# @app.route("on/<int/close-sessieger:sessionId>", method=['PUT'])
-# def close_session(sessionId):
-#     # session = Session.query.filter_by(id=sessionId).first()
-#     query = {"SessionID": ObjectId(sessionId)}
-#     session = session_col.find_one(query)
-#     if session:
-#         data = request.get_json()
-#         now = datetime.now()
-#         closing_time = now.strftime("%Y/%m/%d %H:%M:%S").strptime("%Y/%m/%d %H:%M:%S")
-#         update_query = {"status": "In-Progress", "sessionTimeClosed": None}
-#         new_values = { '$set' : {"status" : "Closed",
-#                                  "sessionTimeClosed" : closing_time}}
-#         session.update_one(update_query,new_values)
-#         session_duration = closing_time - data['sessionTimeCreated']
-#         return jsonify(
-#             {
-#                 "code": 200,
-#                 "data":
-#                 {
-#                     "sessionId": sessionId,
-#                     "sessionDuration": session_duration
-#                 }
-#             }
-#         )
-#     return jsonify(
-#         {
-#             "code": 404,
-#                 "data": "Session not found."
-#         }
-#     ), 404
-#     # if not, return session not found
-=======
 @app.route("/close-session/<string:sessionId>", methods=['PUT'])
 def close_session(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()
@@ -267,7 +234,6 @@ def close_session(sessionId):
         }
     ), 404
     # if not, return session not found
->>>>>>> 8a94c480bb6622053b01afa3e16e4ddbc8fe20dd
 
 
 if __name__ == "__main__":

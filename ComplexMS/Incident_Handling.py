@@ -23,10 +23,11 @@ session_time_URL = "http://localhost:5004/session-time/"
 close_session_URL = "http://localhost:5004/close-session/"
 job_waitlist_URL = "http://localhost:5005/job/wait_list/"
 open_job_URL = "http://localhost:5005/job/"
+get_owner_id_email = "http://localhost:5000/owner/email/"
 
 
 
-@app.route("/incident_handling/<string:SessionID", methods=['POST'])
+@app.route("/incident_handling/<string:SessionID>", methods=['POST'])
 def incident_handling():
     # Simple check of input format and data of the request are JSON
     if request.is_json:
@@ -62,6 +63,7 @@ def processIncident(session):
     sessionId = session['_id']
     jobId = session['JobID']
     sitterId = session['SitterID']
+    ownerId = session['OwnerID']
 
     # 2. Update session closing time and change session status to closed
     # Invoke session microservice
@@ -100,6 +102,12 @@ def processIncident(session):
     sitter_replacements_result = invoke_http(job_waitlist_URL + jobId, method='GET')
     print('Sitter Replacements Suggestion: ',sitter_replacements_result)
 
+
+    # Get owner's email
+    # Invoke owner microservice
+    print('\n-----Retrieve email from owner microservice-----')
+    owner_email_result = invoke_http(get_owner_id_email + ownerId, method='GET')
+    print('Owner email: ',owner_email_result)
 
     # 7. Send list of recommended pet sitter replacements
     print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')

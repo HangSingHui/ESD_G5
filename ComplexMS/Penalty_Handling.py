@@ -15,14 +15,13 @@ import json
 app = Flask(__name__)
 
 get_sitter_payment_info_URL = "http://localhost:5001/payment-info/"
-deduct_penalty_URL = "http://localhost:5006/charge-penalty/"
+deduct_penalty_URL = "http://localhost:5006/charge_penalty/"
 deduct_score_URL = "http://localhost:5001/sitter/rating/"
 get_sitter_URL = "http://localhost:5001/sitter/"
 
 # binding key
 monitorBindingKey='#.penalty'
 
-#Actions on the message - send to the GMAIl API
 def callback(channel, method, properties, body): 
     print("\nReceived notification by " + __file__)
     processPenalty(json.loads(body), method.routing_key)
@@ -48,9 +47,7 @@ def processPenalty(message,routing_key):
     # 3. Deduct payment
     # Invoke payment microservice
     print('\n-----Charge penalty fee (payment microservice)-----')
-    # Penalty is $20 (before GST)
-    penalty_amount = jsonify({'data':{'Charge' : 20}})
-    deduct_penalty_result = invoke_http(deduct_penalty_URL + sitter_id, method='POST', json=get_payment_info_result)
+    deduct_penalty_result = invoke_http(deduct_penalty_URL, method='POST', json=get_payment_info_result)
     print('deduct_penalty_result: ',deduct_penalty_result)
 
     # 4. Lower sitter rating score by 50 points

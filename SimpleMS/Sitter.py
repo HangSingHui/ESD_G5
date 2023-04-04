@@ -82,7 +82,9 @@ def get_payment_info(sitter_id):
             "message": "There is no pet sitter with the sitter id: " + sitter_id
         },404
 
-    payment_info = dumps(sitter_doc['Stripe_Id'])
+    payment_info = dumps({'customer': sitter_doc['Stripe_Id'],
+                          'card_id': sitter_doc['CardInfo']
+                        })
     payment_info = json.loads(payment_info)
     return jsonify(
         {"code":200,
@@ -224,12 +226,42 @@ def delete_owner(id):
 # def find_replacements(jobId):
 #     replacementlist = Sitter.query.filter_by(id = id).first()
 
-'''
 # Function 7: retrieve sitter pet preference 
 @app.route("/sitter/<string:species>/<string:rate>", methods=['GET'])
 def retrieve_sitters():
-    pass
-'''
+    # once new job is created, pass in the species and hourly rate of that job
+    # find sitter by species and rate 
+    # output should contain a json object of all the emails of the sitters 
+
+    # cannot query rate directly -> must check range :(())
+    # 30-39 
+    # 40-49 
+    # 50-59
+
+    query={"species":ObjectId(species), 
+           "rate": ObjectId(rate)}
+    sitter=pet_sitter_col.find(query)
+    num_sitter = pet_sitter_db.pet_sitter.count_documents({})
+    
+    # check if there are at least one sitter
+    if num_sitter > 0:
+        sitter = list(sitter)
+        json_data = dumps(sitter)
+        json_data = json.loads(json_data)
+        # return json object of sitters with specified species and rate
+        print(json_data)
+        return jsonify(
+            {
+                "code": 200,
+                "data": json_data
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Sitter not found."
+        }
+    ), 404
 
 
 

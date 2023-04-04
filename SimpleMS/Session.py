@@ -136,7 +136,7 @@ def create_session(job_id):
         session_col.insert_one({'JobID':ObjectId(job_id),
                                 'OwnerID': ObjectId(owner_id),
                                 'sitterID': ObjectId(sitter_id),
-                                'status': 'In Progress',
+                                'status': 'In-Progress',
                                 'sessionTimeCreated': utc_time,
                                 'sessionTimeClosed':None,
                                 'ownerDeposit':0,
@@ -231,6 +231,25 @@ def create_session(job_id):
 #     # if not, return session not found
 '''
 
+@app.route("/session/<string:sessionId>")
+def get_session_by_id(sessionId):
+    query = {"_id": ObjectId(sessionId)}
+    session = session_col.find(query)
+    if session:
+        json_data = json.loads(dumps(session))
+
+        return jsonify(
+            {
+                "code":200,
+                "data": json_data
+            }
+        )
+
+    return{
+        "code": 404,
+        "message": "No session found."
+    },404
+
 @app.route("/close-session/<string:sessionId>", methods=['PUT'])
 def close_session(sessionId):
     # session = Session.query.filter_by(id=sessionId).first()
@@ -240,7 +259,7 @@ def close_session(sessionId):
         closing_time = time.time()
         # closing_time = now.strftime("%Y/%m/%d %H:%M:%S")
         # closing_time = datetime.strptime(closing_time,"%Y/%m/%d %H:%M:%S")
-        update_query = {"status": "In Progress", "sessionTimeClosed": None}
+        update_query = {"status": "In-Progress", "sessionTimeClosed": None}
         new_values = { '$set' : {"status" : "Closed",
                                  "sessionTimeClosed" : closing_time}}
         session_col.update_one(query,new_values)

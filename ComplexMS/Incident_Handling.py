@@ -23,17 +23,17 @@ session_time_URL = "http://localhost:5004/session-time/"
 close_session_URL = "http://localhost:5004/close-session/"
 job_waitlist_URL = "http://localhost:5005/job/wait_list/"
 open_job_URL = "http://localhost:5005/job/"
-get_owner_id_email = "http://localhost:5000/owner/email/"
-get_sitter_details = "http://localhost:5001/sitter/"
+get_owner_by_id_URL = "http://localhost:5000/owner/"
+get_sitter_details_URL = "http://localhost:5001/sitter/"
+get_session_by_id_URL = "http://localhost:5004/session/"
 
 
-
-@app.route("/incident_handling/<string:SessionID>", methods=['POST'])
-def incident_handling():
+@app.route("/incident_handling/<string:sessionId>", methods=['PUT'])
+def incident_handling(sessionId):
     # Simple check of input format and data of the request are JSON
-    if request.is_json:
+    session = invoke_http(get_session_by_id_URL + sessionId)
+    if session:
         try:
-            session = request.get_json()
             print("\nSession in JSON:", session)
             # 1. Send incident info
             result = processIncident(session)
@@ -87,7 +87,8 @@ def processIncident(session):
         # 5. Send pet sitter details to AMQP for penalty handling
         print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
 
-        message = json.loads({'sitterId': sitterId, 'jobId': jobId})
+        message = json.loads({'sitterId': sitterId, 
+                              'jobId': jobId})
 
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="sitter.penalty", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
@@ -104,21 +105,26 @@ def processIncident(session):
     print('Sitter Replacements Suggestion: ',sitter_replacements_result)
 
 
-    # Get owner's email
+    # Get owner's email and name
     # Invoke owner microservice
-    print('\n-----Retrieve email from owner microservice-----')
-    owner_email_result = invoke_http(get_owner_id_email + ownerId, method='GET')
-    print('Owner email: ',owner_email_result)
+    print('\n-----Retrieve name and email from owner microservice-----')
+    owner_name_result = invoke_http(get_owner_by_id_URL + ownerId, method='GET')[0]['Name']
+    owner_email_result = invoke_http(get_owner_by_id_URL + ownerId, method='GET')[0]['Email']
+    print('Owner name:',owner_name_result,'\nOwner email:',owner_email_result)
 
     sitters = []
     for sitter in sitter_replacements_result:
-        details = invoke_http(get_sitter_details + sitter, method='GET')
+        details = invoke_http(get_sitter_details_URL + sitter, method='GET')
         sitters.append(details)
 
     # 7. Send list of recommended pet sitter replacements
     print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')
 
-    message = json.dumps({'jobID': jobId, 'replacements':sitters, 'ownerID': ownerId, 'ownerEmail': owner_email_result})
+    message = json.dumps({'jobID': jobId, 
+                          'replacements':sitters, 
+                          'ownerID': ownerId, 
+                          'ownerName': owner_name_result,
+                          'ownerEmail': owner_email_result})
 
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="replacement.notification", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
@@ -138,7 +144,7 @@ def processIncident(session):
             "cancellation": closing_session_result,
             "cancelation_status": "confirmed"
         }
-    }
+    },201
 
 
 

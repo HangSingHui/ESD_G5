@@ -193,7 +193,7 @@ function removeJob(session_id, job_num) {
         `
         <h1 class="text-center fw-bold">Updating our database now, please bear with us!</h1>
         <h5 class="text-center fw-bold">In the mean time, here's a cute bear waving, say hi!</h5>
-        <img class="d-block mx-auto" src="https://66.media.tumblr.com/5c059a6fbc4f51e9238a17484f784fcf/tumblr_mvo47boXpt1svecmko1_250.gif">
+        <img class="d-block mx-auto mb-5" src="https://66.media.tumblr.com/5c059a6fbc4f51e9238a17484f784fcf/tumblr_mvo47boXpt1svecmko1_250.gif">
     `
 
     const cancel_session = fetch(`${sitter_rejection_url}/${session_id}`,

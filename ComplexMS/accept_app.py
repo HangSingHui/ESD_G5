@@ -8,6 +8,7 @@ import os, sys
 sys.path.append('../SimpleMS')
 import amqp_setup
 
+
 import requests
 from invokes import invoke_http
 import pika

@@ -64,11 +64,18 @@ def penalty_charge():
 #    "customer":"cus_Ne69Q9W8sdVAww"
 #      } 
    details = request.get_json()
-   token = details["card_id"]
-   customer = details["customer"]
+   print(details)
+   token = details['data'][0]["CardInfo"]
+   customer = details['data'][0]["Stripe_Id"]
+   print(token)
+   print(customer)
    charge_details = stripe.Charge.create(amount=2000,currency="sgd",source=token,customer=customer)
+   print(charge_details)
 
-   return charge_details
+   return jsonify({
+            "code":200,
+            "data": charge_details
+        })
    #json object
     #    {
     #        "card_id":"card_1Msny8FrjIdoqzyMXqxi0Hyu"

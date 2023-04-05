@@ -253,7 +253,7 @@ def retrieve_sitters(species, rate_cat):
         query = {
             "$and": [
                 {"species": ObjectId(species)},
-                {"Hourly_rate": {"$gt": 30, "$lt": 41}}
+                {"Hourly_rate": {"$gt": 40, "$lt": 51}}
             ]
             }
         sitter = pet_sitter_col.find(query)
@@ -262,7 +262,7 @@ def retrieve_sitters(species, rate_cat):
         query = {
             "$and": [
                 {"species": ObjectId(species)},
-                {"Hourly_rate": {"$gt": 30, "$lt": 41}}
+                {"Hourly_rate": {"$gt": 50, "$lt": 61}}
             ]
             }
         sitter = pet_sitter_col.find(query)

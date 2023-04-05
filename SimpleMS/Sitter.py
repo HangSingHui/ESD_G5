@@ -273,7 +273,7 @@ def retrieve_sitters(species, rate_cat):
     
     # check if there are at least one sitter
     if num_sitter > 0:
-        sitter = list(sitter["Email"]) #extract email from here or above??? 
+        sitter = list(sitter) #extract email from here or above??? 
         json_data = dumps(sitter)
         json_data = json.loads(json_data)
         # return json object of sitters with specified species and rate

@@ -1,7 +1,7 @@
 import json
 import os
 
-import amqp_setup
+from SimpleMS import amqp_setup
 
 from invokes import invoke_http
 
@@ -9,10 +9,6 @@ from invokes import invoke_http
 #!/usr/bin/env python3
 from flask import Flask
 from flask_mail import Mail, Message
-import os
-
-import json
-import amqp_setup
 
 app = Flask(__name__)
 
@@ -53,8 +49,9 @@ def callback(channel, method, properties, body): # required signature for the ca
     print("\nReceived a dog log by " + __file__)
     result= processSpecies(json.loads(body)) 
     print() # print a new line feed
-    
-    emails = result["data"]["sitterlist"]
+
+    # UDPATE THIS
+    emails = result["data"]["sitterlist"] #assuming the sittelist contains only the emails?? 
 
     ######## from notfication.py ########
     processNotif(json.loads(emails),method.routing_key)
@@ -126,9 +123,10 @@ def processNotif(notif,routing_key):
     # }
 
     #Step 1: Check the routing key of the message
-    if routing_key == "accept.sitter.notification":
-        subject = "[Job Offered: ]" + str(notif.jobID)
-        body= "Dear " + notif.sitterName + ",\n We are pleased to inform you that your application for the job titled: "  + notif.jobTitle + "(" + str(notif.jobID) + ") has been accepted by the owner. Should you wish to turn down the offer, kindly indicate in the Pet's R Us mobile application within the next 12 hours." 
+    # include url to find by jobid?? 
+    if routing_key == "dog.*":
+        subject = "[Available job posting: ]" + str(notif.jobID)
+        body= "Dear " + notif.sitterName + ",\n We are pleased to inform you that there is an available job posting with your indicated species and hourly rate preference: "  + notif.jobTitle + "(" + str(notif.jobID) + ". Should you wish to to take up the job, please indicate in the Pet's R Us mobile application, while still available." 
         recipient = notif.sitterEmail
     
     #structure of AMQP message (JSON - routing key = hold.payment.notification)
@@ -141,29 +139,29 @@ def processNotif(notif,routing_key):
     #       "cardInfo": 1314 #last 4 numbers
     # }
     
-    # message to OWNER about CONFIRMATION OF JOB ACCEPTANCE (SC. 2)
-    elif routing_key=="pmt.hold.success.notification":
-        subject = "[On-hold Payment] for job " + str(notif.jobID)
-        body= "Dear " + notif.ownerName + ",\n You" + notif.sitterName + " has confirmed the acceptance of your job posting titled " + notif.jobTitle + "(" + str(notif.jobID) + "). We have successfully placed a hold of " + notif.totalPayable + " on your card ending with " + str(notif.cardInfo) + "."    
-        recipient = notif.ownerEmail
+    # # message to OWNER about CONFIRMATION OF JOB ACCEPTANCE (SC. 2)
+    # elif routing_key=="pmt.hold.success.notification":
+    #     subject = "[On-hold Payment] for job " + str(notif.jobID)
+    #     body= "Dear " + notif.ownerName + ",\n You" + notif.sitterName + " has confirmed the acceptance of your job posting titled " + notif.jobTitle + "(" + str(notif.jobID) + "). We have successfully placed a hold of " + notif.totalPayable + " on your card ending with " + str(notif.cardInfo) + "."    
+    #     recipient = notif.ownerEmail
 
-    # message to SITTER about CHARGED PENALTY AND DEDUCTION OF POINTS FOR PULLING OUT (SC. 3)
-    elif routing_key == 'penalty.notification':
-        subject = "[Penalty Charged] for job " + str(notif.jobID)
-        body= "Dear " + notif.sitterName + ",\nYou have been charged a penalty fee of $20 due to the last-minute pull out from job "+ str(notif.jobID) + ". We have also deduct your user score by 50 points. Your current user score is "+ notif.sitterUserScore +". Please avoid pulling out from a job more than a day after the job has been confirmed. Thank you."   
-        recipient = notif.sitterEmail
+    # # message to SITTER about CHARGED PENALTY AND DEDUCTION OF POINTS FOR PULLING OUT (SC. 3)
+    # elif routing_key == 'penalty.notification':
+    #     subject = "[Penalty Charged] for job " + str(notif.jobID)
+    #     body= "Dear " + notif.sitterName + ",\nYou have been charged a penalty fee of $20 due to the last-minute pull out from job "+ str(notif.jobID) + ". We have also deduct your user score by 50 points. Your current user score is "+ notif.sitterUserScore +". Please avoid pulling out from a job more than a day after the job has been confirmed. Thank you."   
+    #     recipient = notif.sitterEmail
 
-    # message to OWNER about SITTER REPLACEMENTS (SC. 3)
-    elif routing_key=='replacement.notification':
-        subject = "[Petsitter Replacements Suggestion] for job " + str(notif.jobID)
-        body= "Dear " + notif.ownerName +",\nWe are sorry to say that your matched sitter has pulled out from the job "+ str(notif.jobID) +".\nWe would like to suggest you a list of sitters that could act as a replacement:"
+    # # message to OWNER about SITTER REPLACEMENTS (SC. 3)
+    # elif routing_key=='replacement.notification':
+    #     subject = "[Petsitter Replacements Suggestion] for job " + str(notif.jobID)
+    #     body= "Dear " + notif.ownerName +",\nWe are sorry to say that your matched sitter has pulled out from the job "+ str(notif.jobID) +".\nWe would like to suggest you a list of sitters that could act as a replacement:"
 
-        num = 1
-        # loop to add each sitter's details
-        for sitter in notif.replacements:
-            body += str(num)+". \tName: "+sitter['Name'] + ' ('+str(sitter['_id'])+')\n\tRate: '+sitter['Hourly_rate']+"/hr\n\tContact: "+sitter['Phone']
-            num += 1
-        recipient = notif.ownerEmail
+    #     num = 1
+    #     # loop to add each sitter's details
+    #     for sitter in notif.replacements:
+    #         body += str(num)+". \tName: "+sitter['Name'] + ' ('+str(sitter['_id'])+')\n\tRate: '+sitter['Hourly_rate']+"/hr\n\tContact: "+sitter['Phone']
+    #         num += 1
+    #     recipient = notif.ownerEmail
 
     
     body += mail_signature

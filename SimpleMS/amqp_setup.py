@@ -59,9 +59,9 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.penal
     # 'routing_key=#' => any routing_key would be matched
 
 # direct exchange 
-exchangename="job_filterby_pet_topic"
-exchangetype="topic"
-channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
+# exchangename="job_filterby_pet_topic"
+# exchangetype="topic"
+# channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
 
 # pets - Dog / Cat / Rabbit / Bird 
 # hourly rate - filter in notification.py 

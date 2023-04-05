@@ -156,7 +156,8 @@ def processAcceptApp(app_id):
     sitterEmail = getSitter["data"][0]["Email"]
 
     #5.  Invoke Notif to send confirmation acceptance to sitter
-    # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
+    print("Done AMQP?")
 
     #Get price_id first
     if code not in range(200,300):

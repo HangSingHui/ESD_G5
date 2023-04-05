@@ -245,7 +245,7 @@ def retrieve_sitters(species, rate_cat):
         query = {
             "$and": [
                 {"Species_preference": species},
-                {"Hourly_rate": {"$gt": 30, "$lte":40}}
+                {"Hourly_rate": {"$gte": 30, "$lte":40}}
             ]
             }
     elif rate_cat=="cat2": 

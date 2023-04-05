@@ -68,7 +68,7 @@ def processJob(body,routing_key):
     # print(rate_cat)
     # rate argument will be a category -> do validation again in sitter.py func 7 
     print('\n-----Invoking sitter microservice-----')
-    getEmailList =invoke_http(sitter_URL+"/Bird"+"/"+rate_cat,method="GET") #get email of all sitters
+    getEmailList = invoke_http(sitter_URL+"/Bird"+"/"+rate_cat,method="GET") #get email of all sitters
 
 
     # Check the sitterlist result; if a failure, return error status 
@@ -81,6 +81,7 @@ def processJob(body,routing_key):
             }
     
     recipient = getEmailList["emails"]
+    
     #Send email
     mail_signature = "\n\nDo contact us via our support email at inquiries.petsrus@gmail.com for any queries. \n Thank you for using Pets R Us! \n\n Best Regards,\nPet R Us (With Pets, For Pets)"
 

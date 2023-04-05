@@ -158,7 +158,7 @@ def processPublishJob(new_job,jobID):
     
 def find_by_petID(newjob): 
     print('\n-----Invoking pet microservice-----')
-    pet_id = newjob['PetID'] 
+    pet_id = newjob['PetID'][0] 
     pet_result = invoke_http(pet_URL+"/"+pet_id, method='GET')
     print('pet_result:', pet_result) 
     return pet_result # pet_result - json pet species 

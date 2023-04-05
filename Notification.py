@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 import os, sys
 
 import json
-sys.path.append('../SimpleMS')
+# sys.path.append('../SimpleMS')
 import amqp_setup
 
 app = Flask(__name__)

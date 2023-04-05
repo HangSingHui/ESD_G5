@@ -82,34 +82,41 @@ const pet_response = fetch(`${fetch_pets_route}/${ownerID}`)
 .then(response => response.json())
 .then(data => {
 
-    if (data.code ) {
+    if (data.code == 200) {
+        pets = data.data;
+        console.log(pets);
+
+        li_string = "";
+
+        for (let index = 0; index < pets.length; index++) {
+            pet = pets[index];
+            pet_id = pet["_id"]["$oid"]
+            pet_name = pet["Name"]
+            pet_breed = pet["Breed"]
+
+            
+            temp_li_string = `
+            
+            <li class="list-group-item">
+                <input class="form-check-input me-1" type="checkbox" value="${pet_id}" id="${pet_id}">
+                <label class="form-check-label">${pet_name} the ${pet_breed}</label>
+            </li>
+            `
+
+            li_string += temp_li_string
+
+            document.getElementById("pets").innerHTML = li_string;
         
+        }
     }
 
-    pets = data.data;
-    console.log(pets);
-
-    li_string = "";
-
-    for (let index = 0; index < pets.length; index++) {
-        pet = pets[index];
-        pet_id = pet["_id"]["$oid"]
-        pet_name = pet["Name"]
-        pet_breed = pet["Breed"]
-
-        
-        temp_li_string = `
-        
-        <li class="list-group-item">
-            <input class="form-check-input me-1" type="checkbox" value="${pet_id}" id="${pet_id}">
-            <label class="form-check-label">${pet_name} the ${pet_breed}</label>
-        </li>
-        `
-
-        li_string += temp_li_string
+    else if(data.code == 404){
+        alert("You have no pets! Please register your pets before creating a job")
+        document.getElementById("submit_button").setAttribute("class", "btn btn-primary disabled")
+        document.getElementById("view_jobs").setAttribute("class", "btn btn-secondary disabled")
     }
 
-    document.getElementById("pets").innerHTML = li_string;
+    
 })
 
 
@@ -178,17 +185,8 @@ function submit_job() {
         spec_arr.push(spec.id)
     }
 
-    // console.log(start_time_unix);
-    // console.log(end_time_unix);
-    // console.log(payrate);
-    // console.log(pets_arr);
-    // console.log(job_desc);
-    // console.log(spec_arr);
-    // console.log(files);
-
-    
-
-    var image = "Pets/puppy.jpg"
+    // Simulate the user sending in an image of the puppy 
+    var image = "https://i.ibb.co/92ZMC6b/puppy.jpg"
 
     let jsonData = JSON.stringify({
         "OwnerID" : ownerID,

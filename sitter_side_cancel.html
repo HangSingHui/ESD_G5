@@ -27,9 +27,9 @@
         <p class="text-center fs-3">View and manage upcoming jobs that you have currently accepted, and view all previous sessions that were completed or cancelled.</p>
 
         <div id="filter">
-          <button class="btn btn-info" onclick="viewJobs('In-Progress')">Upcoming Jobs</button>
-          <button class="btn btn-success" onclick="viewJobs('Completed')">Completed Jobs</button>
-          <button class="btn btn-danger" onclick="viewJobs('Cancelled')">Cancelled Jobs</button>
+          <button class="btn btn-info" onclick="viewJobs('In-Progress')" id="1">Upcoming Jobs</button>
+          <button class="btn btn-success" onclick="viewJobs('Completed')" id="2">Completed Jobs</button>
+          <button class="btn btn-danger" onclick="viewJobs('Cancelled')" id="3">Cancelled Jobs</button>
         </div>
         
         <div class="row my-3" id="job_list">
@@ -37,7 +37,8 @@
 
         </div>
     
-        
+        <a class="mx-auto btn btn-secondary" href="create_job.html">Go Back</a>
+        <!-- Is not meant to work, supposed to simulate a back button to a theoretical page where the sitter can apply for jobs (not in our scenarios) -->
       
 
     </div>

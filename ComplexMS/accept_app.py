@@ -156,7 +156,8 @@ def processAcceptApp(app_id):
     sitterEmail = getSitter["data"][0]["Email"]
 
     #5.  Invoke Notif to send confirmation acceptance to sitter
-    # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
+    print("Done AMQP?")
 
     #Get price_id first
     if code not in range(200,300):
@@ -182,7 +183,7 @@ def processAcceptApp(app_id):
     #Update session with price_id
 
     # print(type(job_id))
-    update_price_id = invoke_http(session_URL+"/addPrice/"+job_id,method="PUT",json=payout)
+    update_price_id = invoke_http(session_URL+"/addPrice/"+job_id,method="PUT",json=price_id)
     code = update_price_id["code"]
     if code not in range(200,300):
         return jsonify({

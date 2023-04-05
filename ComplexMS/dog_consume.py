@@ -57,7 +57,7 @@ def processJob(body,routing_key):
 
     # categorise rate 
     rate_cat = ""
-    if (rate<40): 
+    if (rate<=40): 
         rate_cat = "cat1"
     elif (rate<=50): 
         rate_cat = "cat2"

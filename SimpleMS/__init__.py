@@ -1,1 +1,0 @@
-from .amqp_setup import amqp_setup

@@ -166,11 +166,11 @@ def update_job(job_id,status):
 
     info = request.get_json()
     print(info)
-    sitter_id = info["sitter_id"]
+    sitter_id = info["SitterID"]
     print(sitter_id)
     #Change job's status with the id=jobID from matched to open
     queryJob = {"_id":ObjectId(job_id)}
-    changeStatus = {"$set":{"Status":status,"SitterID":sitter_id}}
+    changeStatus = {"$set":{"Status":str(status),"SitterID":sitter_id}}
 
     try:
         job_col.update_one(queryJob, changeStatus)
@@ -180,7 +180,7 @@ def update_job(job_id,status):
                 "data": {
                     "JobID": job_id
                 },
-                "message": "Job status updated to " + status +" and accepted sitter is added."
+                "message": "Job status updated to " + status +" and sitterID is updated accordingly as well."
             }
         ), 200
 

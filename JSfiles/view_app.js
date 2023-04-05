@@ -17,56 +17,60 @@ const app_response = fetch(`${application_get_url}/${job_id}`)
     if (data.code === 404) {
         document.getElementById("application_list").innerHTML = "<h1 class='my-5 text-center'>There are no applications for this job!</h1>"
     }
-
-    var temp_sitters = [];
-    console.log(data);
-    // return data
-    applications = data.data;
-    // window.sessionStorage
-    // console.log(applications);
-    var job_count = 0;
-    for (let index = 0; index < applications.length; index++) {
-        
-        var curr_app = applications[index];
-        var sitter_id = curr_app["SitterID"]
-        var application_id = curr_app["_id"]["$oid"];
-        // console.log(application_id);
-        var app_status = curr_app["Status"]
-        
-        if (app_status === "Pending") {
-            job_count += 1;
-            var app_num = `app${job_count}`
-            temp_sitters.push(sitter_id);
-
-            temp_str = 
-            `
-            <div class="col-6 my-3">
-                <div class="card" id='${application_id}'>
-                    <img src="..." class="class-img-top" id="${app_num}image">
-                    <div class="card-body">
-                        <h5 class="card-title" id='${app_num}name'>Application ${job_count}</h5>
-                        <h6 class="card-subtitle mb-2 text-body-secondary" id='${app_num}subtitle'>Card subtitle</h6>
-                        <p class="card-text" id='${app_num}info'></p>
-                        <button class="btn btn-success" id="${app_num}accept" onclick="accept_application('${application_id}')">Accept</button>
-                        <button class="btn btn-danger" id="${app_num}reject" onclick="reject_application('${application_id}')">Reject</button>
+    
+    else{
+        var temp_sitters = [];
+        console.log(data);
+        // return data
+        applications = data.data;
+        // window.sessionStorage
+        // console.log(applications);
+        var job_count = 0;
+        for (let index = 0; index < applications.length; index++) {
+            
+            var curr_app = applications[index];
+            var sitter_id = curr_app["SitterID"]
+            var application_id = curr_app["_id"]["$oid"];
+            // console.log(application_id);
+            var app_status = curr_app["Status"]
+            
+            if (app_status === "Pending") {
+                job_count += 1;
+                var app_num = `app${job_count}`
+                temp_sitters.push(sitter_id);
+    
+                temp_str = 
+                `
+                <div class="col-6 my-3">
+                    <div class="card" id='${application_id}'>
+                        <img src="..." class="class-img-top" id="${app_num}image">
+                        <div class="card-body">
+                            <h5 class="card-title" id='${app_num}name'>Application ${job_count}</h5>
+                            <h6 class="card-subtitle mb-2 text-body-secondary" id='${app_num}subtitle'>Card subtitle</h6>
+                            <p class="card-text" id='${app_num}info'></p>
+                            <button class="btn btn-success" id="${app_num}accept" onclick="accept_application('${application_id}')">Accept</button>
+                            <button class="btn btn-danger" id="${app_num}reject" onclick="reject_application('${application_id}')">Reject</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            `
-
-            document.getElementById("application_list").innerHTML += temp_str
-            console.log(temp_sitters);
+                `
+    
+                document.getElementById("application_list").innerHTML += temp_str
+                console.log(temp_sitters);
+            }
+            
         }
-        
+    
+        if (job_count == 0) {
+            document.getElementById("application_list").innerHTML = "<h1 class='my-5 text-center'>There are no applications for this job!</h1>"
+        }
+    
+        populate_sitters(temp_sitters);
+    
+        populate_data(sitters)
     }
 
-    if (job_count == 0) {
-        document.getElementById("application_list").innerHTML = "<h1 class='my-5 text-center'>There are no applications for this job!</h1>"
-    }
-
-    populate_sitters(temp_sitters);
-
-    populate_data(sitters)
+    
     
 })
 

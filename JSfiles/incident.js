@@ -22,10 +22,10 @@ fetch(`${session_get_url}/${sitter_id}`)
             var curr_session = curr_sessions[index];
             // console.log(curr_session);
             var session_id = curr_session["_id"]["$oid"]
-            console.log(session_id);
+            // console.log(session_id);
             var job_id = curr_session["JobID"]["$oid"];
             var status = curr_session["status"];
-            console.log(job_id, status);
+            // console.log(job_id, status);
             // temp_jobs_status[`${get_job_url}/${job_id}`] = status;
             const fetch_jobs = fetch(`${get_job_url}/${job_id}`)
             .then(response => response.json())
@@ -137,7 +137,7 @@ for (let index = 0; index < jobs_arr.length; index++) {
                 Are you sure you want to cancel this Job? Note that cancellation of this job at this current period will result in a $20 penalty credited from your bank account. Failure to pay the penalty amount will result in your account being locked out.
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" onclick="removeJob('${curr_session}')" id="job_cancel1">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="removeJob('${curr_session}', '${job_num}')" id="job_cancel1">Cancel</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Don't Cancel</button>
             </div>
             </div>
@@ -184,7 +184,18 @@ jobs_arr = temp_job_arr;
 
 
 
-function removeJob(session_id) {
+function removeJob(session_id, job_num) {
+    var myModalEl = document.getElementById(`cancel${job_num}Modal`)
+    var modal = bootstrap.Modal.getInstance(myModalEl)
+    modal.hide()
+    alert("Checking to reject the application, please hold...")
+    document.getElementById("reload_div").innerHTML = 
+        `
+        <h1 class="text-center fw-bold">Updating our database now, please bear with us!</h1>
+        <h5 class="text-center fw-bold">In the mean time, here's a cute bear waving, say hi!</h5>
+        <img class="d-block mx-auto" src="https://66.media.tumblr.com/5c059a6fbc4f51e9238a17484f784fcf/tumblr_mvo47boXpt1svecmko1_250.gif">
+    `
+
     const cancel_session = fetch(`${sitter_rejection_url}/${session_id}`,
     {
         method:"PUT",
@@ -196,6 +207,33 @@ function removeJob(session_id) {
     .then(response => response.json())
     .then(data => {
         console.log(data);
+        
+        if (data.code==201) {
+            document.getElementById("reload_div").innerHTML = 
+            `
+            <h1 class="text-center fw-bold">Job cancel success!</h1>
+            <h5 class="text-center fw-bold mb-5">Redirecting you back to the sessions page...</h5>
+            
+        `
+
+            setTimeout(function(){
+                location.reload(true);
+                }, 5000);
+        }
+
+        else{
+            document.getElementById("reload_div").innerHTML = 
+            `
+            <h1 class="text-center fw-bold">There was a problem with the cancellation!</h1>
+            <h5 class="text-center fw-bold mb-5">Redirecting you back to the sessions page...</h5>
+            
+        `
+        setTimeout(function(){
+            location.reload(true);
+            }, 5000);
+        }
+        
+        
     })
     .catch(error => {
         console.log(error);

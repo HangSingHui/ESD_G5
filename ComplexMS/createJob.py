@@ -8,6 +8,10 @@ from flask_cors import CORS
 import os, sys
 
 import requests
+
+sys.path.append("../SimpleMS")
+import amqp_setup
+
 from invokes import invoke_http
 
 sys.path.append('../SimpleMS')
@@ -46,7 +50,7 @@ def create_job():
         
         #if is 201, then access rate and species -pasas into amqp
         # filter the hourly rate into categories 
-        # 3 hoursly rates
+        # 3 hourly rates
 
         except Exception as e:
             # Unexpected error in code
@@ -71,10 +75,10 @@ def processJobCreation(new_job):
     # called by create_job function to create job
     # invoke job microservice which will create job in the DB 
 
-    data = request.get_json()
+    # data = request.get_json()
     print('\n-----Invoking job microservice-----')
     owner_id = request.json.get("OwnerID") #ASSUME THIS IS STRING
-    job_result = invoke_http(job_URL+"/"+owner_id, method='POST', json=data)
+    job_result = invoke_http(job_URL+"/"+owner_id, method='POST', json=new_job)
     print('job_result:', job_result)
 
     # Check the job result; if a failure, return error status 
@@ -151,7 +155,7 @@ def find_by_petID(newjob):
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) +
           " for placing an job...")
-    app.run(host="0.0.0.0", port=5400, debug=True)
+    app.run(host='0.0.0.0', port=5400, debug=True)
     # Notes for the parameters:
     # - debug=True will reload the program automatically if a change is detected;
     #   -- it in fact starts two instances of the same flask program,

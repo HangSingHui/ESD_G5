@@ -8,7 +8,7 @@ const notification = fetch(`${notification_url}/${price_id}`)
     console.log(data);
 })
 
-// localStorage.clear()
+localStorage.clear()
 const get_all_url = "http://localhost:5005/job";
 const check_payment_url = "http://localhost:5006/check_payment"
 

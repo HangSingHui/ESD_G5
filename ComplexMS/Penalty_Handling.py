@@ -24,53 +24,24 @@ get_sitter_URL = "http://localhost:5001/sitter/"
 # binding key
 monitorBindingKey='#.penalty'
 
-# def callback(channel, method, properties, body): 
-#     print("\nReceived notification by " + __file__)
-#     processPenalty(json.loads(body), method.routing_key)
-#     print() # print a new line feed
+def callback(channel, method, properties, body): 
+    print("\nReceived notification by " + __file__)
+    processPenalty(json.loads(body), method.routing_key)
+    print() # print a new line feed
 
-# def listenToAMQP():
-#     amqp_setup.check_setup() 
-#     queue_name = 'penalty'
-#     amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
-#     amqp_setup.channel.start_consuming() 
+def listenToAMQP():
+    amqp_setup.check_setup() 
+    queue_name = 'penalty'
+    amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+    amqp_setup.channel.start_consuming() 
 
-@app.route("/penalty_handling/<string:sitterId>/<string:jobId>", methods=['PUT'])
-def penalty_handling(sitterId, jobId):
-    # Simple check of input format and data of the request are JSON
-    try:
-        # 1. Send sitterId and jobId info
-        result = processPenalty(sitterId, jobId)
-        print('\n------------------------')
-        print('result: ', result)
-        # return jsonify(result), result['code']
-        return result
 
-    except Exception as e:
-        # Unexpected error in code
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
-        print(ex_str)
-
-        return jsonify({
-            "code": 500,
-            "message": "penalty_handling.py internal error: " + ex_str
-        }), 500
-
-    # if reached here, not a JSON request.
-    return jsonify({
-        "code": 400,
-        "message": "Invalid JSON input: " + str(request.get_data())
-    }), 400
-
-# def processPenalty(message,routing_key):
-#     # 1. Check the routing key of the message
-#     if routing_key == "sitter.penalty":
-#         sitter_id = message.sitterId
-#         job_id = message.jobId
-
-def processPenalty(sitter_id, job_id):
+def processPenalty(message,routing_key):
+    # 1. Check the routing key of the message
+    if routing_key == "sitter.penalty":
+        data = json.loads(message)
+        sitter_id = data['sitterId']
+        job_id = data['jobId']
 
     # 2. Lower sitter rating score by 50 points
     # Invoke sitter microservice
@@ -116,6 +87,7 @@ def processPenalty(sitter_id, job_id):
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for handling an incident...")
     app.run(host="0.0.0.0", port=5200, debug=True)
+    listenToAMQP()
     # Notes for the parameters: 
     # - debug=True will reload the program automatically if a change is detected;
     #   -- it in fact starts two instances of the same flask program, and uses one of the instances to monitor the program changes;

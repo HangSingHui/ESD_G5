@@ -22,7 +22,7 @@ owner_URL = "http://localhost:5000/owner"
 
 #Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
 
-@app.route("/process_payment_success/<string:price_id>",method="GET")
+@app.route("/process-payment-success/<string:price_id>",method="GET")
 def process_payment_success(price_id):
     #1. Check whether payment is successful - invoke payment microservice
     payment_status = invoke_http(payment_URL+"/check_payment", method="GET")
@@ -34,7 +34,7 @@ def process_payment_success(price_id):
         }),400
     
     #2. Retrieve session object using price_id
-    get_session = invoke_http(session_URL+"/<string:price_id>",method="GET")
+    get_session = invoke_http(session_URL+"/addPrice/<string:price_id>",method="GET")
     code = get_session['code']
     if code not in range(200,300):
         return jsonify({

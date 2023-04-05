@@ -174,7 +174,7 @@ def processAcceptApp(app_id):
 
     #Update session with price_id
 
-    update_price_id = invoke_http(session_URL,"/update-price-id/<string:job_id>",json=price_id)
+    update_price_id = invoke_http(session_URL,"/addPrice/<string:job_id>",json=price_id)
     if update_price_id["code"] not in range(200,300):
         return{
             "code": 500,

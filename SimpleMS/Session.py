@@ -174,7 +174,8 @@ def create_session(job_id):
                                 'ownerDeposit':0,
                                 'sitterPaid': 0,
                                 'sitterCompleted': 0,
-                                'ownerCompleted': 0
+                                'ownerCompleted': 0,
+                                'Price_Id':""
                                 })
     except Exception as e:
         return jsonify(
@@ -301,6 +302,29 @@ def cancel_session(sessionId):
                 }
             ), 500
 
+
+#
+@app.route("/addPrice/<string:job_id>",methods=["PUT"])
+def update_price_id(job_id):
+    price_id = request.get_json()
+    query = {"$and": [{"Job_Id":ObjectId(job_id)},{"Status":"In-Progress"}]}
+    update_price = {"$set":{"Price_Id":price_id}}
+
+    try:
+        session_col.update_one(query,update_price)
+    
+    except:
+        return jsonify(
+        {
+            "code":500, #internal error
+            "message": "Internal error. Application failed to update status from Pending to Accepted."
+        }
+     ),500   
+
+    return jsonify({
+        "code":200,
+        "message": "Successfully updated price_id for open session with job id: " + job_id
+    })
 
 '''
 @app.route("/close-session/<string:sessionId>", methods=['PUT']")

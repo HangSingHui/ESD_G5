@@ -149,7 +149,7 @@ def create_session(job_id):
     sitter_id = request.json.get('SitterID')
 
     #Check if the session with the job_id above has already been created and in not closed
-    query = {"$and":[{"JobID": ObjectId(job_id)},{"Status":"In-Progress"}]}
+    query = {"$and":[{"JobID": ObjectId(job_id)},{"status":"In-Progress"}]}
 
     session_doc = session_col.find_one(query)
     if not session_doc is None:
@@ -304,11 +304,15 @@ def cancel_session(sessionId):
 
 
 #
-@app.route("/addPrice/<string:job_id>",methods=["PUT"])
+@app.route("/session/addPrice/<string:job_id>",methods=["PUT"])
 def update_price_id(job_id):
     price_id = request.get_json()
+    print(price_id)
+    print(type(price_id))
+    print(job_id)
     query = {"$and": [{"Job_Id":ObjectId(job_id)},{"status":"In-Progress"}]}
-    update_price = {"$set":{"Price_Id":price_id}}
+   
+    update_price = {"$set":{"Price_Id":str(price_id)}}
 
     try:
         session_col.update_one(query,update_price)

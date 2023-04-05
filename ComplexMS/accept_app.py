@@ -3,8 +3,8 @@ from flask_cors import CORS
 
 import os, sys
 
-sys.path.append('../SimpleMS')
-# import amqp_setup
+# sys.path.append('../SimpleMS')
+# # import amqp_setup
 
 import requests
 from invokes import invoke_http
@@ -20,7 +20,7 @@ session_URL = "http://localhost:5004/session"
 job_URL = "http://localhost:5005/job"
 payment_URL = "http://localhost:5006/payment"
 application_URL = "http://localhost:5008/application"
-success_notif_URL = "http://localhost:5500"
+# success_notif_URL = "http://localhost:5500"
 
 @app.route("/accept_app/<string:app_id>", methods=['PUT'])
 def acceptApp(app_id):
@@ -31,11 +31,6 @@ def acceptApp(app_id):
 
     if request.is_json:
         try:
-            # info = request.get_json(
-            # #info only contains the app_id
-            # # eg. {
-            # #     "app_id": 1234
-            # # }
             print("\nOwner accepted a job app with app id:" + app_id )
 
             # do the actual work
@@ -100,6 +95,7 @@ def processAcceptApp(app_id):
     #2. Update job to matched and accepted sitterid
     update_matched = invoke_http(job_URL+"/update_job/"+job_id+"/Matched", method='PUT',json=data)
     code = update_matched["code"]
+
     if code not in range(200,300):
     #Error
         return{
@@ -107,7 +103,6 @@ def processAcceptApp(app_id):
             "message": update_matched["message"]
      } 
 
-    
     #3. Update job waitlist 
     update_waitlist = invoke_http(job_URL+"/update_job/wait_list/"+job_id, method='PUT',json=data)
     code = update_waitlist["code"]
@@ -130,6 +125,8 @@ def processAcceptApp(app_id):
     # print(getJob["data"])
     job = getJob["data"][0]
     sitter_id = job["SitterID"]
+    job_id = job["_id"]["$oid"]
+    print(job_id)
 
     
     #3.  Invoke Session to update status
@@ -155,7 +152,7 @@ def processAcceptApp(app_id):
     sitterEmail = getSitter["data"][0]["Email"]
 
     #5.  Invoke Notif to send confirmation acceptance to sitter
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
+    # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="accept.sitter.notification", body=sitterEmail, properties=pika.BasicProperties(delivery_mode = 2))
 
     #Get price_id first
     if code not in range(200,300):
@@ -174,21 +171,23 @@ def processAcceptApp(app_id):
 
     #Update session with price_id
 
-    update_price_id = invoke_http(session_URL,"/addPrice/<string:job_id>",json=price_id)
-    if update_price_id["code"] not in range(200,300):
-        return{
+    # print("here??")
+    # print(type(job_id))
+    update_price_id = invoke_http(session_URL+"/addPrice/"+job_id,method="PUT",json=price_id)
+    code = update_price_id["code"]
+    if code not in range(200,300):
+        return jsonify({
             "code": 500,
             "message": "Failed to update price_id for job with job id: " + job_id
-        }
+        })
 
-
-    return jsonify({
+    return {
         "code":200,
         "message": "You have successfully accepted your desired sitter. Awaiting for owner to make a payment.",
         "data":{
-             "price_id":price_id   
+             "price_id":price_id
             }
-        }),200
+        }
 
 
 

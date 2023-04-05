@@ -5,7 +5,7 @@ from flask_cors import CORS
 
 import os, sys
 
-sys.path.append('../SimpleMS')
+# sys.path.append('../SimpleMS')
 import amqp_setup
 
 import requests

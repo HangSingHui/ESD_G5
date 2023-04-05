@@ -9,7 +9,7 @@ import os, sys
 
 import requests
 
-sys.path.append("../SimpleMS")
+# sys.path.append("../SimpleMS")
 import amqp_setup
 
 from invokes import invoke_http

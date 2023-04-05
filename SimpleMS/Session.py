@@ -32,7 +32,6 @@ def getsession(sessionID):
     #job=job_col.find(query)
    
     num_sessions = session_db.session.count_documents(query)
-    print(num_sessions)
     session = session_col.find(query)
     if num_sessions> 0:
         session = list(session)
@@ -149,8 +148,9 @@ def create_session(job_id):
     owner_id = request.json.get('OwnerID')
     sitter_id = request.json.get('SitterID')
 
-    #Check if the session with the job_id above has already been created
-    query = {"JobID": ObjectId(job_id)}
+    #Check if the session with the job_id above has already been created and in not closed
+    query = {"$and":[{"JobID": ObjectId(job_id)},{"Status":"In-Progress"}]}
+
     session_doc = session_col.find_one(query)
     if not session_doc is None:
         return jsonify({
@@ -307,7 +307,7 @@ def cancel_session(sessionId):
 @app.route("/addPrice/<string:job_id>",methods=["PUT"])
 def update_price_id(job_id):
     price_id = request.get_json()
-    query = {"$and": [{"Job_Id":ObjectId(job_id)},{"Status":"In-Progress"}]}
+    query = {"$and": [{"Job_Id":ObjectId(job_id)},{"status":"In-Progress"}]}
     update_price = {"$set":{"Price_Id":price_id}}
 
     try:
@@ -325,6 +325,36 @@ def update_price_id(job_id):
         "code":200,
         "message": "Successfully updated price_id for open session with job id: " + job_id
     })
+
+@app.route("/get-session-by-price/<string:priceID>")
+def getSessionByPrice(priceID):
+    #search if session exists first with sessionID
+    query={"Price_Id":priceID}
+    #job=job_col.find(query)
+
+    num_sessions = session_db.session.count_documents(query)
+    session = session_col.find(query)
+    if num_sessions> 0:
+        session = list(session)
+        json_data = dumps(session)
+        json_data = json.loads(json_data)
+        # print(json_data)
+        # ownerID = json_data[0]["OwnerID"]["$oid"]
+        return jsonify(
+            {
+                "code":200,
+                "data": json_data
+                # "owner": ownerID
+            }
+        )
+    #if not, return job not found
+    return jsonify(
+            {
+                "code":404,
+                "message":"Session not found."
+            }
+        ),404
+
 
 '''
 @app.route("/close-session/<string:sessionId>", methods=['PUT']")

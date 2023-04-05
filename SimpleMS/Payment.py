@@ -87,6 +87,7 @@ def check_if_paid():
     #Get latest payment intent
     latest = stripe.PaymentIntent.list(limit=1)
     payment_status = latest["data"][0]["status"]
+    # latest_priceID = latest["data"][0]["id"]
     if payment_status == "succeeded":
          return jsonify({
             "code":200,

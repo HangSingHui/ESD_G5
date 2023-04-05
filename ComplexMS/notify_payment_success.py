@@ -34,7 +34,7 @@ def process_payment_success(price_id):
         }),400
     
     #2. Retrieve session object using price_id
-    get_session = invoke_http(session_URL+"/addPrice/<string:price_id>",method="GET")
+    get_session = invoke_http(session_URL+"/get-session-by-price/<string:price_id>",method="GET")
     code = get_session['code']
     if code not in range(200,300):
         return jsonify({
@@ -43,7 +43,7 @@ def process_payment_success(price_id):
             }),404
     
     #Returns a session object
-    owner_id = get_session["OwnerID"]
+    owner_id = get_session["data"][0]["OwnerID"]["$oid"]
 
     #3. Retrieve ownerEmail using Ownerid in session object
     get_owner = invoke_http(owner_URL+"/"+owner_id, method="GET")

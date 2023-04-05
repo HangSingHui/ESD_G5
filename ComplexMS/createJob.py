@@ -114,11 +114,12 @@ def processPublishJob(new_job,jobID):
     # json. dumps() method - convert a python object into an equivalent JSON object
     message = json.dumps( {
         'job_id': jobID, 
+        'job_title': new_job['Title'],
         'owner_id': new_job['OwnerID'], 
         'pet_species': pet_species, 
         'hourly_rate': new_job['Hourly_rate']
     })
-
+    print(message)
     # filter by pet 
     # if dog -> routing key = dog.*
     # if cat -> routing key = cat.*

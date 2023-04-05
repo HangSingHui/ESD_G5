@@ -227,3 +227,7 @@ function submit_job() {
 
     })
 }
+
+function go_to_jobs() {
+    window.location.href = "owner"
+}

@@ -31,6 +31,7 @@ get_owner_by_id_URL = "http://localhost:5000/owner/"
 get_sitter_details_URL = "http://localhost:5001/sitter/"
 get_session_by_id_URL = "http://localhost:5004/session/"
 get_job_by_id_URL = "http://localhost:5005/job/"
+get_app_by_id_URL = "http://localhost:5008/application/"
 
 
 @app.route("/incident_handling/<string:sessionId>", methods=['PUT'])
@@ -100,7 +101,7 @@ def processIncident(session):
     
     # 3. Change job status to 'Open' from Job Microservice
     print('\n-----Update job status from "Matched" to "Open" (job microservice)-----')
-    newStatus = {"Status": "Open", "SitterID": ""}
+    newStatus = {"Status": "Open", "sitter_id": ""}
     open_job_result = invoke_http(update_job_URL + jobId + '/Open' , method='PUT', json=newStatus)
     print('open_job_result: ', open_job_result)
     
@@ -149,18 +150,20 @@ def processIncident(session):
     # 6. Retrieve recommended petsitters as replacement (waitlist)
     # Invoke job microservice
     print('\n-----Retrieve waitlist from job microservice-----')
-    sitter_replacements_response = invoke_http(job_waitlist_URL + jobId, method='GET')
-    print('Sitter Replacements Suggestion: ',sitter_replacements_response)
+    applications_replacements_response = invoke_http(job_waitlist_URL + jobId, method='GET')
+    print('Sitter Replacements Suggestion: ',applications_replacements_response)
 
     #Check if sitter_replacements_response returns valid response. If response -> Get owner's name and email, then get recommended sitter's 
-    if sitter_replacements_response:
-        sitter_replacements_list = sitter_replacements_response['data']
-        print(sitter_replacements_list)
+    if applications_replacements_response:
+        applications_replacements_list = applications_replacements_response['data']
+        print(applications_replacements_list)
 
         #Get owner's email and name
         print('\n-----Retrieve name and email from owner microservice-----')
-        owner_details_response = invoke_http(get_owner_by_id_URL + str(ownerId), method=['GET'])
-        print(owner_details_response)
+        print(ownerId)
+        owner_details_response = invoke_http('http://localhost:5000/owner/641998d4148563c1c5771f50', method='GET')
+        owner_name = owner_details_response["data"][0]["Name"]
+        owner_email = owner_details_response["data"][0]["Email"]
         '''
         print(owner_details_response)
         owner_name = owner_details_response["data"][0]["Name"]
@@ -169,7 +172,6 @@ def processIncident(session):
         print("Owner_email: " + str(owner_email))
         '''
 
-        
         
     # Get owner's email and name
     # Invoke owner microservice
@@ -181,13 +183,24 @@ def processIncident(session):
     print('Owner name:',owner_name_result,'\nOwner email:',owner_email_result)
     '''
 
-    sitters = []
-    for sitter in sitter_replacements_list:
+    replacement_sitters_ids = []
+    replacement_sitters_details =[]
+
+    #GET REPLACEMENT SITTER FROM JOB APPLICATION
+    for application in applications_replacements_list:
+        application_details_response = invoke_http(get_app_by_id_URL + application, method='GET')
+        print(application_details_response)
+        application_sitterID = application_details_response["data"]["SitterID"]['$oid']
+        replacement_sitters_ids.append(application_sitterID)
+    
+    #GET SITTER DETAILS THROUGH SITTER.PY
+    for sitter in replacement_sitters_ids:
         details = invoke_http(get_sitter_details_URL + sitter, method='GET')
         print(details)
-        sitters.append(details)
+        replacement_sitters_details.append(details["data"][0])
+
+    print('List of replacement sitters details ' + str(replacement_sitters_details))
     
-    print(sitters)
 
 '''
     # 7. Send list of recommended pet sitter replacements

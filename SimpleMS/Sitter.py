@@ -51,8 +51,8 @@ def get_all():
 def find_by_id(id):
     query={"_id":ObjectId(id)}
     sitter=pet_sitter_col.find(query)
-    num_sitter = pet_sitter_db.pet_sitter.count_documents({})
-    
+    num_sitter = pet_sitter_db.pet_sitter.count_documents(query)
+    print(num_sitter)
     if num_sitter > 0:
         sitter = list(sitter)
         json_data = dumps(sitter)

@@ -170,16 +170,14 @@ def processAcceptApp(app_id):
 
     # print(job["Payout"])
     payout = job["Payout"]["$numberDecimal"] #Just a string
-    print(payout)
+    # print(payout)
     # payout = {"price_id":price_id}
     create_price = invoke_http(payment_URL+"/charge", method="POST",json=payout)
     code=create_price["code"]
     # print(create_price["data"])
 
     #7. Invoke payment to return the price_id to the UI
-    print(create_price)
     price_id = create_price["price_id"]
-    print(price_id)
 
     #Update session with price_id
 
@@ -191,21 +189,7 @@ def processAcceptApp(app_id):
             "code": 500,
             "message": "Failed to update price_id for job with job id: " + job_id
         })
-    
-    # return_stmt = {
-    #         "code":200,
-    #         "message": "You have successfully accepted your desired sitter. Awaiting for owner to make a payment.",
-    #         "price_id":price_id
-    # }
 
-    # stmt = json.dump(return_stmt)
-    # loaded_stmt = json.load(stmt)
-
-    # return loaded_stmt
-
-    # # print("This is the type")
-    # # print(return_stmt)
-    # # print(type(return_stmt))
 
     return {
             "code":200,
@@ -217,5 +201,5 @@ def processAcceptApp(app_id):
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) +
-          " for placing an order...")
+          " for accepting a job application...")
     app.run(host="0.0.0.0", port=5100, debug=True)

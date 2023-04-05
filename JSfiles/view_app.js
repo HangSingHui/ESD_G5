@@ -47,7 +47,7 @@ const app_response = fetch(`${application_get_url}/${job_id}`)
                         <h5 class="card-title" id='${app_num}name'>Application ${job_count}</h5>
                         <h6 class="card-subtitle mb-2 text-body-secondary" id='${app_num}subtitle'>Card subtitle</h6>
                         <p class="card-text" id='${app_num}info'></p>
-                        <button class="btn btn-success" id="${app_num}accept" onclick="accept_application('642b0c420bd4ba2fe4dc950f')">Accept</button>
+                        <button class="btn btn-success" id="${app_num}accept" onclick="accept_application('${application_id}')">Accept</button>
                         <button class="btn btn-danger" id="${app_num}reject" onclick="reject_application('${application_id}')">Reject</button>
                     </div>
                 </div>
@@ -147,28 +147,32 @@ function accept_application(item) {
         )
         .then(response => response.json())
         .then(data => {
-            // console.log(response);
             console.log(data);
+            result = data.data;
+            price_id = result["price_id"]
+            alert("You have successfully accepted this sitter! We hope your pet has a paw-some time!")
+
+            var product_price_id = price_id
+
+            localStorage.setItem("price_id", product_price_id);
+
+            stripe.redirectToCheckout({
+                lineItems:[
+                    {
+                        price : product_price_id,
+                        quantity: 1
+                    },
+                ],
+                mode: 'payment',
+                successUrl : "http://127.0.0.1:5500/owner_accept_applications.html",
+                cancelUrl : "http://127.0.0.1:5500/owner_accept_applications.html"
+            })
+            .then(function (){});
         })
 
-    alert("You have successfully accepted this sitter! We hope your pet has a paw-some time!")
+    
 
-    // var product_price_id = 'price_1Mt8RtFrjIdoqzyM6KhY7Ifn'
-
-    // localStorage.setItem("price_id", product_price_id);
-
-    // stripe.redirectToCheckout({
-    //     lineItems:[
-    //         {
-    //             price : product_price_id,
-    //             quantity: 1
-    //         },
-    //     ],
-    //     mode: 'payment',
-    //     successUrl : "http://127.0.0.1:5500/owner_accept_applications.html",
-    //     cancelUrl : "http://127.0.0.1:5500/owner_accept_applications.html"
-    // })
-    // .then(function (){});
+    
 
     document.getElementById("application_list").innerHTML = 
     

@@ -78,7 +78,7 @@ def processIncident(session):
     print('sitterId '+sitterId)
     print('ownerId '+ownerId)
 
-    # 2. Update session closing time and change session status to closed
+    # Update session closing time and change session status to closed
     # Invoke session microservice
     print('\n-----Cancel session (session microservice)-----')
     '''
@@ -99,7 +99,7 @@ def processIncident(session):
     job_start_datetime = get_job_result["data"][0]["Start_datetime"]
     print("\nJob Start Datetime: "+job_start_datetime)
     
-    # 3. Change job status to 'Open' from Job Microservice
+    # Change job status to 'Open' from Job Microservice
     print('\n-----Update job status from "Matched" to "Open" (job microservice)-----')
     newStatus = {"SitterID": ""}
     open_job_result = invoke_http(update_job_URL + jobId + '/Open' , method='PUT', json=newStatus)
@@ -113,7 +113,7 @@ def processIncident(session):
 
     #TRIGGER PENALTY HANDLING IF CANCELLATION NOTICE < 24 HOURS
     if cancellation_notice_hours < 24:
-        # 5. Send pet sitter details to AMQP for penalty handling
+        # Send pet sitter details to AMQP for penalty handling
         print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
 
         message = json.dumps({"sitterId": sitterId, "jobId": jobId})
@@ -124,7 +124,7 @@ def processIncident(session):
     # if no, ignore
         pass
 
-    # 6. Retrieve recommended petsitters as replacement (waitlist)
+    # Retrieve recommended petsitters as replacement (waitlist)
     # Invoke job microservice
     print('\n-----Retrieve waitlist from job microservice-----')
     sitter_replacements_response = invoke_http(job_waitlist_URL + jobId, method='GET')
@@ -143,35 +143,10 @@ def processIncident(session):
         owner_name = owner_details_response["data"][0]["Name"]
         owner_email = owner_details_response["data"][0]["Email"]
         print(owner_name, owner_email)
-        '''
-        print(owner_details_response)
-        owner_name = owner_details_response["data"][0]["Name"]
-        owner_email = owner_details_response["data"][0]["Email"]
-        print("Owner_name: " + str(owner_name))
-        print("Owner_email: " + str(owner_email))
-        '''
-
-        
-    # Get owner's email and name
-    # Invoke owner microservice
-    #print('\n-----Retrieve name and email from owner microservice-----')
-
-    '''
-    owner_name_result = invoke_http(get_owner_by_id_URL + ownerId, method='GET')[0]['Name']
-    owner_email_result = invoke_http(get_owner_by_id_URL + ownerId, method='GET')[0]['Email']
-    print('Owner name:',owner_name_result,'\nOwner email:',owner_email_result)
-    '''
 
     replacement_sitters_details = []
-
-    # #GET REPLACEMENT SITTER FROM JOB APPLICATION
-    # for application in applications_replacements_list:
-    #     application_details_response = invoke_http(get_app_by_id_URL + application, method='GET')
-    #     print(application_details_response)
-    #     application_sitterID = application_details_response["data"]["SitterID"]['$oid']
-    #     replacement_sitters_ids.append(application_sitterID)
     
-    #GET SITTER DETAILS THROUGH SITTER.PY
+    #GET SITTER DETAILS THROUGH SITTER.PY IF WAITLIST IS NOT EMPTY
     if len(sitter_replacements_list) >= 1:
         for sitter in sitter_replacements_list:
             details = invoke_http(get_sitter_details_URL + sitter, method='GET')
@@ -179,7 +154,7 @@ def processIncident(session):
             replacement_sitters_details.append(details["data"][0])
         print('List of replacement sitters details ' + str(replacement_sitters_details))
 
-        # 7. Send list of recommended pet sitter replacements
+        # Send list of recommended pet sitter replacements
         print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')
 
         message = json.dumps({'jobID': jobId, 
@@ -190,16 +165,12 @@ def processIncident(session):
 
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="replacement.notification", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    # IF EMPTY --> PUBLISH MESSAGE TO AMQP TO NOTIFY OWNER AND APOLOGIZE (NO RECCOMENDATION)
     else:
         print('\n\n-----Notifying owner that there we are sorry the sitter pulled out with routing_key=no.replacement.notification-----')
         message = json.dumps({'jobID': jobId,'ownerName': owner_name,'ownerEmail':owner_email})
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="no.replacement.notification", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2))
-
-
-    
-    # make message persistent within the matching queues until it is received by some receiver 
-    # (the matching queues have to exist and be durable and bound to the exchange)
 
 
     # - reply from the invocation is not used;
@@ -215,9 +186,6 @@ def processIncident(session):
                 "cancelation_status": "confirmed"
             }
     }
-
-
-
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":

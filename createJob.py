@@ -39,13 +39,15 @@ def create_job():
             result = processJobCreation(new_job)
             code = result["code"]
             jobID = result['data']['job_result']['jobID']
+            print(jobID)
 
             if code in range(200, 300):     
                 # if the job creation is successful, send the message to the fanout exchange 
-                published_result = processPublishJob(new_job,jobID) # new_job contains entire job info 
+                result = processPublishJob(new_job,jobID) # new_job contains entire job info 
+                return ""
                 # what is published_result? 
 
-            return jsonify(result), result["code"]
+            # return jsonify(result), result["code"]
         
         #if is 201, then access rate and species -pasas into amqp
         # filter the hourly rate into categories 
@@ -64,10 +66,10 @@ def create_job():
             }), 500
     
     # if reached here, not a JSON request.
-    return jsonify({
-        "code": 400,
-        "message": "Invalid JSON input: " + str(request.get_data())
-    }), 400
+        return jsonify({
+            "code": 400,
+            "message": "Invalid JSON input: " + str(request.get_data())
+        }), 400
 
 
 def processJobCreation(new_job):
@@ -80,6 +82,7 @@ def processJobCreation(new_job):
     # data = request.get_json()
     print('\n-----Invoking job microservice-----')
     owner_id = new_job["OwnerID"] #ASSUME THIS IS STRING
+    print(owner_id)
     job_result = invoke_http(job_URL+"/"+owner_id, method='POST', json=new_job)
     print('job_result:', job_result)
 
@@ -107,6 +110,8 @@ def processPublishJob(new_job,jobID):
     # extract the pet type and publish to the queues 
     # job_id = new_job['_id']   
     # owner_id = new_job['OwnerID']
+    # print(new_job)
+    # print(jobID)
     pet_species = find_by_petID(new_job)['data']
     # print(pet_species)   
     hourly_rate_result = new_job['Hourly_rate']
@@ -158,7 +163,8 @@ def processPublishJob(new_job,jobID):
     
 def find_by_petID(newjob): 
     print('\n-----Invoking pet microservice-----')
-    pet_id = newjob['PetID'][0] 
+    print(newjob)
+    pet_id = newjob['PetID']
     pet_result = invoke_http(pet_URL+"/"+pet_id, method='GET')
     print('pet_result:', pet_result) 
     return pet_result # pet_result - json pet species 

@@ -1,5 +1,5 @@
 // Simulate that a Sitter has logged in 
-var sitter_id = '642935cb06864f6b8cac1f39'
+var sitter_id = '64199bff455936ecfa302f27'
 
 const session_get_url = "http://localhost:5004/sitter_all_sessions";
 const get_job_url = "http://localhost:5005/job";
@@ -39,13 +39,6 @@ for (let index = 0; index < curr_sessions.length; index++) {
     jobs_id_arr.push(job_id)
     session_id_arr.push(session_id)
 }
-    
-
-// console.log(temp_jobs_status);
-// console.log(jobs_arr);
-// console.log(status_arr); 
-// jobs = temp_jobs_status
-// console.log(jobs);
 
 updateArr(status_arr, jobs_id_arr, session_id_arr);
 

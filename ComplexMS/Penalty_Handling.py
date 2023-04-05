@@ -24,10 +24,6 @@ get_sitter_URL = "http://localhost:5001/sitter/"
 # binding key
 monitorBindingKey='#.penalty'
 
-def callback(channel, method, properties, body): 
-    print("\nReceived notification by " + __file__)
-    processPenalty(json.loads(body), method.routing_key)
-    print() # print a new line feed
 
 def listenToAMQP():
     amqp_setup.check_setup() 
@@ -35,12 +31,17 @@ def listenToAMQP():
     amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
     amqp_setup.channel.start_consuming() 
 
+def callback(channel, method, properties, body): 
+    print("\nReceived notification by " + __file__)
+    processPenalty(body.decode('utf-8'), method.routing_key)
+    print() # print a new line feed
 
 def processPenalty(message,routing_key):
     # 1. Check the routing key of the message
     if routing_key == "sitter.penalty":
         print('penalty request received')
         data = json.loads(message)
+        print(data)
         sitter_id = data['sitterId']
         job_id = data['jobId']
 

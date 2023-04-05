@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import json
+from bson.json_util import dumps
 
 import os, sys
 
@@ -184,12 +186,8 @@ def processAcceptApp(app_id):
     return {
         "code":200,
         "message": "You have successfully accepted your desired sitter. Awaiting for owner to make a payment.",
-        "data":{
-             "price_id":price_id
-            }
+        "price_id":price_id
         }
-
-
 
 
 # Execute this program if it is run as a main script (not by 'import')

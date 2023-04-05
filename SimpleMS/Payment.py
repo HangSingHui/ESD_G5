@@ -18,7 +18,7 @@ def calculate_order_amount(charge):
     # Replace this constant with a calculation of the order's amount
     # Calculate the order total on the server to prevent
     # people from directly manipulating the amount on the client
-    total = charge* 1.18  # GST
+    total = charge* 1.18 *100  # GST
     return total
 
 @app.route('/payment/charge', methods=['POST'])

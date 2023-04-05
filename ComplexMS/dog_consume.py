@@ -47,6 +47,7 @@ def receiveOrderLog():
 
 def callback(channel, method, properties, body): # required signature for the callback; no return
     print("\nReceived a dog log by " + __file__)
+    # processSpecies return emails of sitters 
     result= processSpecies(json.loads(body)) 
     print() # print a new line feed
 
@@ -86,8 +87,6 @@ def processSpecies(message): #get sitter function
     # rate argument will be a category -> do validation again in sitter.py func 7 
     print('\n-----Invoking sitter microservice-----')
     sitterList =invoke_http(sitter_URL+"/"+species+"/"+rate_cat) #get all sitters
-    # ASSUMING sitterList - json of all the emails of the sitters subscribed to the queue 
-    # invoke notif function to send notif to all the sitters 
 
     print('sitter_result:', sitterList)
 

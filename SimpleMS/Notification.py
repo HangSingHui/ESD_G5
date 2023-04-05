@@ -40,16 +40,7 @@ def callback(channel, method, properties, body):
 mail_signature = "\n\nDo contact us via our support email at inquiries.petsrus@gmail.com for any queries.\n\nThank you for using Pets R Us!\n\nBest Regards,\nPet R Us (With Pets, For Pets)"
 
 def processNotif(info,routing_key):
-    # print("Recording an order log:")
-    # print(order)  
 
-    #structure of AMQP message (JSON - routing key = accept.sitter.notification
-    # {
-    #    "sitterEmail": "lebubbub@gmail.com",
-    #    "jobTitle": "Dog Walking",
-    #     "sitterName": "Sally",
-    #       "jobID": 123   
-    # }
     subject="[None - Do Not Reply]"
     body = ""
 
@@ -59,15 +50,6 @@ def processNotif(info,routing_key):
         body= "Dear Pets R Us Sitter ,\n\nWe are pleased to inform you that you have been accepted as a sitter! Please access the app to view more details. Should you wish to turn down the offer, kindly indicate in the Pet's R Us mobile application within the next 12 hours." 
         recipient = info
     
-    #structure of AMQP message (JSON - routing key = hold.payment.notification)
-    # {
-    #    "ownerEmail": "lebubbub@gmail.com",
-    #    "jobTitle": "Dog Walking",
-    #     "sitterName": "Sally",
-    #      "jobD": 123.
-    #       "totalPayable": $40,
-    #       "cardInfo": 1314 #last 4 numbers
-    # }
     
     # message to OWNER about CONFIRMATION OF JOB ACCEPTANCE (SC. 2)
     elif routing_key=="pmt.hold.success.notification":
@@ -82,17 +64,24 @@ def processNotif(info,routing_key):
         body= "Dear " + notif['sitterName'] + ",\n\nYou have been charged a penalty fee of $20 due to the last-minute pull out from job <jobID: "+ str(notif['jobID']) + ">. We have also deduct your user score by 50 points. Your current user score is "+ str(notif['sitterUserScore']) +" points. Please avoid pulling out from a job less than 24 hours before the job commences.\n\nThank you."   
         recipient = notif['sitterEmail']
 
-    # message to OWNER about SITTER REPLACEMENTS (SC. 3)
+    # message to OWNER about SITTER PULLING OUT AND SITTER REPLACEMENTS (SC. 3)
     elif routing_key=='replacement.notification':
         notif = json.loads(info)
         subject = "[Petsitter Replacements Suggestion] for job <jobID: " + str(notif['jobID'])+">"
-        body= "Dear " + notif['ownerName'] +",\n\nWe are sorry to say that your matched sitter has pulled out from the job <jobID: "+ str(notif['jobID']) +">.\n\nWe would like to suggest you a list of sitters that could act as a replacement:\n\n"
+        body= "Dear " + notif['ownerName'] +",\n\nWe are sorry to let you know that your matched sitter has pulled out from the job <jobID: "+ str(notif['jobID']) +">.\n\nWe would like to suggest you a list of sitters that could act as a replacement:\n\n"
 
         num = 1
         # loop to add each sitter's details
         for sitter in notif['replacements']:
             body += str(num)+".\tName: "+sitter['Name'] + ' ('+str(sitter['_id'])+')\n\tRate: '+str(sitter['Hourly_rate'])+"/hr\n\tContact: "+str(sitter['Phone'])+"\n"
             num += 1
+        recipient = notif['ownerEmail']
+
+    # message to OWNER about SITTER PULLING OUT (SC. 3)
+    elif routing_key=='no.replacement.notification':
+        notif = json.loads(info)
+        subject = "[Petsitter Pulled Out Last Minute] for job <jobID: " + str(notif['jobID'])+">"
+        body= "Dear " + notif['ownerName'] +",\n\nWe are deeply sorry to let you know that your matched sitter has pulled out from the job <jobID: "+ str(notif['jobID']) +">. We hope that you can find another petsitter soon."
         recipient = notif['ownerEmail']
 
     

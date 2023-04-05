@@ -52,7 +52,7 @@ def get_pets(id):
     return jsonify(
         {
             "code": 404,
-            "message": "There are no existing sitters."
+            "message": "There are no pets for the owners."
         }
     ), 404
     '''

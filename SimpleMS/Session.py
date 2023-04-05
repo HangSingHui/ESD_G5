@@ -307,6 +307,7 @@ def cancel_session(sessionId):
 @app.route("/session/addPrice/<string:job_id>",methods=["PUT"])
 def update_price_id(job_id):
     price_id = request.get_json()
+    price_id = price_id["price_id"]
     print(price_id)
     print(type(price_id))
     print(job_id)

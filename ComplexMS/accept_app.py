@@ -5,8 +5,8 @@ from bson.json_util import dumps
 
 import os, sys
 
-# sys.path.append('../SimpleMS')
-# # import amqp_setup
+sys.path.append('../SimpleMS')
+import amqp_setup
 
 import requests
 from invokes import invoke_http
@@ -164,12 +164,13 @@ def processAcceptApp(app_id):
             "message":"Error on Stripe Server. Unable to create new price to charge owner."
         }),500
 
-    payout = job["Payout"]
+    payout = {"price_id":price_id}
     create_price = invoke_http(payment_URL+"/charge", method="POST",json=payout)
     code=create_price["code"]
 
     #7. Invoke payment to return the price_id to the UI
     price_id = create_price["price_id"]
+    data={"price_id":price_id}
 
     #Update session with price_id
 

@@ -52,7 +52,7 @@ def acceptApp(app_id):
 
             return jsonify({
                 "code": 500,
-                "message": "_order.py internal error: " + ex_str
+                "message": "accept_app.py internal error: " + ex_str
             }), 500
 
     # if reached here, not a JSON request.

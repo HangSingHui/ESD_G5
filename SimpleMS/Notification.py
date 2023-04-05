@@ -79,20 +79,21 @@ def processNotif(info,routing_key):
     elif routing_key == 'penalty.notification':
         notif = json.loads(info)
         subject = "[Penalty Charged] for job <jobID: " + str(notif['jobID'])+">"
-        body= "Dear " + notif['sitterName'] + ",\n\nYou have been charged a penalty fee of $20 due to the last-minute pull out from job <jobID: "+ str(notif['jobID']) + ">. We have also deduct your user score by 50 points. Your current user score is "+ str(notif['sitterUserScore']) +"points. Please avoid pulling out from a job less than 24 hours before the job commences.\n\nThank you."   
+        body= "Dear " + notif['sitterName'] + ",\n\nYou have been charged a penalty fee of $20 due to the last-minute pull out from job <jobID: "+ str(notif['jobID']) + ">. We have also deduct your user score by 50 points. Your current user score is "+ str(notif['sitterUserScore']) +" points. Please avoid pulling out from a job less than 24 hours before the job commences.\n\nThank you."   
         recipient = notif['sitterEmail']
 
-    # # message to OWNER about SITTER REPLACEMENTS (SC. 3)
-    # elif routing_key=='replacement.notification':
-    #     subject = "[Petsitter Replacements Suggestion] for job " + str(notif.jobID)
-    #     body= "Dear " + notif.ownerName +",\nWe are sorry to say that your matched sitter has pulled out from the job "+ str(notif.jobID) +".\nWe would like to suggest you a list of sitters that could act as a replacement:"
+    # message to OWNER about SITTER REPLACEMENTS (SC. 3)
+    elif routing_key=='replacement.notification':
+        notif = json.loads(info)
+        subject = "[Petsitter Replacements Suggestion] for job <jobID: " + str(notif['jobID'])+">"
+        body= "Dear " + notif['ownerName'] +",\n\nWe are sorry to say that your matched sitter has pulled out from the job <jobID: "+ str(notif['jobID']) +">.\n\nWe would like to suggest you a list of sitters that could act as a replacement:\n\n"
 
-    #     num = 1
-    #     # loop to add each sitter's details
-    #     for sitter in notif.replacements:
-    #         body += str(num)+". \tName: "+sitter['Name'] + ' ('+str(sitter['_id'])+')\n\tRate: '+sitter['Hourly_rate']+"/hr\n\tContact: "+sitter['Phone']+"\n"
-    #         num += 1
-    #     recipient = notif.ownerEmail
+        num = 1
+        # loop to add each sitter's details
+        for sitter in notif['replacements']:
+            body += str(num)+".\tName: "+sitter['Name'] + ' ('+str(sitter['_id'])+')\n\tRate: '+str(sitter['Hourly_rate'])+"/hr\n\tContact: "+str(sitter['Phone'])+"\n"
+            num += 1
+        recipient = notif['ownerEmail']
 
     
     body += mail_signature

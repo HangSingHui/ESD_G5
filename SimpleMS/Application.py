@@ -125,7 +125,7 @@ def acceptUpdate(app_id):
     all_applications = getAll(job_id).json
     for data in all_applications["data"]:
         if data["Status"] == "Rejected" and data["Waitlist_if_rejected"] == "Yes":
-            waitList.append(data["_id"]["$oid"])
+            waitList.append(data["SitterID"]["$oid"])
 
 
     return jsonify(

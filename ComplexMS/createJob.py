@@ -24,8 +24,8 @@ app = Flask(__name__)
 CORS(app)
 
 # thr URLs are just the SMS that the CMS will be sending requests to? 
-job_URL = "http://localhost:5100/job"
-pet_URL = "http://localhost:5007/pet"
+job_URL = "http://localhost:5005/createjob"
+pet_URL = "http://localhost:5007/pets/get_species"
 
 @app.route("/createjob", methods=['POST'])
 def create_job():
@@ -39,10 +39,12 @@ def create_job():
             # func results either success or failure response 
             result = processJobCreation(new_job)
             code = result["code"]
+            jobID = result['data']['job_result']['jobID']
+            print(jobID)
 
             if code in range(200, 300):     
                 # if the job creation is successful, send the message to the fanout exchange 
-                published_result = processPublishJob(new_job) # new_job contains entire job info 
+                published_result = processPublishJob(new_job,jobID) # new_job contains entire job info 
                 # what is published_result? 
 
             return jsonify(result), result["code"]
@@ -76,7 +78,7 @@ def processJobCreation(new_job):
 
     # data = request.get_json()
     print('\n-----Invoking job microservice-----')
-    owner_id = request.json.get("OwnerID") #ASSUME THIS IS STRING
+    owner_id = new_job["OwnerID"] #ASSUME THIS IS STRING
     job_result = invoke_http(job_URL+"/"+owner_id, method='POST', json=new_job)
     print('job_result:', job_result)
 
@@ -96,22 +98,22 @@ def processJobCreation(new_job):
     }
 
 
-def processPublishJob(new_job):
+def processPublishJob(new_job,jobID):
     '''publish messages to the queues that the pet sitters are subscribed to'''
 
     # if this function is reached, it is assumed that the job has been successfully created
     # there is no need to check success of status
     # extract the pet type and publish to the queues 
-
+    print(jobID)
     # job_id = new_job['_id']   
     # owner_id = new_job['OwnerID']
-    pet_species = find_by_petID(new_job)
+    pet_species = find_by_petID(new_job)['data']
     # print(pet_species)   
     hourly_rate_result = new_job['Hourly_rate']
 
     # json. dumps() method - convert a python object into an equivalent JSON object
     message = json.dumps( {
-        'job_id': new_job['_id'], 
+        'job_id': jobID, 
         'owner_id': new_job['OwnerID'], 
         'pet_species': pet_species, 
         'hourly_rate': new_job['Hourly_rate']
@@ -123,7 +125,7 @@ def processPublishJob(new_job):
 
     ########### Send to different queues based on pet species type ###########
 
-    if pet_species == 'dog': 
+    if pet_species == 'Dog': 
         # send to dog queue 
         print('\n\n-----Publishing the (dog) message with routing_key=dog.*-----')
 
@@ -133,7 +135,7 @@ def processPublishJob(new_job):
         # make message persistent within the matching queues until it is received by some receiver 
         # (the matching queues have to exist and be durable and bound to the exchange)
 
-    if pet_species == 'cat': 
+    if pet_species == 'Cat': 
         # send to cat queue 
         print('\n\n-----Publishing the (dog) message with routing_key=cat.*-----')
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="cat.*", 
@@ -142,8 +144,7 @@ def processPublishJob(new_job):
     
 def find_by_petID(newjob): 
     print('\n-----Invoking pet microservice-----')
-    # owner_id = request.json.get("OwnerID") #ASSUME THIS IS STRING
-    pet_id = newjob['petID'] 
+    pet_id = newjob['PetID'] 
     pet_result = invoke_http(pet_URL+"/"+pet_id, method='GET')
     print('pet_result:', pet_result) 
     return pet_result # pet_result - json pet species 

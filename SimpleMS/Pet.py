@@ -96,7 +96,12 @@ def get_pet_species(id):
         json_data = dumps(pets)
         json_data = json.loads(json_data)
         species = json_data[0]['Species'] 
-        return species
+        return jsonify(
+            {
+            "code": 200,
+            "data": species
+            }
+        )
         '''
         species = print(json_data[0]['Species'])
         return species

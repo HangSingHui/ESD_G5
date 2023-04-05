@@ -124,43 +124,6 @@ def processIncident(session):
     # if no, ignore
         pass
 
-    '''
-    if(cancellation_notice_hours < 24):
-        # 5. Send pet sitter details to AMQP for penalty handling
-        print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
-
-        message = json.loads({'sitterId': sitterId, 
-                              'jobId': jobId})
-
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="sitter.penalty", 
-        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-    else:
-    # if no, ignore
-        pass
-        '''
-
-
-    '''
-    # 4. check if job was cancelled after 1 day
-    # if yes, invoke penalty handling (complex MS)
-    if closing_session_result['data']['sessionDuration'] > 24 : 
-        # 5. Send pet sitter details to AMQP for penalty handling
-        print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
-
-        message = json.loads({'sitterId': sitterId, 
-                              'jobId': jobId})
-
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="sitter.penalty", 
-        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-
-    else:
-    # if no, ignore
-        pass
-        '''
-    
-
-
-
     # 6. Retrieve recommended petsitters as replacement (waitlist)
     # Invoke job microservice
     print('\n-----Retrieve waitlist from job microservice-----')
@@ -209,26 +172,32 @@ def processIncident(session):
     #     replacement_sitters_ids.append(application_sitterID)
     
     #GET SITTER DETAILS THROUGH SITTER.PY
-    for sitter in sitter_replacements_list:
-        details = invoke_http(get_sitter_details_URL + sitter, method='GET')
-        print(details)
-        replacement_sitters_details.append(details["data"][0])
+    if len(sitter_replacements_list) >= 1:
+        for sitter in sitter_replacements_list:
+            details = invoke_http(get_sitter_details_URL + sitter, method='GET')
+            print(details)
+            replacement_sitters_details.append(details["data"][0])
+        print('List of replacement sitters details ' + str(replacement_sitters_details))
 
-    print('List of replacement sitters details ' + str(replacement_sitters_details))
+        # 7. Send list of recommended pet sitter replacements
+        print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')
+
+        message = json.dumps({'jobID': jobId, 
+                            'replacements': replacement_sitters_details, 
+                            'ownerID': ownerId, 
+                            'ownerName': owner_name,
+                            'ownerEmail': owner_email})
+
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="replacement.notification", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    else:
+        print('\n\n-----Notifying owner that there we are sorry the sitter pulled out with routing_key=no.replacement.notification-----')
+        message = json.dumps({'jobID': jobId,'ownerName': owner_name,'ownerEmail':owner_email})
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="no.replacement.notification", 
+        body=message, properties=pika.BasicProperties(delivery_mode = 2))
+
+
     
-
-
-    # 7. Send list of recommended pet sitter replacements
-    print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')
-
-    message = json.dumps({'jobID': jobId, 
-                          'replacements': replacement_sitters_details, 
-                          'ownerID': ownerId, 
-                          'ownerName': owner_name,
-                          'ownerEmail': owner_email})
-
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="replacement.notification", 
-        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
     # make message persistent within the matching queues until it is received by some receiver 
     # (the matching queues have to exist and be durable and bound to the exchange)
 

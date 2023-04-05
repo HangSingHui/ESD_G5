@@ -86,13 +86,19 @@ def processNotif(info,routing_key):
     elif routing_key=='replacement.notification':
         notif = json.loads(info)
         subject = "[Petsitter Replacements Suggestion] for job <jobID: " + str(notif['jobID'])+">"
-        body= "Dear " + notif['ownerName'] +",\n\nWe are sorry to say that your matched sitter has pulled out from the job <jobID: "+ str(notif['jobID']) +">.\n\nWe would like to suggest you a list of sitters that could act as a replacement:\n\n"
+        body= "Dear " + notif['ownerName'] +",\n\nWe are sorry to let you know that your matched sitter has pulled out from the job <jobID: "+ str(notif['jobID']) +">.\n\nWe would like to suggest you a list of sitters that could act as a replacement:\n\n"
 
         num = 1
         # loop to add each sitter's details
         for sitter in notif['replacements']:
             body += str(num)+".\tName: "+sitter['Name'] + ' ('+str(sitter['_id'])+')\n\tRate: '+str(sitter['Hourly_rate'])+"/hr\n\tContact: "+str(sitter['Phone'])+"\n"
             num += 1
+        recipient = notif['ownerEmail']
+
+    elif routing_key=='no.replacement.notification':
+        notif = json.loads(info)
+        subject = "[Petsitter Pulled Out Last Minute] for job <jobID: " + str(notif['jobID'])+">"
+        body= "Dear " + notif['ownerName'] +",\n\nWe are deeply sorry to let you know that your matched sitter has pulled out from the job <jobID: "+ str(notif['jobID']) +">. We hope that you can find another petsitter soon."
         recipient = notif['ownerEmail']
 
     

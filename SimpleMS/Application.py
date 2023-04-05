@@ -26,6 +26,8 @@ def getAll(job_id):
 
     query={"JobID":ObjectId(job_id)}
 
+    query={"JobID":ObjectId(job_id)}
+
     app_doc = app_col.find(query)
     len_app = app_db.job_application.count_documents(query)
 
@@ -145,7 +147,6 @@ def acceptUpdate(app_id):
 
 
 if __name__ == '__main__':
-    # app.run(port=5001, debug=True)
     app.run(host='0.0.0.0', port=5008, debug=True)
 
     

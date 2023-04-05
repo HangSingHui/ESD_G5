@@ -237,59 +237,53 @@ def retrieve_sitters(species, rate_cat):
     # 31-40
     # 41-50 
     # 51-60
-
+    print(species)
+    print(rate_cat)
     if rate_cat=="cat1": 
         # query range 31-40
         # sitter = pet_sitter_col.find({ "species":ObjectId(species), Hourly_rate : { $gt :  30, $lt : 41}})
         query = {
             "$and": [
-                {"species": ObjectId(species)},
-                {"Hourly_rate": {"$gt": 30, "$lt": 41}}
+                {"Species_preference": species},
+                {"Hourly_rate": {"$gt": 30}}
             ]
             }
-        sitter = pet_sitter_col.find(query)
-    if rate_cat=="cat2": 
+    elif rate_cat=="cat2": 
         # query range 41-50 
         query = {
             "$and": [
-                {"species": ObjectId(species)},
-                {"Hourly_rate": {"$gt": 40, "$lt": 51}}
+                {"Species_preference": species},
+                {"Hourly_rate": {"$gt": 40}}
             ]
             }
-        sitter = pet_sitter_col.find(query)
-    if rate_cat == "cat3" : 
+    else:
         # query range 51-60
-        query = {
+       query = {
             "$and": [
-                {"species": ObjectId(species)},
-                {"Hourly_rate": {"$gt": 50, "$lt": 61}}
+                {"Species_preference": species},
+                {"Hourly_rate": {"$gt": 50}}
             ]
             }
-        sitter = pet_sitter_col.find(query)
-    # query={"species":ObjectId(species)}
-    # retrieve the rate from the db -> then must go through the rate and then categorise each one 
-    # sitter=pet_sitter_col.find(query)
-    num_sitter = pet_sitter_db.pet_sitter.count_documents({})
-    
-    # check if there are at least one sitter
-    if num_sitter > 0:
-        sitter = list(sitter) #extract email from here or above??? 
-        json_data = dumps(sitter)
-        json_data = json.loads(json_data)
-        # return json object of sitters with specified species and rate
-        print(json_data)
+
+    sitter_doc = pet_sitter_col.find(query)
+    len_sitter = pet_sitter_db.pet_sitter.count_documents(query)
+    # print(len_sitter)
+
+    email_list=[]
+    if len_sitter > 0:
+        for sitter in sitter_doc:
+            email_list.append(sitter["Email"])
         return jsonify(
-            {
-                "code": 200,
-                "data": json_data
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no sitters with this preference."
-        }
-    ), 404
+            {"code":200,
+            "emails": email_list
+        })
+
+    return{
+        "code": 404,
+        "message": "No sitters with that preference"
+    },404
+        
+
 
 
 

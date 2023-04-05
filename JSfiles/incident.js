@@ -15,36 +15,7 @@ fetch(`${session_get_url}/${sitter_id}`)
 .then(response => response.json())
 .then(data => {
 
-    if (data.code == 200) {
-        var temp_job_arr = []
-        var curr_sessions = data.data;
-        for (let index = 0; index < curr_sessions.length; index++) {
-            var curr_session = curr_sessions[index];
-            // console.log(curr_session);
-            var session_id = curr_session["_id"]["$oid"]
-            // console.log(session_id);
-            var job_id = curr_session["JobID"]["$oid"];
-            var status = curr_session["status"];
-            // console.log(job_id, status);
-            // temp_jobs_status[`${get_job_url}/${job_id}`] = status;
-            const fetch_jobs = fetch(`${get_job_url}/${job_id}`)
-            .then(response => response.json())
-            .then(data => {
-            temp_job_arr.push(data.data)
-            update_job_arr(temp_job_arr);
-            })
-        
-        
-            // jobs_arr.push(`${get_job_url}/${job_id}`)
-            status_arr.push(status)
-            jobs_id_arr.push(job_id)
-            session_id_arr.push(session_id)
-        }
-        
-        updateArr(status_arr, jobs_id_arr, session_id_arr);
-    }
-
-    else if(data.code == 404){
+    if(data.code == 404){
         alert("You have no sessions at all, go find a pet to sit!")
         document.getElementById("1").setAttribute("class", "btn btn-info disabled")
         document.getElementById("2").setAttribute("class", "btn btn-success disabled")
@@ -52,23 +23,54 @@ fetch(`${session_get_url}/${sitter_id}`)
         
     }
 
+    var temp_job_arr = []
+    var curr_sessions = data.data;
+    // console.log(curr_sessions);
+    for (let index = 0; index < curr_sessions.length; index++) {
+        var curr_session = curr_sessions[index];
+        // console.log(curr_session);
+        var session_id = curr_session["_id"]["$oid"]
+        // console.log(session_id);
+        var job_id = curr_session["JobID"]["$oid"];
+        var status = curr_session["status"];
+        // console.log(job_id, status);
+        // temp_jobs_status[`${get_job_url}/${job_id}`] = status;
+        const fetch_jobs = fetch(`${get_job_url}/${job_id}`)
+        .then(response => response.json())
+        .then(data => {
+        temp_job_arr.push(data.data)
+        update_job_arr(temp_job_arr);
+        })
+    
+    
+        // jobs_arr.push(`${get_job_url}/${job_id}`)
+        status_arr.push(status)
+        jobs_id_arr.push(job_id)
+        session_id_arr.push(session_id)
+    }
+    
+    updateArr(status_arr, jobs_id_arr, session_id_arr);
+
+    
+
 })
 
 function viewJobs(curr_filter) {
-console.log(jobs_arr, status_arr, jobs_id_arr);
+// console.log(jobs_arr, status_arr, jobs_id_arr);
 var curr_count = 0 
 document.getElementById("job_list").innerHTML = ""
 for (let index = 0; index < jobs_arr.length; index++) {
     curr_status = status_arr[index]
     curr_job = jobs_arr[index][0]
+    // console.log(curr_status);
     curr_session = session_id_arr[index]
-    console.log(curr_job);
-    console.log(curr_filter);
+    // console.log(curr_job);
+    // console.log(curr_filter);
     curr_id = jobs_id_arr[index]
-
+    
     if (curr_status == curr_filter) {
     curr_count += 1;
-    console.log(curr_job);
+    // console.log(curr_job);
     var job_num = `job${index+1}`
     
     var job_title = curr_job["Title"];
@@ -160,7 +162,7 @@ for (let index = 0; index < jobs_arr.length; index++) {
     </div>
     
     `
-
+    // console.log(temp_str);
     document.getElementById("job_list").innerHTML += temp_str
     }
     
@@ -206,7 +208,7 @@ function removeJob(session_id, job_num) {
     )
     .then(response => response.json())
     .then(data => {
-        console.log(data);
+        // console.log(data);
         
         if (data.code==201) {
             document.getElementById("reload_div").innerHTML = 

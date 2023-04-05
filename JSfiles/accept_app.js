@@ -1,11 +1,11 @@
 var price_id = localStorage.getItem("price_id")
-console.log(price_id);
+// console.log(price_id);
 const notification_url = "http://localhost:5555/process-payment-success";
 
 const notification = fetch(`${notification_url}/${price_id}`)
 .then(response => response.json())
 .then(data => {
-    console.log(data);
+    // console.log(data);
 })
 
 localStorage.clear()
@@ -15,7 +15,7 @@ const check_payment_url = "http://localhost:5006/check_payment"
 const check_payment = fetch(check_payment_url)
 .then(response => response.json())
 .then(data => {
-    console.log(data);
+    // console.log(data);
 })
 
 
@@ -30,7 +30,7 @@ const response = fetch(get_all_url).then(response => response.json())
 
         var job = jobs[index];
         var job_id = jobs[index]["_id"]["$oid"];
-        console.log(job_id);
+        // console.log(job_id);
 
         var job_title = job["Title"];
         var job_desc = job["Description"];
@@ -123,7 +123,7 @@ const response = fetch(get_all_url).then(response => response.json())
 
 function fetch_applications(job_id) {
 
-    console.log(job_id);
+    // console.log(job_id);
     localStorage.setItem("job_id", job_id);
         // localStorage.setItem("applications", applications);
     window.location.href = "http://127.0.0.1:5500/view_applications.html"

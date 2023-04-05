@@ -6,7 +6,7 @@ import pika
 hostname = "esd-rabbit" # default hostname
 port = 5672 # default port
 # connect to the broker and set up a communication channel in the connection
-connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitmq",port=port,heartbeat=3600000, blocked_connection_timeout=3600000))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname,port=port,heartbeat=3600,blocked_connection_timeout=3600,))
     # Note about AMQP connection: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
     # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls.
     # If see: Stream connection lost: ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)
@@ -22,7 +22,6 @@ exchangename="notification_topic"
 exchangetype="topic"
 channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
     # 'durable' makes the exchange survive broker restarts
-
 
 # Here can be a place to set up all queues needed by the microservices,
 # - instead of setting up the queues using RabbitMQ UI.
@@ -59,7 +58,7 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='#.penal
 # hourly rate - filter in notification.py 
 
 ############   Pets - Dog queue   #############
-#delcare Error queue
+#declare Error queue
 queue_name = 'Dog'
 channel.queue_declare(queue=queue_name, durable=True) 
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog') 

@@ -1,9 +1,9 @@
 // Simulate that a Sitter has logged in 
 var sitter_id = '64199bff455936ecfa302f27'
 
-const session_get_url = "http://localhost:5004/sitter_all_sessions";
-const get_job_url = "http://localhost:5005/job";
-const sitter_rejection_url = "http://localhost:5200/incident_handling";
+const session_get_url = "http://session:5004/sitter_all_sessions";
+const get_job_url = "http://job:5005/job";
+const sitter_rejection_url = "http://incident_handling:5200/incident_handling";
 
 var jobs_arr = [];
 var status_arr = [];

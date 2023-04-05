@@ -182,7 +182,14 @@ jobs_arr = temp_job_arr;
 
 
 function removeJob(session_id) {
-    const cancel_session = fetch(`${sitter_rejection_url}/${session_id}`)
+    const cancel_session = fetch(`${sitter_rejection_url}/${session_id}`,
+    {
+        method:"PUT",
+        headers: {
+            "Content-type":"application/json"
+        }
+    }
+    )
     .then(response => response.json())
     .then(data => {
         console.log(data);

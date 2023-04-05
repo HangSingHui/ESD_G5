@@ -10,13 +10,13 @@ import os, sys
 import requests
 from invokes import invoke_http
 
-from SimpleMS import amqp_setup
+sys.path.append('../SimpleMS')
+import amqp_setup
 from datetime import datetime, timedelta
 
-from SimpleMS import amqp_setup_notification
 import pika
 import json
-
+# python 
 app = Flask(__name__)
 CORS(app)
 

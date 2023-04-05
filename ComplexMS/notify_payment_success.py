@@ -18,7 +18,6 @@ CORS(app)
 owner_URL = "http://localhost:5000/owner"
 payment_URL = "http://localhost:5006"
 session_URL = "http://localhost:5004/session"
-owner_URL = "http://localhost:5000/owner"
 
 #Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
 
@@ -34,6 +33,7 @@ def process_payment_success(price_id):
         }),400
     
     print(price_id)
+    print(type(price_id))
     
     #2. Retrieve session object using price_id
     get_session = invoke_http(session_URL+"/get-session-by-price/"+price_id,method="GET")
@@ -45,7 +45,7 @@ def process_payment_success(price_id):
             }),404
     
     #Returns a session object
-    owner_id = get_session["data"][0]["OwnerID"]["$oid"]
+    owner_id = get_session["data"]
 
     #3. Retrieve ownerEmail using Ownerid in session object
     get_owner = invoke_http(owner_URL+"/"+owner_id, method="GET")

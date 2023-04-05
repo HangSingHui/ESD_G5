@@ -5,8 +5,8 @@ from bson.json_util import dumps
 
 import os, sys
 
-# sys.path.append('../SimpleMS')
-# import amqp_setup
+sys.path.append('../SimpleMS')
+import amqp_setup
 
 import requests
 from invokes import invoke_http
@@ -167,7 +167,7 @@ def processAcceptApp(app_id):
         }),500
 
     # print(job["Payout"])
-    payout = job["Payout"]["$numberDecimal"]
+    payout = job["Payout"]["$numberDecimal"] #Just a string
     print(payout)
     # payout = {"price_id":price_id}
     create_price = invoke_http(payment_URL+"/charge", method="POST",json=payout)
@@ -190,11 +190,11 @@ def processAcceptApp(app_id):
             "message": "Failed to update price_id for job with job id: " + job_id
         })
     
-    return_stmt = {
-            "code":200,
-            "message": "You have successfully accepted your desired sitter. Awaiting for owner to make a payment.",
-            "price_id":price_id
-    }
+    # return_stmt = {
+    #         "code":200,
+    #         "message": "You have successfully accepted your desired sitter. Awaiting for owner to make a payment.",
+    #         "price_id":price_id
+    # }
 
     # stmt = json.dump(return_stmt)
     # loaded_stmt = json.load(stmt)

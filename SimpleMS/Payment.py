@@ -26,7 +26,7 @@ def calculate_order_amount(charge):
 def change_price():
     # details = request.get_json()
     product_id = "prod_NdMqTOurWTf43d"
-    charge_before_gst = request.get_json() #this is from job
+    charge_before_gst = request.get_json() #this is just a number with type string
     print(charge_before_gst)
     charge_before_gst = float(charge_before_gst)
     charge_after_gst = calculate_order_amount(charge_before_gst)

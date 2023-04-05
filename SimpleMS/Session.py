@@ -307,16 +307,21 @@ def cancel_session(sessionId):
 @app.route("/session/addPrice/<string:job_id>",methods=["PUT"])
 def update_price_id(job_id):
     price_id = request.get_json()
+    print(price_id)
     # price_id = price_id["price_id"]
     print(price_id)
     print(type(price_id))
     print(job_id)
-    query = {"$and": [{"Job_Id":ObjectId(job_id)},{"status":"In-Progress"}]}
+    query = {"$and": [{"JobID":ObjectId(job_id)},{"status":"In Progress"}]}
+
+    result = session_col.find(query)
+    len_session = session_db.session.count_documents(query)
+    print(len_session)
    
     update_price = {"$set":{"Price_Id":str(price_id)}}
 
     try:
-        session_col.update_one(query,update_price)
+        test = session_col.update_many(query,update_price)
     
     except:
         return jsonify(
@@ -325,6 +330,7 @@ def update_price_id(job_id):
             "message": "Internal error. Application failed to update status from Pending to Accepted."
         }
      ),500   
+    
 
     return jsonify({
         "code":200,
@@ -334,31 +340,32 @@ def update_price_id(job_id):
 @app.route("/session/get-session-by-price/<string:priceID>")
 def getSessionByPrice(priceID):
     #search if session exists first with sessionID
-    query={"Price_Id":priceID}
-    #job=job_col.find(query)
+    print(priceID)
+    query= {'Price_Id': priceID}
+    print(query)
+    session_doc = session_col.find_one(query)
+    # print(session)
+    # owner_id = session["OwnerID"]
+    # print(owner_id)
 
-    num_sessions = session_db.session.count_documents(query)
-    session = session_col.find(query)
-    if num_sessions> 0:
-        session = list(session)
-        json_data = dumps(session)
-        json_data = json.loads(json_data)
-        # print(json_data)
-        # ownerID = json_data[0]["OwnerID"]["$oid"]
-        return jsonify(
-            {
-                "code":200,
-                "data": json_data
-                # "owner": ownerID
-            }
-        )
-    #if not, return job not found
-    return jsonify(
-            {
-                "code":404,
-                "message":"Session not found."
-            }
-        ),404
+
+    if session_doc is None:
+        return {
+            "code":404,
+            "message":"Session not found."
+        },404
+    
+    print("here")
+    print(session_doc)
+    print(str(session_doc["OwnerID"]))
+    # json_data = dumps(session_doc)
+    # json_data = json.loads(session_doc)
+
+    return{
+            "code":200,
+            "data": str(session_doc["OwnerID"])
+        }
+
 
 
 '''

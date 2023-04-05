@@ -85,7 +85,8 @@ def processPenalty(message,routing_key):
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
-    print("This is flask " + os.path.basename(__file__) + " for handling an incident...")
+    print("This is flask " + os.path.basename(__file__) + " for handling an penalty...")
+    print(": monitoring routing key '{}' in exchange '{}' ...".format(monitorBindingKey, amqp_setup.exchangename))
     app.run(host="0.0.0.0", port=5200, debug=True)
     listenToAMQP()
     # Notes for the parameters: 

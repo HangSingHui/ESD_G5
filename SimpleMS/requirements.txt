@@ -1,5 +1,10 @@
-Flask-Mail
+# Flask-Mail
 Flask==2.2.2
 Flask-Cors==3.0.10
 Flask-SQLAlchemy==3.0.2
 mysql-connector-python==8.0.31
+requests==2.28.2
+pymongo==4.3.3
+Flask-Mail==0.9.1
+Flask-PyMongo==2.3.0
+

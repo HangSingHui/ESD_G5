@@ -7,7 +7,7 @@ hostname = "localhost" # default hostname
 port = 5672 # default port
 # connect to the broker and set up a communication channel in the connection
 connection = pika.BlockingConnection(
-    pika.ConnectionParameters(service=hostname, port=port,heartbeat=3600, blocked_connection_timeout=3600, ))
+    pika.ConnectionParameters(host=hostname, port=port,heartbeat=3600, blocked_connection_timeout=3600, ))
         # these parameters to prolong the expiration time (in seconds) of the connection
 
     # Note about AMQP connection: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;

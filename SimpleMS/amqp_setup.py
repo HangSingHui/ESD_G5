@@ -70,22 +70,22 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.penal
 #delcare Error queue
 queue_name = 'Dog'
 channel.queue_declare(queue=queue_name, durable=True) 
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.*') 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog') 
 
 ############   Pets - Cat queue   #############
 queue_name = 'Cat'
 channel.queue_declare(queue=queue_name, durable=True) 
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='cat.*') 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='cat') 
 
 ############   Pets - Rabbit queue   #############
 queue_name = 'Rabbit'
 channel.queue_declare(queue=queue_name, durable=True) 
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='rabbit.*') 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='rabbit') 
 
 ############   Pets - Bird queue   #############
 queue_name = 'Bird'
 channel.queue_declare(queue=queue_name, durable=True) 
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='bird.*') 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='bird') 
 
 def check_setup():
     # The shared connection and channel created when the module is imported may be expired, 

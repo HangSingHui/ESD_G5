@@ -72,7 +72,10 @@ def create_job():
 
 def processJobCreation(new_job):
     # called by create_job function to create job
+    
     # invoke job microservice which will create job in the DB 
+    # return jobid, species [entire job object]
+    #send to amqp the species
 
     # data = request.get_json()
     print('\n-----Invoking job microservice-----')

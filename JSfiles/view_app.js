@@ -171,11 +171,11 @@ function accept_application(item) {
 
     
 
-    
-
     document.getElementById("application_list").innerHTML = 
-    
     "<h1 class='text-center fw-bold mt-5'>Updating our database, please give us a moment!</h1><h4 class='text-center fw-bold mn-5'>Redirecting you to checkout...</h4>";
+
+    document.getElementById("back").remove()
+
     }
     
 

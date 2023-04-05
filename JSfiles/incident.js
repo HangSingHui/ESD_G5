@@ -15,32 +15,42 @@ fetch(`${session_get_url}/${sitter_id}`)
 .then(response => response.json())
 .then(data => {
 
-var temp_job_arr = []
-var curr_sessions = data.data;
-for (let index = 0; index < curr_sessions.length; index++) {
-    var curr_session = curr_sessions[index];
-    // console.log(curr_session);
-    var session_id = curr_session["_id"]["$oid"]
-    console.log(session_id);
-    var job_id = curr_session["JobID"]["$oid"];
-    var status = curr_session["status"];
-    console.log(job_id, status);
-    // temp_jobs_status[`${get_job_url}/${job_id}`] = status;
-    const fetch_jobs = fetch(`${get_job_url}/${job_id}`)
-    .then(response => response.json())
-    .then(data => {
-    temp_job_arr.push(data.data)
-    update_job_arr(temp_job_arr);
-    })
+    if (data.code == 200) {
+        var temp_job_arr = []
+        var curr_sessions = data.data;
+        for (let index = 0; index < curr_sessions.length; index++) {
+            var curr_session = curr_sessions[index];
+            // console.log(curr_session);
+            var session_id = curr_session["_id"]["$oid"]
+            console.log(session_id);
+            var job_id = curr_session["JobID"]["$oid"];
+            var status = curr_session["status"];
+            console.log(job_id, status);
+            // temp_jobs_status[`${get_job_url}/${job_id}`] = status;
+            const fetch_jobs = fetch(`${get_job_url}/${job_id}`)
+            .then(response => response.json())
+            .then(data => {
+            temp_job_arr.push(data.data)
+            update_job_arr(temp_job_arr);
+            })
+        
+        
+            // jobs_arr.push(`${get_job_url}/${job_id}`)
+            status_arr.push(status)
+            jobs_id_arr.push(job_id)
+            session_id_arr.push(session_id)
+        }
+        
+        updateArr(status_arr, jobs_id_arr, session_id_arr);
+    }
 
-
-    // jobs_arr.push(`${get_job_url}/${job_id}`)
-    status_arr.push(status)
-    jobs_id_arr.push(job_id)
-    session_id_arr.push(session_id)
-}
-
-updateArr(status_arr, jobs_id_arr, session_id_arr);
+    else if(data.code == 404){
+        alert("You have no sessions at all, go find a pet to sit!")
+        document.getElementById("1").setAttribute("class", "btn btn-info disabled")
+        document.getElementById("2").setAttribute("class", "btn btn-success disabled")
+        document.getElementById("3").setAttribute("class", "btn btn-danger disabled")
+        
+    }
 
 })
 

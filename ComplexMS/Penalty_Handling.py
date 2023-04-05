@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import pika
 import json
 
-sys.path.append('../SimpleMS')
+# sys.path.append('../SimpleMS')
 import amqp_setup
 
 app = Flask(__name__)

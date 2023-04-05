@@ -134,35 +134,37 @@ function accept_application(item) {
     var confirmation = confirm(`Confirm sitter's application? We will notify the sitter about your application and update the current job listing`)
     if (confirmation == true) {
         const accept_response = fetch(`${accept_application_route}/${item}`,
-    {
-        method:"PUT",
-        headers: {
-            "Content-type":"application/json"
+        {
+            method:"PUT",
+            headers: {
+                "Content-type":"application/json"
+            }
         }
-    })
-    .then(response => response)
-    .then(data => {
-        console.log(data);
-    })
+        )
+        .then(response => response.json())
+        .then(data => {
+            console.log(response);
+            console.log(data);
+        })
 
     alert("You have successfully accepted this sitter! We hope your pet has a paw-some time!")
 
-    var product_price_id = 'price_1Mt8RtFrjIdoqzyM6KhY7Ifn'
+    // var product_price_id = 'price_1Mt8RtFrjIdoqzyM6KhY7Ifn'
 
-    localStorage.setItem("price_id", product_price_id);
+    // localStorage.setItem("price_id", product_price_id);
 
-    stripe.redirectToCheckout({
-        lineItems:[
-            {
-                price : product_price_id,
-                quantity: 1
-            },
-        ],
-        mode: 'payment',
-        successUrl : "http://127.0.0.1:5500/owner_accept_applications.html",
-        cancelUrl : "http://127.0.0.1:5500/owner_accept_applications.html"
-    })
-    .then(function (){});
+    // stripe.redirectToCheckout({
+    //     lineItems:[
+    //         {
+    //             price : product_price_id,
+    //             quantity: 1
+    //         },
+    //     ],
+    //     mode: 'payment',
+    //     successUrl : "http://127.0.0.1:5500/owner_accept_applications.html",
+    //     cancelUrl : "http://127.0.0.1:5500/owner_accept_applications.html"
+    // })
+    // .then(function (){});
 
     document.getElementById("application_list").innerHTML = 
     

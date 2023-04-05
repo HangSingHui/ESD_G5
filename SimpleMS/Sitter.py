@@ -287,7 +287,7 @@ def retrieve_sitters(species, rate_cat):
     return jsonify(
         {
             "code": 404,
-            "message": "Sitter not found."
+            "message": "There are no sitters with this preference."
         }
     ), 404
 

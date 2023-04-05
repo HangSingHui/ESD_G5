@@ -1,5 +1,6 @@
 var price_id = localStorage.getItem("price_id")
-const notification_url = "http://localhost:5555/process_payment_success";
+console.log(price_id);
+const notification_url = "http://localhost:5555/process-payment-success";
 
 const notification = fetch(`${notification_url}/${price_id}`)
 .then(response => response.json())
@@ -7,7 +8,7 @@ const notification = fetch(`${notification_url}/${price_id}`)
     console.log(data);
 })
 
-localStorage.clear()
+// localStorage.clear()
 const get_all_url = "http://localhost:5005/job";
 const check_payment_url = "http://localhost:5006/check_payment"
 

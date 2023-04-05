@@ -50,7 +50,7 @@ def processNotif(notif,routing_key):
     #     "sitterName": "Sally",
     #       "jobID": 123   
     # }
-
+    print(notif)
     #Step 1: Check the routing key of the message
     if routing_key == "accept.sitter.notification":
         subject = "[Job Offered: ]" + str(notif.jobID)
@@ -87,7 +87,7 @@ def processNotif(notif,routing_key):
         num = 1
         # loop to add each sitter's details
         for sitter in notif.replacements:
-            body += str(num)+". \tName: "+sitter['Name'] + ' ('+str(sitter['_id'])+')\n\tRate: '+sitter['Hourly_rate']+"/hr\n\tContact: "+sitter['Phone']
+            body += str(num)+". \tName: "+sitter['Name'] + ' ('+str(sitter['_id'])+')\n\tRate: '+sitter['Hourly_rate']+"/hr\n\tContact: "+sitter['Phone']+"\n"
             num += 1
         recipient = notif.ownerEmail
 
@@ -98,12 +98,14 @@ def processNotif(notif,routing_key):
                     sender=app.config.get("MAIL_USERNAME"),
                     recipients=[recipient], 
                     body=body)
+
         mail.send(msg)
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')    
     app.run(port=5002, debug=True)
     print("\nThis is " + os.path.basename(__file__), end='')
     print(": monitoring routing key '{}' in exchange '{}' ...".format(monitorBindingKey, amqp_setup.exchangename))
+    receiveNotif()
 
 
 

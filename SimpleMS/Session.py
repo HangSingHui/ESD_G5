@@ -80,7 +80,7 @@ def get_all_owner_sessions(owner_id):
 @app.route("/sitter_all_sessions/<string:sitterId>")
 def get_all_sitter_sessions(sitterId):
     # sessionslist = Session.query.filter_by(sitterId=sitterId)
-    query= {'SitterID': ObjectId(sitterId)}
+    query= {'sitterID': ObjectId(sitterId)}
     sessions = session_col.find(query)
     num_sessions = session_db.session.count_documents(query)
     if num_sessions>0:
@@ -122,8 +122,8 @@ def get_owner_sessions_by_status(owner_id, status):
 @app.route("/sessions/sitter/<string:sitter_id>/<string:status>")
 def get_sitter_sessions_by_status(sitter_id, status):
 
-
-    query = {"$and":[{"SitterID": ObjectId(sitter_id)},{"status": status}]}
+    query = {"sitterID": ObjectId(sitter_id),"status": status}
+    #query = {"$and":[{"SitterID": ObjectId(sitter_id)},{"status": status}]}
     session_doc = session_col.find(query)
     len_session = session_db.session.count_documents(query)
 

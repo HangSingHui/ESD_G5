@@ -39,7 +39,6 @@ def create_job():
             result = processJobCreation(new_job)
             code = result["code"]
             jobID = result['data']['job_result']['jobID']
-            print(jobID)
 
             if code in range(200, 300):     
                 # if the job creation is successful, send the message to the fanout exchange 
@@ -106,7 +105,6 @@ def processPublishJob(new_job,jobID):
     # if this function is reached, it is assumed that the job has been successfully created
     # there is no need to check success of status
     # extract the pet type and publish to the queues 
-    print(jobID)
     # job_id = new_job['_id']   
     # owner_id = new_job['OwnerID']
     pet_species = find_by_petID(new_job)['data']

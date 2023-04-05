@@ -128,7 +128,7 @@ def processPublishJob(new_job,jobID):
 
     if pet_species == 'Dog': 
         # send to dog queue 
-        print('\n\n-----Publishing the (dog) message with routing_key=dog.*-----')
+        print('\n\n-----Publishing the (dog) message with routing_key=dog-----')
 
         # invoke_http(error_URL, method="POST", json=order_result)
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="dog", 
@@ -138,19 +138,19 @@ def processPublishJob(new_job,jobID):
 
     elif pet_species == 'Cat': 
         # send to cat queue 
-        print('\n\n-----Publishing the (cat) message with routing_key=cat.*-----')
+        print('\n\n-----Publishing the (cat) message with routing_key=cat-----')
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="cat", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
     elif pet_species == 'Rabbit': 
         # send to cat queue 
-        print('\n\n-----Publishing the (rabbit) message with routing_key=cat.*-----')
+        print('\n\n-----Publishing the (rabbit) message with routing_key=rabbit-----')
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="rabbit", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
     elif pet_species == 'Bird': 
         # send to cat queue 
-        print('\n\n-----Publishing the (bird) message with routing_key=cat.*-----')
+        print('\n\n-----Publishing the (bird) message with routing_key=bird-----')
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="bird", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
     

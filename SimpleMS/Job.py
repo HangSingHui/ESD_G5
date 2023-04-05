@@ -115,10 +115,8 @@ def create_job(OwnerID):
     date = datetime.datetime.utcnow()
     utc_time = calendar.timegm(date.utctimetuple())
     
-    print(utc_time)
-    print(payout)
     
-    new_job = { "OwnerID" : data_json['OwnerID'],
+    new_job = { "OwnerID" : ObjectId(OwnerID),
                 "Created": int(utc_time),
                 "SitterID": "",
                 "Title": data_json['Title'], 
@@ -135,7 +133,7 @@ def create_job(OwnerID):
             }
     
     try:
-        job_col.insert_one( new_job )
+        _id = job_col.insert_one( new_job )
         
         
     # Status (Open - No Pet Sitter hired, Matched - Pet Sitter hired, Closed - Job Closed, Completed - Session linked to this job is completed)
@@ -150,11 +148,15 @@ def create_job(OwnerID):
                 "message": "An error occurred while creating the job. " + str(e)
             }
         ), 500
+
+    job_id = _id.inserted_id
+
     
     return jsonify(
         {
             "code": 201,
-            "message": "New job successfully created."
+            "message": "New job successfully created.",
+            "jobID":str(job_id)
         }
     ), 201
 

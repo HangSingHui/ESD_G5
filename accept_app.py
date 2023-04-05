@@ -16,12 +16,12 @@ import pika
 app = Flask(__name__)
 CORS(app)
 
-owner_URL = "http://localhost:5000/owner"
-sitter_URL = "http://localhost:5001/sitter"
-session_URL = "http://localhost:5004/session"
-job_URL = "http://localhost:5005/job"
-payment_URL = "http://localhost:5006/payment"
-application_URL = "http://localhost:5008/application"
+owner_URL = "http://owner:5000/owner"
+sitter_URL = "http://sitter:5001/sitter"
+session_URL = "http://session:5004/session"
+job_URL = "http://job:5005/job"
+payment_URL = "http://payment:5006/payment"
+application_URL = "http://application:5008/application"
 # success_notif_URL = "http://localhost:5500"
 
 @app.route("/accept_app/<string:app_id>", methods=['PUT'])

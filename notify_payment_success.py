@@ -15,9 +15,9 @@ import pika
 app = Flask(__name__)
 CORS(app)
 
-owner_URL = "http://localhost:5000/owner"
-payment_URL = "http://localhost:5006"
-session_URL = "http://localhost:5004/session"
+owner_URL = "http://owner:5000/owner"
+payment_URL = "http://payment:5006"
+session_URL = "http://session:5004/session"
 
 #Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
 

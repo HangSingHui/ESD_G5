@@ -115,8 +115,6 @@ def create_job(OwnerID):
     date = datetime.datetime.utcnow()
     utc_time = calendar.timegm(date.utctimetuple())
     
-    # print(utc_time)
-    # print(payout)
     
     new_job = { "OwnerID" : ObjectId(OwnerID),
                 "Created": int(utc_time),
@@ -151,8 +149,6 @@ def create_job(OwnerID):
             }
         ), 500
 
-    # print("jobid")
-    # print(_id.inserted_id)
     job_id = _id.inserted_id
 
     

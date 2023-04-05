@@ -126,7 +126,7 @@ def processNotif(notif,routing_key):
     # include url to find by jobid?? 
     if routing_key == "dog.*":
         subject = "[Available job posting: ]" + str(notif.jobID)
-        body= "Dear " + notif.sitterName + ",\n We are pleased to inform you that there is an available job posting with your indicated species and hourly rate preference: "  + notif.jobTitle + "(" + str(notif.jobID) + ". Should you wish to to take up the job, please indicate in the Pet's R Us mobile application, while still available." 
+        body= "Dear " + notif.sitterName + ",\n We are pleased to inform you that there is an available job posting with your indicated species and around the range of your hourly rate preference: "  + notif.jobTitle + "(" + str(notif.jobID) + ". Should you wish to to take up the job, please indicate in the Pet's R Us mobile application, while still available." 
         recipient = notif.sitterEmail
     
     #structure of AMQP message (JSON - routing key = hold.payment.notification)

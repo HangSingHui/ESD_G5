@@ -82,10 +82,10 @@ def processJob(body,routing_key):
     
     recipient = getEmailList["emails"]
     #Send email
-    mail_signature = "\nDo contact us via our support email at inquiries.petsrus@gmail.com for any queries. \n Thank you for using Pets R Us! \n\n Best Regards,\nPet R Us (With Pets, For Pets)"
+    mail_signature = "\n\nDo contact us via our support email at inquiries.petsrus@gmail.com for any queries. \n Thank you for using Pets R Us! \n\n Best Regards,\nPet R Us (With Pets, For Pets)"
 
     subject = "[Available job posting]"
-    body= "Dear Pets R Us Sitter,\n We are pleased to inform you that there is an available job posting with your indicated species and within the range of your hourly rate preference, with  title: " + title + "\n\nShould you wish to to take up the job, please indicate in the Pet's R Us mobile application, while still available." 
+    body= "Dear Pets R Us Sitter,\n We are pleased to inform you that there is an available job posting with your indicated species and within the range of your hourly rate preference, titled: <" + title + ">.\n\nShould you wish to to take up the job, please indicate in the Pet's R Us mobile application, while still available." 
     # recipient = emailList
 
     body += mail_signature

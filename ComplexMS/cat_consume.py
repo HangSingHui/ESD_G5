@@ -29,7 +29,7 @@ mail = Mail(app)
 sitter_URL = "http://localhost:5100/sitter" #to invoke later on
 job_URL ="http://localhost:5005/job"
 
-monitorBindingKey='rabbit.*'
+monitorBindingKey='cat'
 
 def receiveJob():
     amqp_setup.check_setup() 

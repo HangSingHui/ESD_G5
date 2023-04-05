@@ -16,10 +16,9 @@ from invokes import invoke_http
 
 from datetime import datetime, timedelta
 
-
 import pika
 import json
-
+# python 
 app = Flask(__name__)
 CORS(app)
 
@@ -74,7 +73,10 @@ def create_job():
 
 def processJobCreation(new_job):
     # called by create_job function to create job
+
     # invoke job microservice which will create job in the DB 
+    # return jobid, species [entire job object]
+    #send to amqp the species
 
     # data = request.get_json()
     print('\n-----Invoking job microservice-----')
@@ -130,7 +132,7 @@ def processPublishJob(new_job,jobID):
         print('\n\n-----Publishing the (dog) message with routing_key=dog.*-----')
 
         # invoke_http(error_URL, method="POST", json=order_result)
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="dog.*", 
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="dog.#", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
         # make message persistent within the matching queues until it is received by some receiver 
         # (the matching queues have to exist and be durable and bound to the exchange)
@@ -138,8 +140,9 @@ def processPublishJob(new_job,jobID):
     if pet_species == 'Cat': 
         # send to cat queue 
         print('\n\n-----Publishing the (dog) message with routing_key=cat.*-----')
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="cat.*", 
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="bird.#", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    
     
     
 def find_by_petID(newjob): 

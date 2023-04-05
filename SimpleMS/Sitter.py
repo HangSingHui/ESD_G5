@@ -237,15 +237,15 @@ def retrieve_sitters(species, rate_cat):
     # 31-40
     # 41-50 
     # 51-60
-    print(species)
-    print(rate_cat)
+    # print(species)
+    # print(rate_cat)
     if rate_cat=="cat1": 
         # query range 31-40
         # sitter = pet_sitter_col.find({ "species":ObjectId(species), Hourly_rate : { $gt :  30, $lt : 41}})
         query = {
             "$and": [
                 {"Species_preference": species},
-                {"Hourly_rate": {"$gt": 30}}
+                {"Hourly_rate": {"$gt": 30, "$lte":40}}
             ]
             }
     elif rate_cat=="cat2": 
@@ -253,7 +253,7 @@ def retrieve_sitters(species, rate_cat):
         query = {
             "$and": [
                 {"Species_preference": species},
-                {"Hourly_rate": {"$gt": 40}}
+                {"Hourly_rate": {"$gt": 40, "$lte":50}}
             ]
             }
     else:
@@ -261,7 +261,7 @@ def retrieve_sitters(species, rate_cat):
        query = {
             "$and": [
                 {"Species_preference": species},
-                {"Hourly_rate": {"$gt": 50}}
+                {"Hourly_rate": {"$gt": 50, "$lte":60}}
             ]
             }
 

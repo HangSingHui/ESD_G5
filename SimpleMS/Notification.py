@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 import os, sys
 
 import json
-sys.path.append('../SimpleMS')
+# sys.path.append('../SimpleMS')
 import amqp_setup
 
 app = Flask(__name__)
@@ -14,10 +14,8 @@ mail_settings = {
     "MAIL_PORT": 465,
     "MAIL_USE_TLS": False,
     "MAIL_USE_SSL": True,
-    # "MAIL_USERNAME": os.environ['EMAIL_USER'], #noreply.petsrus@gmail.com
-    "MAIL_USERNAME": os.environ.get('EMAIL_USER','noreply.petsrus@gmail.com'),
-    "MAIL_USERNAME": os.environ.get('EMAIL_PASSWORD','hyilskfcwghyotff')
-    # "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'] #hyilskfcwghyotff
+    "MAIL_USERNAME": os.environ.get('EMAIL_USER', 'noreply.petsrus@gmail.com'),
+    "MAIL_PASSWORD": os.environ.get('EMAIL_PASSWORD', 'qadqazlflabbbaym')
 }
 
 app.config.update(mail_settings)
@@ -34,12 +32,14 @@ def receiveNotif():
 #Actions on the message - send to the GMAIl API
 def callback(channel, method, properties, body): 
     print("\nReceived notification by " + __file__)
-    processNotif(json.loads(body),method.routing_key)
+    body = body.decode('utf-8')
+    print(body)
+    processNotif(body,method.routing_key)
     print() # print a new line feed
 
-mail_signature = "\n Do contact us via our support email at inquiries.petsrus@gmail.com for any queries. \n Thank you for using Pets R Us! \n\n Best Regards, Pet R Us (With Pets, For Pets)"
+mail_signature = "\n\nDo contact us via our support email at inquiries.petsrus@gmail.com for any queries.\n\nThank you for using Pets R Us!\n\nBest Regards,\nPet R Us (With Pets, For Pets)"
 
-def processNotif(notif,routing_key):
+def processNotif(email,routing_key):
     # print("Recording an order log:")
     # print(order)  
 
@@ -50,12 +50,11 @@ def processNotif(notif,routing_key):
     #     "sitterName": "Sally",
     #       "jobID": 123   
     # }
-    print(notif)
     #Step 1: Check the routing key of the message
     if routing_key == "accept.sitter.notification":
-        subject = "[Job Offered: ]" + str(notif.jobID)
-        body= "Dear " + notif.sitterName + ",\n We are pleased to inform you that your application for the job titled: "  + notif.jobTitle + "(" + str(notif.jobID) + ") has been accepted by the owner. Should you wish to turn down the offer, kindly indicate in the Pet's R Us mobile application within the next 12 hours." 
-        recipient = notif.sitterEmail
+        subject = "[Job Offer!]"
+        body= "Dear Pets R Us Sitter ,\n\nWe are pleased to inform you that you have been accepted as a sitter! Please access the app to view more details. Should you wish to turn down the offer, kindly indicate in the Pet's R Us mobile application within the next 12 hours." 
+        recipient = email
     
     #structure of AMQP message (JSON - routing key = hold.payment.notification)
     # {
@@ -100,6 +99,7 @@ def processNotif(notif,routing_key):
                     body=body)
 
         mail.send(msg)
+    
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')    
     print("\nThis is " + os.path.basename(__file__), end='')

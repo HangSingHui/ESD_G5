@@ -13,6 +13,7 @@ import stripe
 stripe.api_key="sk_test_51Ms4GgFrjIdoqzyMioZGnC28QwZsUW48fFwvURhXwbCiJGlw2F85IDkADg02Cq5GBHna0di1jJ5Pjho1A3dw59iC00uxo9ykaY"
 
 app = Flask(__name__)
+CORS(app)
 
 def calculate_order_amount(charge):
     # Replace this constant with a calculation of the order's amount

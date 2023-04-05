@@ -29,11 +29,11 @@ mail = Mail(app)
 sitter_URL = "http://localhost:5100/sitter" #to invoke later on
 job_URL ="http://localhost:5005/job"
 
-monitorBindingKey='rabbit.*'
+monitorBindingKey='rabbit.#'
 
 def receiveJob():
     amqp_setup.check_setup() 
-    queue_name = 'notification'
+    queue_name = 'Rabbit'
     amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
     amqp_setup.channel.start_consuming() 
 

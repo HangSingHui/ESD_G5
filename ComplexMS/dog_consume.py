@@ -26,14 +26,14 @@ mail_settings = {
 app.config.update(mail_settings)
 mail = Mail(app)
 
-sitter_URL = "http://localhost:5100/sitter" #to invoke later on
+sitter_URL = "http://localhost:5001/sitter" #to invoke later on
 job_URL ="http://localhost:5005/job"
 
-monitorBindingKey='dog'
+monitorBindingKey='dog.#'
 
 def receiveJob():
     amqp_setup.check_setup() 
-    queue_name = 'notification'
+    queue_name = 'Dog'
     amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
     amqp_setup.channel.start_consuming() 
 
@@ -46,33 +46,28 @@ def callback(channel, method, properties, body):
     print() # print a new line feed
 
 
-def processJob(jobID,routing_key): 
+def processJob(body,routing_key): 
 
     #invoke job to get the rate
-    get_job = invoke_http(job_URL+"/"+jobID,method="GET")
-    code = get_job["code"]
-    if code not in range(200,300):
-        return jsonify({
-            "code":404,
-            "message": "Job not found."
-        })
-    
-    rate = int(get_job["data"][0]["Hourly_rate"]["$numberDecimal"])
-    title = get_job["data"][0]["Title"]
+    info =json.loads(body)
+    rate = int(info["hourly_rate"])
     # print(rate)
 
     # categorise rate 
-    if (rate>30 and rate<40): 
+    rate_cat = ""
+    if (rate<40): 
         rate_cat = "cat1"
-    elif (rate>40 and rate<50): 
+    elif (rate<=50): 
         rate_cat = "cat2"
-    if (rate>50 and rate<60): 
+    elif (rate<=60): 
         rate_cat = "cat3"
     
+    # print("Rate cat")
+    # print(rate_cat)
     # rate argument will be a category -> do validation again in sitter.py func 7 
     print('\n-----Invoking sitter microservice-----')
-    getEmailList =invoke_http(sitter_URL+"/Rabbit"+"/"+rate_cat) #get email of all sitters
-    emailList = getEmailList["emails"]
+    getEmailList =invoke_http(sitter_URL+"/Dog"+"/"+rate_cat,method="GET") #get email of all sitters
+
 
     # Check the sitterlist result; if a failure, return error status 
     code = getEmailList["code"]
@@ -83,21 +78,21 @@ def processJob(jobID,routing_key):
                 "message": "Sitter list unable to be obtained."
             }
     
+    emailList = getEmailList["emails"]
     #Send email
     mail_signature = "\n Do contact us via our support email at inquiries.petsrus@gmail.com for any queries. \n Thank you for using Pets R Us! \n\n Best Regards, Pet R Us (With Pets, For Pets)"
 
-    if routing_key == "rabbit.*":
-        subject = "[Available job posting]"
-        body= "Dear Pets R Us Sitter,\n We are pleased to inform you that there is an available job posting with your indicated species and within the range of your hourly rate preference: " + title + "\nShould you wish to to take up the job, please indicate in the Pet's R Us mobile application, while still available." 
-        recipient = emailList
+    subject = "[Available job posting]"
+    body= "Dear Pets R Us Sitter,\n We are pleased to inform you that there is an available job posting with your indicated species and within the range of your hourly rate preference, with job id: " +  + "\nShould you wish to to take up the job, please indicate in the Pet's R Us mobile application, while still available." 
+    recipient = emailList
 
-        body += mail_signature
-        with app.app_context():
-            msg = Message(subject=subject,
-                        sender=app.config.get("MAIL_USERNAME"),
-                        recipients=[recipient], 
-                        body=body)
-            mail.send(msg)
+    body += mail_signature
+    with app.app_context():
+        msg = Message(subject=subject,
+                    sender=app.config.get("MAIL_USERNAME"),
+                    recipients=[recipient], 
+                    body=body)
+        mail.send(msg)
 
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from flask import Flask
 from flask_mail import Mail, Message
-import os
+import os, sys
 
 import json
-# import amqp_setup
+sys.path.append('../SimpleMS')
+import amqp_setup
 
 app = Flask(__name__)
 

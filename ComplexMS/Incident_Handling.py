@@ -177,6 +177,7 @@ def processIncident(session):
         print('\n-----Retrieve name and email from owner microservice-----')
         print(ownerId)
         owner_details_response = invoke_http(get_owner_by_id_URL+ownerId, method='GET')
+        print(owner_details_response)
         owner_name = owner_details_response["data"][0]["Name"]
         owner_email = owner_details_response["data"][0]["Email"]
         print(owner_name, owner_email)

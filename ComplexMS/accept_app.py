@@ -5,7 +5,7 @@ from bson.json_util import dumps
 
 import os, sys
 
-sys.path.append('../SimpleMS')
+# sys.path.append('../SimpleMS')
 # import amqp_setup
 
 import requests
@@ -38,7 +38,9 @@ def acceptApp(app_id):
             # do the actual work
             # 1. Send order info {cart items}
             result = processAcceptApp(app_id)
-            return jsonify(result), result["code"]
+            print(result)
+            return result
+            # return jsonify(result), result["code"]
 
         except Exception as e:
             # Unexpected error in code
@@ -164,31 +166,50 @@ def processAcceptApp(app_id):
             "message":"Error on Stripe Server. Unable to create new price to charge owner."
         }),500
 
-    payout = {"price_id":price_id}
+    # print(job["Payout"])
+    payout = job["Payout"]["$numberDecimal"]
+    print(payout)
+    # payout = {"price_id":price_id}
     create_price = invoke_http(payment_URL+"/charge", method="POST",json=payout)
     code=create_price["code"]
+    # print(create_price["data"])
 
     #7. Invoke payment to return the price_id to the UI
+    print(create_price)
     price_id = create_price["price_id"]
-    data={"price_id":price_id}
+    print(price_id)
 
     #Update session with price_id
 
-    # print("here??")
     # print(type(job_id))
-    update_price_id = invoke_http(session_URL+"/addPrice/"+job_id,method="PUT",json=price_id)
+    update_price_id = invoke_http(session_URL+"/addPrice/"+job_id,method="PUT",json=payout)
     code = update_price_id["code"]
     if code not in range(200,300):
         return jsonify({
             "code": 500,
             "message": "Failed to update price_id for job with job id: " + job_id
         })
+    
+    return_stmt = {
+            "code":200,
+            "message": "You have successfully accepted your desired sitter. Awaiting for owner to make a payment.",
+            "price_id":price_id
+    }
+
+    # stmt = json.dump(return_stmt)
+    # loaded_stmt = json.load(stmt)
+
+    # return loaded_stmt
+
+    # # print("This is the type")
+    # # print(return_stmt)
+    # # print(type(return_stmt))
 
     return {
-        "code":200,
-        "message": "You have successfully accepted your desired sitter. Awaiting for owner to make a payment.",
-        "price_id":price_id
-        }
+            "code":200,
+            "message": "You have successfully accepted your desired sitter. Awaiting for owner to make a payment.",
+            "price_id":price_id
+    }
 
 
 # Execute this program if it is run as a main script (not by 'import')

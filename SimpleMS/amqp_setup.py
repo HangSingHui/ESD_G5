@@ -53,10 +53,7 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.payme
 #delcare message queue
 queue_name = 'penalty'
 channel.queue_declare(queue=queue_name, durable=True)
-    # 'durable' makes the queue survive broker restarts
-
-#bind Activity_Log queue
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.penalty') 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='#.penalty') 
     # bind the queue to the exchange via the key
     # 'routing_key=#' => any routing_key would be matched
 

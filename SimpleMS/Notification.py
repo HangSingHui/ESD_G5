@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from flask import Flask
+from flask import Flask, jsonify
 from flask_mail import Mail, Message
 import os, sys
 
@@ -102,7 +102,6 @@ def processNotif(notif,routing_key):
         mail.send(msg)
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')    
-    app.run(port=5002, debug=True)
     print("\nThis is " + os.path.basename(__file__), end='')
     print(": monitoring routing key '{}' in exchange '{}' ...".format(monitorBindingKey, amqp_setup.exchangename))
     receiveNotif()

@@ -68,9 +68,9 @@ def processNotif(email,routing_key):
     
     # message to OWNER about CONFIRMATION OF JOB ACCEPTANCE (SC. 2)
     elif routing_key=="pmt.hold.success.notification":
-        subject = "[On-hold Payment] for job " + str(notif.jobID)
-        body= "Dear " + notif.ownerName + ",\n You" + notif.sitterName + " has confirmed the acceptance of your job posting titled " + notif.jobTitle + "(" + str(notif.jobID) + "). We have successfully placed a hold of " + notif.totalPayable + " on your card ending with " + str(notif.cardInfo) + "."    
-        recipient = notif.ownerEmail
+        subject = "[On-hold Payment] for job "
+        body= "Dear Pets R Us User,\n\nWe have successfully received your payment for your recent sitter acceptance."
+        recipient = email
 
     # message to SITTER about CHARGED PENALTY AND DEDUCTION OF POINTS FOR PULLING OUT (SC. 3)
     elif routing_key == 'penalty.notification':

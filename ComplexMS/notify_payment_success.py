@@ -5,8 +5,8 @@ from flask_cors import CORS
 
 import os, sys
 
-# sys.path.append('../SimpleMS')
-# import amqp_setup
+sys.path.append('../SimpleMS')
+import amqp_setup
 
 import requests
 from invokes import invoke_http
@@ -60,7 +60,7 @@ def process_payment_success(price_id):
     # print(ownerEmail)
     #4. Send ownerEmail via AMQP to broker
 
-    # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pmt.hold.success.notification", body=ownerEmail, properties=pika.BasicProperties(delivery_mode = 2))
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pmt.hold.success.notification", body=ownerEmail, properties=pika.BasicProperties(delivery_mode = 2))
 
     return jsonify({
         "code":200,

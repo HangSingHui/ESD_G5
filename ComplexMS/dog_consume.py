@@ -51,6 +51,8 @@ def processJob(body,routing_key):
     #invoke job to get the rate
     info =json.loads(body)
     rate = int(info["hourly_rate"])
+    job_id = info["job_id"]
+    title = info["job_title"]
     # print(rate)
 
     # categorise rate 
@@ -78,19 +80,19 @@ def processJob(body,routing_key):
                 "message": "Sitter list unable to be obtained."
             }
     
-    emailList = getEmailList["emails"]
+    recipient = getEmailList["emails"]
     #Send email
-    mail_signature = "\n Do contact us via our support email at inquiries.petsrus@gmail.com for any queries. \n Thank you for using Pets R Us! \n\n Best Regards, Pet R Us (With Pets, For Pets)"
+    mail_signature = "\nDo contact us via our support email at inquiries.petsrus@gmail.com for any queries. \n Thank you for using Pets R Us! \n\n Best Regards,\nPet R Us (With Pets, For Pets)"
 
     subject = "[Available job posting]"
-    body= "Dear Pets R Us Sitter,\n We are pleased to inform you that there is an available job posting with your indicated species and within the range of your hourly rate preference, with job id: " +  + "\nShould you wish to to take up the job, please indicate in the Pet's R Us mobile application, while still available." 
-    recipient = emailList
+    body= "Dear Pets R Us Sitter,\n We are pleased to inform you that there is an available job posting with your indicated species and within the range of your hourly rate preference, with  title: " + title + "\n\nShould you wish to to take up the job, please indicate in the Pet's R Us mobile application, while still available." 
+    # recipient = emailList
 
     body += mail_signature
     with app.app_context():
         msg = Message(subject=subject,
                     sender=app.config.get("MAIL_USERNAME"),
-                    recipients=[recipient], 
+                    recipients=recipient, 
                     body=body)
         mail.send(msg)
 

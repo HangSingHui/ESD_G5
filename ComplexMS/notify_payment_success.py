@@ -6,7 +6,7 @@ from flask_cors import CORS
 import os, sys
 
 sys.path.append('../SimpleMS')
-import amqp_setup
+# import amqp_setup
 
 import requests
 from invokes import invoke_http
@@ -22,7 +22,7 @@ owner_URL = "http://localhost:5000/owner"
 
 #Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
 
-@app.route("/process-payment-success/<string:price_id>",method="GET")
+@app.route("/process-payment-success",method="GET")
 def process_payment_success(price_id):
     #1. Check whether payment is successful - invoke payment microservice
     payment_status = invoke_http(payment_URL+"/check_payment", method="GET")

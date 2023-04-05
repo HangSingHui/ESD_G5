@@ -101,7 +101,7 @@ def processIncident(session):
     
     # 3. Change job status to 'Open' from Job Microservice
     print('\n-----Update job status from "Matched" to "Open" (job microservice)-----')
-    newStatus = {"Status": "Open", "sitter_id": ""}
+    newStatus = {"Status": "Open", "SitterID": ""}
     open_job_result = invoke_http(update_job_URL + jobId + '/Open' , method='PUT', json=newStatus)
     print('open_job_result: ', open_job_result)
     

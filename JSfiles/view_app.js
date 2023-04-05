@@ -148,8 +148,7 @@ function accept_application(item) {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            result = data.data;
-            price_id = result["price_id"]
+            price_id = data["price_id"]
             alert("You have successfully accepted this sitter! We hope your pet has a paw-some time!")
 
             var product_price_id = price_id
@@ -176,7 +175,7 @@ function accept_application(item) {
 
     document.getElementById("application_list").innerHTML = 
     
-    "<h1 class='text-center fw-bold mt-5'>Redirecting you to payment...</h1><h4 class='text-center fw-bold mn-5'>Updating our database...</h4>";
+    "<h1 class='text-center fw-bold mt-5'>Updating our database, please give us a moment!</h1><h4 class='text-center fw-bold mn-5'>Redirecting you to checkout...</h4>";
     }
     
 

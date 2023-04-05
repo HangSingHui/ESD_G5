@@ -74,7 +74,7 @@ function ifEmpty() {
 // Simulate that an owner has logged in 
 var ownerID = '64291e7a06864f6b8cac1f28'
 
-const create_route = "http://localhost:5005/createjob"
+const create_route = "http://localhost:5400/createjob"
 
 const fetch_pets_route = "http://localhost:5007/pets"
 
@@ -166,7 +166,7 @@ function submit_job() {
     var payout = job_duration * payrate;
     
     var pets = document.getElementById("pets");
-    var pets_arr = []
+    var pets_arr = [];
     
     var spec_arr = [];
     var spec_list = document.getElementById("spec_list");
@@ -205,7 +205,7 @@ function submit_job() {
         "Image_Path" : image,
     })
 
-    fetch(`${create_route}/${ownerID}`,  {
+    const create_job = fetch(create_route,  {
         method : "POST",
         headers: {
             "Content-type": "application/json"
@@ -214,7 +214,7 @@ function submit_job() {
     })
     .then(response => response.json())
     .then(data => {
-        // console.log(data);
+        console.log(data);
         // result = data.data;
         // console.log(result);
         if (data.code === 201) {

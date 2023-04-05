@@ -15,6 +15,7 @@ import pika
 import json
 
 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -71,7 +72,7 @@ def processIncident(session):
     print('invoked')
     sessionId = session['data'][0]['_id']['$oid']
     jobId = session['data'][0]['JobID']['$oid']
-    sitterId = session['data'][0]['SitterID']['$oid']
+    sitterId = session['data'][0]['sitterID']['$oid']
     ownerId = session['data'][0]['OwnerID']['$oid']
     print(sessionId)
     print(jobId)
@@ -110,6 +111,20 @@ def processIncident(session):
     print(cancellation_notice)
     cancellation_notice_hours = cancellation_notice // 3600
     print('Cancellation_notice_hours' + str(cancellation_notice_hours))
+
+    #TRIGGER PENALTY HANDLING IF CANCELLATION NOTICE < 24 HOURS
+    if cancellation_notice_hours < 24:
+        # 5. Send pet sitter details to AMQP for penalty handling
+        print('\n\n-----Publishing pet sitter details to AMQP with routing_key=sitter.penalty-----')
+
+        message = json.dumps({"sitterId": sitterId, "jobId": jobId})
+
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="sitter.penalty", 
+        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    else:
+    # if no, ignore
+        pass
+
     '''
     if(cancellation_notice_hours < 24):
         # 5. Send pet sitter details to AMQP for penalty handling
@@ -184,7 +199,7 @@ def processIncident(session):
     '''
 
     replacement_sitters_ids = []
-    replacement_sitters_details =[]
+    replacement_sitters_details = []
 
     #GET REPLACEMENT SITTER FROM JOB APPLICATION
     for application in applications_replacements_list:
@@ -202,15 +217,15 @@ def processIncident(session):
     print('List of replacement sitters details ' + str(replacement_sitters_details))
     
 
-'''
+
     # 7. Send list of recommended pet sitter replacements
     print('\n\n-----Publishing the list of recommended pet sitter replacements with routing_key=replacement.notification-----')
 
     message = json.dumps({'jobID': jobId, 
-                          'replacements':sitters, 
+                          'replacements': replacement_sitters_details, 
                           'ownerID': ownerId, 
-                          'ownerName': owner_name_result,
-                          'ownerEmail': owner_email_result})
+                          'ownerName': owner_name,
+                          'ownerEmail': owner_email})
 
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="replacement.notification", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
@@ -220,19 +235,19 @@ def processIncident(session):
 
     # - reply from the invocation is not used;
     # continue even if this invocation fails        
-    print("\nSitter replacement status ({:d}) published to the RabbitMQ Exchange:", sitter_replacements_result)
+    print("\nSitter replacement status ({:d}) published to the RabbitMQ Exchange:", replacement_sitters_details)
 
 
     # 8. Return confirmation of cancellation
     return {
         "code": 201,
         "data": {
-            "cancellation": closing_session_result,
+            #"cancellation": closing_session_result,
             "cancelation_status": "confirmed"
         }
     },201
 
-'''
+
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":

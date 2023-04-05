@@ -20,18 +20,17 @@ app = Flask(__name__)
 CORS(app)
 
 
-notification_URL = "http://localhost:5002/notification/"
-penalty_URL = "http://localhost:5300/Penalty_Handling/"
-session_time_URL = "http://localhost:5004/session-time/"
-close_session_URL = "http://localhost:5004/close-session/"
-cancel_session_URL = "http://127.0.0.1:5004/cancel-session/"
-job_waitlist_URL = "http://localhost:5005/job/wait-list/"
-open_job_URL = "http://localhost:5005/job/"
-update_job_URL = "http://localhost:5005/job/update_job/"
-get_owner_by_id_URL = "http://localhost:5000/owner/"
-get_sitter_details_URL = "http://localhost:5001/sitter/"
-get_session_by_id_URL = "http://localhost:5004/session/"
-get_job_by_id_URL = "http://localhost:5005/job/"
+penalty_URL = "http://penalty_handling:5300/Penalty_Handling/"
+session_time_URL = "http://session:5004/session-time/"
+close_session_URL = "http://session:5004/close-session/"
+cancel_session_URL = "http://session:5004/cancel-session/"
+job_waitlist_URL = "http://job:5005/job/wait-list/"
+open_job_URL = "http://job:5005/job/"
+update_job_URL = "http://job:5005/job/update_job/"
+get_owner_by_id_URL = "http://owner:5000/owner/"
+get_sitter_details_URL = "http://sitter:5001/sitter/"
+get_session_by_id_URL = "http://session:5004/session/"
+get_job_by_id_URL = "http://job:5005/job/"
 
 
 @app.route("/incident_handling/<string:sessionId>", methods=['PUT'])

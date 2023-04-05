@@ -17,10 +17,10 @@ import amqp_setup
 
 app = Flask(__name__)
 
-get_sitter_payment_info_URL = "http://localhost:5001/payment-info/"
-deduct_penalty_URL = "http://localhost:5006/charge_penalty"
-deduct_score_URL = "http://localhost:5001/sitter/rating/"
-get_sitter_URL = "http://localhost:5001/sitter/"
+get_sitter_payment_info_URL = "http://sitter:5001/payment-info/"
+deduct_penalty_URL = "http://payment:5006/charge_penalty"
+deduct_score_URL = "http://sitter:5001/sitter/rating/"
+get_sitter_URL = "http://sitter:5001/sitter/"
 
 # binding key
 monitorBindingKey='#.penalty'

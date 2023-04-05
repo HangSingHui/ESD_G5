@@ -74,7 +74,7 @@ function ifEmpty() {
 // Simulate that an owner has logged in 
 var ownerID = '64291e7a06864f6b8cac1f28'
 
-const create_route = "http://localhost:5005/createjob"
+const create_route = "http://localhost:5400/createjob"
 
 const fetch_pets_route = "http://localhost:5007/pets"
 
@@ -82,34 +82,41 @@ const pet_response = fetch(`${fetch_pets_route}/${ownerID}`)
 .then(response => response.json())
 .then(data => {
 
-    if (data.code ) {
+    if (data.code == 200) {
+        pets = data.data;
+        console.log(pets);
+
+        li_string = "";
+
+        for (let index = 0; index < pets.length; index++) {
+            pet = pets[index];
+            pet_id = pet["_id"]["$oid"]
+            pet_name = pet["Name"]
+            pet_breed = pet["Breed"]
+
+            
+            temp_li_string = `
+            
+            <li class="list-group-item">
+                <input class="form-check-input me-1" type="checkbox" value="${pet_id}" id="${pet_id}">
+                <label class="form-check-label">${pet_name} the ${pet_breed}</label>
+            </li>
+            `
+
+            li_string += temp_li_string
+
+            document.getElementById("pets").innerHTML = li_string;
         
+        }
     }
 
-    pets = data.data;
-    console.log(pets);
-
-    li_string = "";
-
-    for (let index = 0; index < pets.length; index++) {
-        pet = pets[index];
-        pet_id = pet["_id"]["$oid"]
-        pet_name = pet["Name"]
-        pet_breed = pet["Breed"]
-
-        
-        temp_li_string = `
-        
-        <li class="list-group-item">
-            <input class="form-check-input me-1" type="checkbox" value="${pet_id}" id="${pet_id}">
-            <label class="form-check-label">${pet_name} the ${pet_breed}</label>
-        </li>
-        `
-
-        li_string += temp_li_string
+    else if(data.code == 404){
+        alert("You have no pets! Please register your pets before creating a job")
+        document.getElementById("submit_button").setAttribute("class", "btn btn-primary disabled")
+        document.getElementById("view_jobs").setAttribute("class", "btn btn-secondary disabled")
     }
 
-    document.getElementById("pets").innerHTML = li_string;
+    
 })
 
 
@@ -159,7 +166,7 @@ function submit_job() {
     var payout = job_duration * payrate;
     
     var pets = document.getElementById("pets");
-    var pets_arr = []
+    var pets_arr = [];
     
     var spec_arr = [];
     var spec_list = document.getElementById("spec_list");
@@ -178,17 +185,8 @@ function submit_job() {
         spec_arr.push(spec.id)
     }
 
-    // console.log(start_time_unix);
-    // console.log(end_time_unix);
-    // console.log(payrate);
-    // console.log(pets_arr);
-    // console.log(job_desc);
-    // console.log(spec_arr);
-    // console.log(files);
-
-    
-
-    var image = "Pets/puppy.jpg"
+    // Simulate the user sending in an image of the puppy 
+    var image = "https://i.ibb.co/92ZMC6b/puppy.jpg"
 
     let jsonData = JSON.stringify({
         "OwnerID" : ownerID,
@@ -207,7 +205,7 @@ function submit_job() {
         "Image_Path" : image,
     })
 
-    fetch(`${create_route}/${ownerID}`,  {
+    const create_job = fetch(create_route,  {
         method : "POST",
         headers: {
             "Content-type": "application/json"
@@ -216,7 +214,7 @@ function submit_job() {
     })
     .then(response => response.json())
     .then(data => {
-        // console.log(data);
+        console.log(data);
         // result = data.data;
         // console.log(result);
         if (data.code === 201) {

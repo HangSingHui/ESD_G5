@@ -69,15 +69,15 @@ def incident_handling(sessionId):
 
 
 def processIncident(session):
-    print('invoked')
+    print('processIncident successfully invoked!')
     sessionId = session['data'][0]['_id']['$oid']
     jobId = session['data'][0]['JobID']['$oid']
     sitterId = session['data'][0]['sitterID']['$oid']
     ownerId = session['data'][0]['OwnerID']['$oid']
-    print(sessionId)
-    print(jobId)
-    print(sitterId)
-    print(ownerId)
+    print('sessionId '+sessionId)
+    print('jobId '+jobId)
+    print('sitterId '+sitterId)
+    print('ownerId '+ownerId)
 
     # 2. Update session closing time and change session status to closed
     # Invoke session microservice
@@ -98,11 +98,11 @@ def processIncident(session):
     get_job_result = invoke_http(get_job_by_id_URL + jobId, method= 'GET')
     print('Get Job By Id Result: ', get_job_result)
     job_start_datetime = get_job_result["data"][0]["Start_datetime"]
-    print(job_start_datetime)
+    print("\nJob Start Datetime: "+job_start_datetime)
     
     # 3. Change job status to 'Open' from Job Microservice
     print('\n-----Update job status from "Matched" to "Open" (job microservice)-----')
-    newStatus = {"Status": "Open", "SitterID": ""}
+    newStatus = {"SitterID": ""}
     open_job_result = invoke_http(update_job_URL + jobId + '/Open' , method='PUT', json=newStatus)
     print('open_job_result: ', open_job_result)
     
@@ -110,7 +110,7 @@ def processIncident(session):
     cancellation_notice = int(job_start_datetime) - int(sessionTimeCancelled)
     print(cancellation_notice)
     cancellation_notice_hours = cancellation_notice // 3600
-    print('Cancellation_notice_hours' + str(cancellation_notice_hours))
+    print('Cancellation_notice_hours: ' + str(cancellation_notice_hours))
 
     #TRIGGER PENALTY HANDLING IF CANCELLATION NOTICE < 24 HOURS
     if cancellation_notice_hours < 24:
@@ -176,9 +176,10 @@ def processIncident(session):
         #Get owner's email and name
         print('\n-----Retrieve name and email from owner microservice-----')
         print(ownerId)
-        owner_details_response = invoke_http('http://localhost:5000/owner/641998d4148563c1c5771f50', method='GET')
+        owner_details_response = invoke_http(get_owner_by_id_URL+ownerId, method='GET')
         owner_name = owner_details_response["data"][0]["Name"]
         owner_email = owner_details_response["data"][0]["Email"]
+        print(owner_name, owner_email)
         '''
         print(owner_details_response)
         owner_name = owner_details_response["data"][0]["Name"]
@@ -240,12 +241,13 @@ def processIncident(session):
 
     # 8. Return confirmation of cancellation
     return {
-        "code": 201,
-        "data": {
-            #"cancellation": closing_session_result,
-            "cancelation_status": "confirmed"
-        }
-    },201
+            "code": 201,
+            "data": {
+                #"cancellation": closing_session_result,
+                "cancelation_status": "confirmed"
+            }
+    }
+
 
 
 

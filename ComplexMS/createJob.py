@@ -114,11 +114,12 @@ def processPublishJob(new_job,jobID):
     # json. dumps() method - convert a python object into an equivalent JSON object
     message = json.dumps( {
         'job_id': jobID, 
+        'job_title': new_job['Title'],
         'owner_id': new_job['OwnerID'], 
         'pet_species': pet_species, 
         'hourly_rate': new_job['Hourly_rate']
     })
-
+    print(message)
     # filter by pet 
     # if dog -> routing key = dog.*
     # if cat -> routing key = cat.*
@@ -130,15 +131,27 @@ def processPublishJob(new_job,jobID):
         print('\n\n-----Publishing the (dog) message with routing_key=dog.*-----')
 
         # invoke_http(error_URL, method="POST", json=order_result)
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="dog.#", 
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="dog", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
         # make message persistent within the matching queues until it is received by some receiver 
         # (the matching queues have to exist and be durable and bound to the exchange)
 
-    if pet_species == 'Cat': 
+    elif pet_species == 'Cat': 
         # send to cat queue 
-        print('\n\n-----Publishing the (dog) message with routing_key=cat.*-----')
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="bird.#", 
+        print('\n\n-----Publishing the (cat) message with routing_key=cat.*-----')
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="cat", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    elif pet_species == 'Rabbit': 
+        # send to cat queue 
+        print('\n\n-----Publishing the (rabbit) message with routing_key=cat.*-----')
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="rabbit", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    elif pet_species == 'Bird': 
+        # send to cat queue 
+        print('\n\n-----Publishing the (bird) message with routing_key=cat.*-----')
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="bird", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
     
     

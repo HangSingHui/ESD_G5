@@ -6,7 +6,7 @@ from bson.json_util import dumps
 import os, sys
 
 sys.path.append('../SimpleMS')
-import amqp_setup
+# import amqp_setup
 
 import requests
 from invokes import invoke_http
@@ -182,7 +182,7 @@ def processAcceptApp(app_id):
     #Update session with price_id
 
     # print(type(job_id))
-    update_price_id = invoke_http(session_URL+"/addPrice/"+job_id,method="PUT",json=payout)
+    update_price_id = invoke_http(session_URL+"/addPrice/"+job_id,method="PUT",json=price_id)
     code = update_price_id["code"]
     if code not in range(200,300):
         return jsonify({

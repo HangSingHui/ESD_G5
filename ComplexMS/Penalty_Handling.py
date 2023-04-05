@@ -78,19 +78,19 @@ def processPenalty(message,routing_key):
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="penalty.notification", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2))
     
-    return(jsonify
-           ({
-                "code":200,
-                "message":'Penalty Handled!'
-            })
-        )
+    # return(jsonify
+    #        ({
+    #             "code":200,
+    #             "message":'Penalty Handled!'
+    #         })
+    #     )
 
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for handling an penalty...")
     print(": monitoring routing key '{}' in exchange '{}' ...".format(monitorBindingKey, amqp_setup.exchangename))
-    app.run(host="0.0.0.0", port=5300, debug=True)
+    # app.run(host="0.0.0.0", port=5300, debug=True)
     listenToAMQP()
     # Notes for the parameters: 
     # - debug=True will reload the program automatically if a change is detected;

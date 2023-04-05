@@ -84,7 +84,7 @@ const pet_response = fetch(`${fetch_pets_route}/${ownerID}`)
 
     if (data.code == 200) {
         pets = data.data;
-        // console.log(pets);
+        console.log(pets);
 
         li_string = "";
 

@@ -23,8 +23,8 @@ app = Flask(__name__)
 CORS(app)
 
 # thr URLs are just the SMS that the CMS will be sending requests to? 
-job_URL = "http://localhost:5005/createjob"
-pet_URL = "http://localhost:5007/pets/get_species"
+job_URL = "http://0.0.0.0:5005/createjob"
+pet_URL = "http://0.0.0.0:5007/pets/get_species"
 
 @app.route("/createjob", methods=['POST'])
 def create_job():

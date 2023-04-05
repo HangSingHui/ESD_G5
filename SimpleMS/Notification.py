@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 import os
 
 import json
-import amqp_setup
+# import amqp_setup
 
 app = Flask(__name__)
 
@@ -13,13 +13,14 @@ mail_settings = {
     "MAIL_PORT": 465,
     "MAIL_USE_TLS": False,
     "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": os.environ['EMAIL_USER'], #noreply.petsrus@gmail.com
-    "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'] #hyilskfcwghyotff
+    # "MAIL_USERNAME": os.environ['EMAIL_USER'], #noreply.petsrus@gmail.com
+    "MAIL_USERNAME": os.environ.get('EMAIL_USER','noreply.petsrus@gmail.com'),
+    "MAIL_USERNAME": os.environ.get('EMAIL_PASSWORD','hyilskfcwghyotff')
+    # "MAIL_PASSWORD": os.environ['EMAIL_PASSWORD'] #hyilskfcwghyotff
 }
 
 app.config.update(mail_settings)
 mail = Mail(app)
-
 
 monitorBindingKey='#.notification'
 
@@ -99,6 +100,7 @@ def processNotif(notif,routing_key):
         mail.send(msg)
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')    
+    app.run(port=5002, debug=True)
     print("\nThis is " + os.path.basename(__file__), end='')
     print(": monitoring routing key '{}' in exchange '{}' ...".format(monitorBindingKey, amqp_setup.exchangename))
 

@@ -39,6 +39,7 @@ def listenToAMQP():
 def processPenalty(message,routing_key):
     # 1. Check the routing key of the message
     if routing_key == "sitter.penalty":
+        print('penalty request received')
         data = json.loads(message)
         sitter_id = data['sitterId']
         job_id = data['jobId']
@@ -87,7 +88,7 @@ def processPenalty(message,routing_key):
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for handling an penalty...")
     print(": monitoring routing key '{}' in exchange '{}' ...".format(monitorBindingKey, amqp_setup.exchangename))
-    app.run(host="0.0.0.0", port=5200, debug=True)
+    app.run(host="0.0.0.0", port=5300, debug=True)
     listenToAMQP()
     # Notes for the parameters: 
     # - debug=True will reload the program automatically if a change is detected;

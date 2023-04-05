@@ -68,7 +68,7 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.penal
 
 ############   Pets - Dog queue   #############
 #delcare Error queue
-ueue_name = 'Dog'
+queue_name = 'Dog'
 channel.queue_declare(queue=queue_name, durable=True) 
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='dog.*') 
 

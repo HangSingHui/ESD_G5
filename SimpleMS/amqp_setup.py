@@ -20,7 +20,9 @@ connection = pika.BlockingConnection(
     # - Try: simply re-run the program or refresh the page.
     # For rare cases, it's incompatibility between RabbitMQ and the machine running it,
     # - Use the Docker version of RabbitMQ instead: https://www.rabbitmq.com/download.html
+print('creating channel')
 channel = connection.channel()
+print('channel created')
 # Set up the exchange if the exchange doesn't exist
 # - use a 'topic' exchange to enable interaction
 exchangename="notification_topic"

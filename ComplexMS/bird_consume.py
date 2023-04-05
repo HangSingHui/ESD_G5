@@ -64,8 +64,6 @@ def processJob(body,routing_key):
     elif (rate<=60): 
         rate_cat = "cat3"
     
-    # print("Rate cat")
-    # print(rate_cat)
     # rate argument will be a category -> do validation again in sitter.py func 7 
     print('\n-----Invoking sitter microservice-----')
     getEmailList = invoke_http(sitter_URL+"/Bird"+"/"+rate_cat,method="GET") #get email of all sitters

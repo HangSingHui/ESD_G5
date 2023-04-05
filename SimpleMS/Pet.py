@@ -101,6 +101,12 @@ def get_pet_species(id):
         species = print(json_data[0]['Species'])
         return species
         '''
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Pet not found."
+        }
+    ), 404
         
 
 if __name__ == "__main__":

@@ -149,7 +149,7 @@ function accept_application(item) {
         .then(data => {
             console.log(data);
             price_id = data["price_id"]
-            alert("You have successfully accepted this sitter! We hope your pet has a paw-some time!")
+            alert(data["message"] + "We hope your pet has a paw-some time!")
 
             var product_price_id = price_id
 

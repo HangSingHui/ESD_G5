@@ -81,6 +81,11 @@ const fetch_pets_route = "http://localhost:5007/pets"
 const pet_response = fetch(`${fetch_pets_route}/${ownerID}`)
 .then(response => response.json())
 .then(data => {
+
+    if (data.code ) {
+        
+    }
+
     pets = data.data;
     console.log(pets);
 

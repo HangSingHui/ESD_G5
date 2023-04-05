@@ -330,7 +330,7 @@ def update_price_id(job_id):
         "message": "Successfully updated price_id for open session with job id: " + job_id
     })
 
-@app.route("/get-session-by-price/<string:priceID>")
+@app.route("/session/get-session-by-price/<string:priceID>")
 def getSessionByPrice(priceID):
     #search if session exists first with sessionID
     query={"Price_Id":priceID}

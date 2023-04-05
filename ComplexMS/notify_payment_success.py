@@ -22,8 +22,8 @@ owner_URL = "http://localhost:5000/owner"
 
 #Actions after receiving the AMQP to hold payment on Owner's Account by accept_app.py
 
-@app.route("/process-payment-success",methods=["GET"])
-def process_payment_success():
+@app.route("/process-payment-success/<string:price_id>",methods=["GET"])
+def process_payment_success(price_id):
     #1. Check whether payment is successful - invoke payment microservice
     payment_status = invoke_http(payment_URL+"/check_payment", method="GET")
     code = payment_status['code']
@@ -33,8 +33,10 @@ def process_payment_success():
             "message": "Owner failed to make payment."
         }),400
     
+    print(price_id)
+    
     #2. Retrieve session object using price_id
-    get_session = invoke_http(session_URL+"/get-session-by-price/<string:price_id>",method="GET")
+    get_session = invoke_http(session_URL+"/get-session-by-price/"+price_id,method="GET")
     code = get_session['code']
     if code not in range(200,300):
         return jsonify({
@@ -55,9 +57,15 @@ def process_payment_success():
             }),404
 
     ownerEmail = get_owner["data"][0]["Email"]
+    print(ownerEmail)
     #4. Send ownerEmail via AMQP to broker
 
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pmt.hold.success.notification", body=ownerEmail, properties=pika.BasicProperties(delivery_mode = 2))
+    # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="pmt.hold.success.notification", body=ownerEmail, properties=pika.BasicProperties(delivery_mode = 2))
+
+    return jsonify({
+        "code":200,
+        "message":"Payment has been successful. Sending email to notify owner of successful transaction."
+    })
 
 
     

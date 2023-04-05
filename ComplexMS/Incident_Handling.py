@@ -2,14 +2,15 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 import os, sys
-
+sys.path.append('../SimpleMS')
 
 import requests
 from invokes import invoke_http
-from SimpleMS import amqp_setup
+import amqp_setup
+#import amqp_setup_notification
 from datetime import datetime, timedelta
-
-from SimpleMS import amqp_setup_notification
+#from SimpleMS import amqp_setup
+#from SimpleMS import amqp_setup_notification
 import pika
 import json
 
@@ -104,7 +105,7 @@ def processIncident(session):
     print('open_job_result: ', open_job_result)
     
     #CHECK IF JOB WAS CANCELLED WITHIN A DAY BEFORE JOB STARTDATETIME
-    cancellation_notice = int(job_start_datetime) - (sessionTimeCancelled)
+    cancellation_notice = int(job_start_datetime) - int(sessionTimeCancelled)
     print(cancellation_notice)
     cancellation_notice_hours = cancellation_notice // 3600
     print('Cancellation_notice_hours' + str(cancellation_notice_hours))
@@ -148,21 +149,42 @@ def processIncident(session):
     # 6. Retrieve recommended petsitters as replacement (waitlist)
     # Invoke job microservice
     print('\n-----Retrieve waitlist from job microservice-----')
-    sitter_replacements_result = invoke_http(job_waitlist_URL + jobId, method='GET')
-    print('Sitter Replacements Suggestion: ',sitter_replacements_result)
+    sitter_replacements_response = invoke_http(job_waitlist_URL + jobId, method='GET')
+    print('Sitter Replacements Suggestion: ',sitter_replacements_response)
 
-    
+    #Check if sitter_replacements_response returns valid response. If response -> Get owner's name and email, then get recommended sitter's 
+    if sitter_replacements_response:
+        sitter_replacements_list = sitter_replacements_response['data']
+        print(sitter_replacements_list)
 
+        #Get owner's email and name
+        print('\n-----Retrieve name and email from owner microservice-----')
+        owner_details_response = invoke_http(get_owner_by_id_URL + str(ownerId), method=['GET'])
+        print(owner_details_response)
+        '''
+        print(owner_details_response)
+        owner_name = owner_details_response["data"][0]["Name"]
+        owner_email = owner_details_response["data"][0]["Email"]
+        print("Owner_name: " + str(owner_name))
+        print("Owner_email: " + str(owner_email))
+        '''
+
+        
+        
     # Get owner's email and name
     # Invoke owner microservice
-    print('\n-----Retrieve name and email from owner microservice-----')
+    #print('\n-----Retrieve name and email from owner microservice-----')
+
+    '''
     owner_name_result = invoke_http(get_owner_by_id_URL + ownerId, method='GET')[0]['Name']
     owner_email_result = invoke_http(get_owner_by_id_URL + ownerId, method='GET')[0]['Email']
     print('Owner name:',owner_name_result,'\nOwner email:',owner_email_result)
+    '''
 
     sitters = []
-    for sitter in sitter_replacements_result:
+    for sitter in sitter_replacements_list:
         details = invoke_http(get_sitter_details_URL + sitter, method='GET')
+        print(details)
         sitters.append(details)
     
     print(sitters)

@@ -5,7 +5,7 @@ from bson.json_util import dumps
 
 import os, sys
 
-sys.path.append('../SimpleMS')
+# sys.path.append('../SimpleMS')
 import amqp_setup 
 
 

@@ -20,7 +20,7 @@ const app_response = fetch(`${application_get_url}/${job_id}`)
     
     else{
         var temp_sitters = [];
-        console.log(data);
+        // console.log(data);
         // return data
         applications = data.data;
         // window.sessionStorage
@@ -56,7 +56,7 @@ const app_response = fetch(`${application_get_url}/${job_id}`)
                 `
     
                 document.getElementById("application_list").innerHTML += temp_str
-                console.log(temp_sitters);
+                // console.log(temp_sitters);
             }
             
         }
@@ -137,9 +137,9 @@ function populate_data(sitters_arr) {
 function accept_application(item) {
     var confirmation = confirm(`Confirm sitter's application? We will notify the sitter about your application and update the current job listing`)
     if (confirmation == true) {
-        console.log(item);
+        // console.log(item);
 
-        console.log(`${accept_application_route}/${item}`);
+        // console.log(`${accept_application_route}/${item}`);
 
         const accept_response = fetch(`${accept_application_route}/${item}`,
         {
@@ -151,7 +151,7 @@ function accept_application(item) {
         )
         .then(response => response.json())
         .then(data => {
-            console.log(data);
+            // console.log(data);
             price_id = data["price_id"]
             alert(data["message"] + "We hope your pet has a paw-some time!")
 

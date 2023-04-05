@@ -66,7 +66,7 @@ function ifEmpty() {
     var spec_list = document.getElementById("spec_list")
     if (spec_list.getElementsByTagName("li").length == 0) {
         document.getElementById("spec_placeholder").innerText = "No Specifications Entered"
-        console.log(document.getElementById("spec_placeholder"));
+        // console.log(document.getElementById("spec_placeholder"));
         spec_list.setAttribute("class", "list-group d-none")
     }
 }
@@ -84,7 +84,7 @@ const pet_response = fetch(`${fetch_pets_route}/${ownerID}`)
 
     if (data.code == 200) {
         pets = data.data;
-        console.log(pets);
+        // console.log(pets);
 
         li_string = "";
 
@@ -214,7 +214,7 @@ function submit_job() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data);
+        // console.log(data);
         // result = data.data;
         // console.log(result);
         if (data.code === 201) {

@@ -18,7 +18,6 @@ CORS(app)
 
 owner_URL = "http://localhost:5000/owner"
 sitter_URL = "http://localhost:5001/sitter"
-notification_URL = "http://localhost:5002/notification"
 session_URL = "http://localhost:5004/session"
 job_URL = "http://localhost:5005/job"
 payment_URL = "http://localhost:5006/payment"

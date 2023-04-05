@@ -1,0 +1,326 @@
+version: "3.8"
+
+volumes:
+  rabbitmq_data:
+
+services:
+
+  ####################################
+  # RabbitMQ: The messaging broker   
+  ####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: esd-rabbit
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes: 
+      - rabbitmq_data:/var/lib/rabbitmq
+ 
+  ###################################
+  # Application: The Application microservice
+  ###################################
+  application:
+    build:
+      context: ./
+      dockerfile: application.Dockerfile
+    image: christianmk/application:1.0
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+        - "5008:5008"
+ 
+  #######################################################
+  # Job: The Job microservice
+  #######################################################
+  job:
+    build:
+      context: ./
+      dockerfile: job.Dockerfile
+    image: christianmk/job:1.0
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5005:5005"
+  ###################################
+  # Owner: The Owner microservice
+  ###################################
+  owner:
+    build:
+      context: ./
+      dockerfile: owner.Dockerfile
+    image: christianmk/owner:1.0
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5000:5000"
+  #######################################################
+  # Pet: The Pet microservice
+  #######################################################
+  pet:
+    build:
+      context: ./
+      dockerfile: pet.Dockerfile
+    image: christianmk/pet:1.0
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5007:5007"
+  ###################################
+  # Sitter: The Sitter microservice
+  ###################################
+  sitter:
+    build:
+      context: ./
+      dockerfile: sitter.Dockerfile
+    image: christianmk/sitter:1.0
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5001:5001"
+  #######################################################
+  # Session: The Session microservice
+  #######################################################
+  session:
+    build:
+      context: ./
+      dockerfile: session.Dockerfile
+    image: christianmk/session:1.0
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+  ###################################
+  # Payment: The Payment microservice
+  ###################################
+  payment:
+    build:
+      context: ./
+      dockerfile: payment.Dockerfile
+    image: christianmk/payment:1.0
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5006:5006"
+  #######################################################
+  # Notification: The Notification microservice
+  #######################################################
+  notification:
+    build:
+      context: ./
+      dockerfile: notification.Dockerfile
+    image: christianmk/notification:1.0
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+    
+  ###################################
+  # Bird Consume: The Bird Consume microservice
+  ###################################
+  bird_consume:
+    build:
+      context: ./
+      dockerfile: bird_consume.Dockerfile
+    image: christianmk/bird_consume:1.0
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+  ###################################
+  # Dog Consume: The Dog Consume microservice
+  ###################################
+  dog_consume:
+    build:
+      context: ./
+      dockerfile: dog_consume.Dockerfile
+    image: christianmk/dog_consume:1.0
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+  
+  ###################################
+  # Cat Consume: The Cat Consume microservice
+  ###################################
+  cat_consume:
+    build:
+      context: ./
+      dockerfile: cat_consume.Dockerfile
+    image: christianmk/cat_consume:1.0
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+  
+  ###################################
+  # Rabbit Consume: The Rabbit Consume microservice
+  ###################################
+  rabbit_consume:
+    build:
+      context: ./
+      dockerfile: rabbit_consume.Dockerfile
+    image: christianmk/rabbit_consume:1.0
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+
+  ##################################
+  # Create Job Handling: The Create Job microservice
+  ##################################
+  create_job:
+    build:
+      context: ./
+      dockerfile: create_job.Dockerfile
+    image: christianmk/create_job:1.0
+    restart: always
+    depends_on:
+    - job
+    - pet
+    - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      job_URL : "http://job:5005/createjob"
+      pet_URL : "http://pet:5007/pets/get_species"
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5400:5400"
+  
+  ##################################
+  # Notify Payment Success: The Notify Payment Success microservice
+  ##################################
+  notify_payment_success:
+    build:
+      context: ./
+      dockerfile: notify_payment_success.Dockerfile
+    image: christianmk/notify_payment_success:1.0
+    restart: always
+    depends_on:
+    - payment
+    - session
+    - owner
+    - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      owner_URL : "http://owner:5000/owner"
+      payment_URL : "http://payment:5006"
+      session_URL : "http://session:5004/session"
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5555:5555"
+
+  
+
+  ##################################
+  # Accept Application: The Accept Application microservice
+  ##################################
+  accept_application:
+    build:
+      context: ./
+      dockerfile: accept_application.Dockerfile
+    image: christianmk/accept_application:1.0
+    restart: always
+    depends_on:
+      - application
+      - session
+      - job
+      - sitter
+      - payment
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      owner_URL : "http://owner:5000/owner"
+      sitter_URL : "http://sitter:5001/sitter"
+      session_URL : "http://session:5004/session"
+      job_URL : "http://job:5005/job"
+      payment_URL : "http://payment:5006/payment"
+      application_URL : "http://application:5008/application"
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5100:5100"
+
+  ##################################
+  # Incident Handling: The Incident Handling microservice
+  ##################################
+  incident_handling:
+    build:
+      context: ./
+      dockerfile: incident_handling.Dockerfile
+    image: christianmk/incident_handling:1.0
+    restart: always
+    depends_on:
+    - session
+    - penalty_handling
+    - job
+    - owner
+    - sitter
+    - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      penalty_URL : "http://penalty_handling:5300/Penalty_Handling/"
+      session_time_URL : "http://session:5004/session-time/"
+      close_session_URL : "http://session:5004/close-session/"
+      cancel_session_URL : "http://session:5004/cancel-session/"
+      job_waitlist_URL : "http://job:5005/job/wait-list/"
+      open_job_URL : "http://job:5005/job/"
+      update_job_URL : "http://job:5005/job/update_job/"
+      get_owner_by_id_URL : "http://owner:5000/owner/"
+      get_sitter_details_URL : "http://sitter:5001/sitter/"
+      get_session_by_id_URL : "http://session:5004/session/"
+      get_job_by_id_URL : "http://job:5005/job/"
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5200:5200"
+
+  ##################################
+  # Penalty Handling: The Notify Payment Success microservice
+  ##################################
+  penalty_handling:
+    build:
+      context: ./
+      dockerfile: penalty_handling.Dockerfile
+    image: christianmk/penalty_handling:1.0
+    restart: always
+    depends_on:
+    - sitter
+    - payment
+    - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      get_sitter_payment_info_URL : "http://sitter:5001/payment-info/"
+      deduct_penalty_URL : "http://payment:5006/charge_penalty"
+      deduct_score_URL : "http://sitter:5001/sitter/rating/"
+      get_sitter_URL : "http://sitter:5001/sitter/"
+      PYTHONUNBUFFERED: 1
+
+  
+      
+      
+    

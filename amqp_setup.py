@@ -3,17 +3,10 @@ import pika
 # These module-level variables are initialized whenever a new instance of python interpreter imports the module;
 # In each instance of python interpreter (i.e., a program run), the same module is only imported once (guaranteed by the interpreter).
 
-hostname = "localhost" # default hostname
+hostname = "esd-rabbit" # default hostname
 port = 5672 # default port
 # connect to the broker and set up a communication channel in the connection
-connection = pika.BlockingConnection(
-    pika.ConnectionParameters(
-        host=hostname, 
-        port=port,
-        heartbeat=3600, 
-        blocked_connection_timeout=3600, 
-        # these parameters to prolong the expiration time (in seconds) of the connection
-))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitmq",port=port,heartbeat=3600000, blocked_connection_timeout=3600000))
     # Note about AMQP connection: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
     # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls.
     # If see: Stream connection lost: ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)

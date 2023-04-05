@@ -284,7 +284,7 @@ def cancel_session(sessionId):
             {
                 "code": 200,
                 "data": {
-                    "JobID": sessionId,
+                    "SessionID": sessionId,
                     "sessionTimeCancelled" : utc_time
                 },
                 "message": "Job status changed to cancelled and sessionTimeCancelled added"

@@ -74,9 +74,9 @@ function ifEmpty() {
 // Simulate that an owner has logged in 
 var ownerID = '64291e7a06864f6b8cac1f28'
 
-const create_route = "http://localhost:5400/createjob"
+const create_route = "http://127.0.0.1:5400/createjob"
 
-const fetch_pets_route = "http://job-1:5007/pets"
+const fetch_pets_route = "http://127.0.0.1:5007/pets"
 
 const pet_response = fetch(`${fetch_pets_route}/${ownerID}`)
 .then(response => response.json())

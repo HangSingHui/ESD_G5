@@ -7,7 +7,7 @@ var stripe = Stripe("pk_test_51Ms4GgFrjIdoqzyMIKQv8tYAqcPtO2cm09hNoEoxxnNZC2MlDm
 
 // window.sessionStorage
 var job_id = localStorage.getItem("job_id")
-
+console.log(job_id)
 let sitters;
 
 const app_response = fetch(`${application_get_url}/${job_id}`)

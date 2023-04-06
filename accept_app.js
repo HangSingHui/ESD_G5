@@ -1,5 +1,5 @@
 var price_id = localStorage.getItem("price_id")
-// console.log(price_id);
+console.log(price_id);
 const notification_url = "http://127.0.0.1:5555/process-payment-success";
 
 const notification = fetch(`${notification_url}/${price_id}`)

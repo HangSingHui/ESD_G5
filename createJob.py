@@ -44,10 +44,10 @@ def create_job():
             if code in range(200, 300):     
                 # if the job creation is successful, send the message to the fanout exchange 
                 result = processPublishJob(new_job,jobID) # new_job contains entire job info 
-                return ""
-                # what is published_result? 
+                return jsonify(result)
+                 
 
-            # return jsonify(result), result["code"]
+        
         
         #if is 201, then access rate and species -pasas into amqp
         # filter the hourly rate into categories 
@@ -159,7 +159,10 @@ def processPublishJob(new_job,jobID):
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="bird", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
     
-    
+    return{
+        "code":201,
+        "message":"Job is successfully published to sitters."
+    }
     
 def find_by_petID(newjob): 
     print('\n-----Invoking pet microservice-----')

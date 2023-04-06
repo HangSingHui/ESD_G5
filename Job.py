@@ -166,7 +166,7 @@ def update_job(job_id,status):
 
     info = request.get_json()
     print(info)
-    sitter_id = info["SitterID"]
+    sitter_id = info["sitter_id"]
     print(sitter_id)
     #Change job's status with the id=jobID from matched to open
     queryJob = {"_id":ObjectId(job_id)}

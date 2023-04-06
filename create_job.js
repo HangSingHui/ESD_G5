@@ -219,7 +219,8 @@ function submit_job() {
         // console.log(result);
         if (data.code === 201) {
             alert("Job has been successfully created!")
-            window.location.reload()
+            // window.location.reload()
+            go_to_jobs()
         }
         else if (data.code === 500){
             alert("Job creation failed, please check that your fields are properly filled up and try again!")
@@ -229,5 +230,5 @@ function submit_job() {
 }
 
 function go_to_jobs() {
-    window.location.href = "owner"
+    window.location.href = "http://127.0.0.1:5500/owner_accept_applications.html"
 }

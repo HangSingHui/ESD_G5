@@ -1,7 +1,7 @@
-const accept_application_route = "http://localhost:5100/accept_app";
-const application_get_url = "http://localhost:5008/application/job";
-const sitter_info_url = "http://localhost:5001/sitter"
-const reject_sitter = "http://localhost:5008/application/reject_one"
+const accept_application_route = "http://127.0.0.1:5100/accept_app";
+const application_get_url = "http://127.0.0.1:5008/application/job";
+const sitter_info_url = "http://127.0.0.1:5001/sitter"
+const reject_sitter = "http://127.0.0.1:5008/application/reject_one"
 var stripe = Stripe("pk_test_51Ms4GgFrjIdoqzyMIKQv8tYAqcPtO2cm09hNoEoxxnNZC2MlDmmbMYGpmFOHOMXZdJS3u8FI3j8mOjxLdvMHCFeg00I2EsXps1");
 
 

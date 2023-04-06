@@ -26,8 +26,8 @@ mail_settings = {
 app.config.update(mail_settings)
 mail = Mail(app)
 
-sitter_URL = "http://localhost:5001/sitter" #to invoke later on
-job_URL ="http://localhost:5005/job"
+sitter_URL = "http://sitter:5001/sitter" #to invoke later on
+job_URL ="http://job:5005/job"
 
 monitorBindingKey='bird.#'
 
@@ -78,7 +78,9 @@ def processJob(body,routing_key):
                 "message": "Sitter list unable to be obtained."
             }
     
+    
     recipient = getEmailList["emails"]
+    print(recipient)
     
     #Send email
     mail_signature = "\n\nDo contact us via our support email at inquiries.petsrus@gmail.com for any queries.\nThank you for using Pets R Us! \n\n Best Regards,\nPet R Us (With Pets, For Pets)"
